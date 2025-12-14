@@ -1,2 +1,1169 @@
-cd /home/user/webapp
-cat INDEX_COMPLET_PROJET.md
+<!doctype html>
+<html lang="fr" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Le Voyage du Héros</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: #FFFFFF;
+      height: 100%;
+      overflow: auto;
+    }
+    
+    html {
+      height: 100%;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    .game-container {
+      width: 100%;
+      min-height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    /* Arrière-plans géométriques */
+    .bg-shapes {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+    
+    .shape {
+      position: absolute;
+      opacity: 0.15;
+    }
+    
+    .circle-1 {
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: #FF0000;
+      top: -100px;
+      right: -50px;
+    }
+    
+    .square-1 {
+      width: 200px;
+      height: 200px;
+      background: #0000FF;
+      bottom: 100px;
+      left: -50px;
+      transform: rotate(45deg);
+    }
+    
+    .triangle-1 {
+      width: 0;
+      height: 0;
+      border-left: 150px solid transparent;
+      border-right: 150px solid transparent;
+      border-bottom: 260px solid #FFFF00;
+      top: 50%;
+      right: 10%;
+    }
+    
+    /* Écran d'accueil */
+    .welcome-screen {
+      width: 100%;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      position: relative;
+      z-index: 1;
+      background: linear-gradient(135deg, #FFE5B4 0%, #87CEEB 50%, #FFB6C1 100%);
+    }
+    
+    .logo-area {
+      text-align: center;
+      margin-bottom: 60px;
+      animation: fadeSlideDown 1s ease;
+    }
+    
+    @keyframes fadeSlideDown {
+      0% { opacity: 0; transform: translateY(-50px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    
+    .game-logo {
+      font-size: 72px;
+      margin-bottom: 20px;
+    }
+    
+    .game-title {
+      font-size: 56px;
+      font-weight: 900;
+      color: #000000;
+      margin: 0 0 16px 0;
+      letter-spacing: -2px;
+      text-transform: uppercase;
+    }
+    
+    .game-subtitle {
+      font-size: 20px;
+      font-weight: 600;
+      color: #666666;
+      margin: 0;
+    }
+    
+    .start-button {
+      padding: 24px 60px;
+      background: #FF0000;
+      color: #FFFFFF;
+      border: none;
+      font-size: 22px;
+      font-weight: 800;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      letter-spacing: 1px;
+      box-shadow: 8px 8px 0 #000000;
+      animation: fadeSlideUp 1s ease 0.3s backwards;
+    }
+    
+    @keyframes fadeSlideUp {
+      0% { opacity: 0; transform: translateY(50px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    
+    .start-button:hover {
+      transform: translate(4px, 4px);
+      box-shadow: 4px 4px 0 #000000;
+    }
+    
+    /* Écran de jeu */
+    .game-screen {
+      width: 100%;
+      min-height: 100%;
+      padding: 15px 20px 50px 20px;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    /* Timeline */
+    .timeline-container {
+      width: 100%;
+      max-width: 1200px;
+      margin-bottom: 12px;
+      position: relative;
+    }
+    
+    .timeline-svg {
+      width: 100%;
+      height: 80px;
+    }
+    
+    .timeline-step {
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .timeline-step.completed circle {
+      fill: #FF0000;
+    }
+    
+    .timeline-step.active circle {
+      fill: #0000FF;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    /* Carte de scénario */
+    .scenario-card {
+      width: 100%;
+      max-width: 900px;
+      background: #FFFFFF;
+      border: 6px solid #000000;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 12px 12px 0 #000000;
+      animation: slideIn 0.6s ease;
+    }
+    
+    @keyframes slideIn {
+      0% { opacity: 0; transform: translateX(-100px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+    
+    .act-label {
+      display: inline-block;
+      padding: 4px 14px;
+      background: #FFFF00;
+      color: #000000;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+    
+    .scenario-title {
+      font-size: 26px;
+      font-weight: 900;
+      color: #000000;
+      margin: 0 0 10px 0;
+      line-height: 1.2;
+    }
+    
+    .scenario-description {
+      font-size: 15px;
+      color: #333333;
+      line-height: 1.5;
+      margin: 0 0 20px 0;
+    }
+    
+    /* Choix */
+    .choices-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      width: 100%;
+      max-width: 900px;
+    }
+    
+    .choice-card {
+      background: #FFFFFF;
+      border: 4px solid #000000;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      box-shadow: 6px 6px 0 #000000;
+    }
+    
+    .choice-card:hover {
+      transform: translate(3px, 3px);
+      box-shadow: 3px 3px 0 #000000;
+    }
+    
+    .choice-card.selected {
+      border-color: #FF0000;
+      background: #FFF5F5;
+    }
+    
+    .choice-emoji {
+      font-size: 36px;
+      margin-bottom: 10px;
+      display: block;
+    }
+    
+    .choice-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: #000000;
+      margin: 0 0 8px 0;
+      text-transform: uppercase;
+    }
+    
+    .choice-description {
+      font-size: 13px;
+      color: #666666;
+      line-height: 1.5;
+      margin: 0 0 14px 0;
+    }
+    
+    .choice-skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .skill-tag {
+      display: inline-block;
+      padding: 4px 12px;
+      background: #000000;
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .skill-tag.red { background: #FF0000; }
+    .skill-tag.blue { background: #0000FF; }
+    .skill-tag.yellow { background: #FFFF00; color: #000000; }
+    
+    /* Bouton continuer */
+    .continue-button {
+      padding: 14px 40px;
+      background: #0000FF;
+      color: #FFFFFF;
+      border: none;
+      font-size: 16px;
+      font-weight: 800;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      letter-spacing: 1px;
+      box-shadow: 6px 6px 0 #000000;
+      margin-top: 16px;
+    }
+    
+    .continue-button:hover:not(:disabled) {
+      transform: translate(3px, 3px);
+      box-shadow: 3px 3px 0 #000000;
+    }
+    
+    .continue-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    /* Info popup */
+    .info-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      width: 90%;
+      max-width: 600px;
+      background: #FFFF00;
+      border: 6px solid #000000;
+      padding: 40px;
+      z-index: 1000;
+      box-shadow: 12px 12px 0 rgba(0, 0, 0, 0.5);
+      transition: transform 0.3s ease;
+    }
+    
+    .info-popup.show {
+      transform: translate(-50%, -50%) scale(1);
+    }
+    
+    .info-popup-title {
+      font-size: 28px;
+      font-weight: 900;
+      color: #000000;
+      margin: 0 0 20px 0;
+      text-transform: uppercase;
+    }
+    
+    .info-popup-text {
+      font-size: 16px;
+      color: #333333;
+      line-height: 1.8;
+      margin: 0 0 30px 0;
+    }
+    
+    .info-popup-close {
+      padding: 12px 30px;
+      background: #000000;
+      color: #FFFFFF;
+      border: none;
+      font-size: 16px;
+      font-weight: 800;
+      text-transform: uppercase;
+      cursor: pointer;
+      letter-spacing: 1px;
+    }
+    
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    
+    .popup-overlay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    /* Écran de résultats */
+    .results-screen {
+      width: 100%;
+      min-height: 100%;
+      padding: 30px 20px 50px 20px;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: linear-gradient(135deg, #FFE5B4 0%, #87CEEB 50%, #FFB6C1 100%);
+    }
+    
+    .results-card {
+      width: 100%;
+      max-width: 1000px;
+      background: #FFFFFF;
+      border: 6px solid #000000;
+      padding: 30px;
+      box-shadow: 12px 12px 0 #000000;
+      margin-bottom: 24px;
+    }
+    
+    .profile-badge {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 60px;
+      background: #FFFF00;
+      border: 5px solid #000000;
+      border-radius: 50%;
+    }
+    
+    .profile-title {
+      font-size: 32px;
+      font-weight: 900;
+      color: #000000;
+      text-align: center;
+      margin: 0 0 14px 0;
+      text-transform: uppercase;
+      letter-spacing: -1px;
+    }
+    
+    .profile-description {
+      font-size: 15px;
+      color: #333333;
+      line-height: 1.6;
+      text-align: center;
+      margin: 0 0 30px 0;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .badges-section {
+      margin-bottom: 30px;
+    }
+    
+    .section-title {
+      font-size: 22px;
+      font-weight: 900;
+      color: #000000;
+      margin: 0 0 20px 0;
+      text-transform: uppercase;
+      text-align: center;
+    }
+    
+    .badges-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+    }
+    
+    .badge-item {
+      background: #FFFFFF;
+      border: 3px solid #000000;
+      padding: 12px;
+      text-align: center;
+    }
+    
+    .badge-icon {
+      font-size: 30px;
+      margin-bottom: 6px;
+      display: block;
+    }
+    
+    .badge-name {
+      font-size: 11px;
+      font-weight: 800;
+      color: #000000;
+      margin: 0;
+      text-transform: uppercase;
+    }
+    
+    .erasmus-cta {
+      text-align: center;
+      padding: 30px;
+      background: #FF0000;
+      border: 5px solid #000000;
+      margin-bottom: 20px;
+      width: 100%;
+      max-width: 1000px;
+    }
+    
+    .erasmus-title {
+      font-size: 26px;
+      font-weight: 900;
+      color: #FFFFFF;
+      margin: 0 0 14px 0;
+      text-transform: uppercase;
+    }
+    
+    .erasmus-text {
+      font-size: 15px;
+      color: #FFFFFF;
+      margin: 0 0 20px 0;
+      line-height: 1.5;
+    }
+    
+    .erasmus-link {
+      display: inline-block;
+      padding: 14px 32px;
+      background: #FFFFFF;
+      color: #FF0000;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border: 4px solid #000000;
+      box-shadow: 5px 5px 0 #000000;
+      transition: all 0.3s ease;
+    }
+    
+    .erasmus-link:hover {
+      transform: translate(2px, 2px);
+      box-shadow: 3px 3px 0 #000000;
+    }
+    
+    .restart-button {
+      padding: 14px 40px;
+      background: #000000;
+      color: #FFFFFF;
+      border: none;
+      font-size: 16px;
+      font-weight: 800;
+      text-transform: uppercase;
+      cursor: pointer;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+    }
+    
+    .restart-button:hover {
+      background: #333333;
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+    
+    @media (max-width: 768px) {
+      .game-title {
+        font-size: 40px;
+      }
+      
+      .scenario-card {
+        padding: 30px;
+      }
+      
+      .scenario-title {
+        font-size: 28px;
+      }
+      
+      .results-card {
+        padding: 40px 30px;
+      }
+      
+      .profile-title {
+        font-size: 36px;
+      }
+      
+      .choices-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body class="h-full">
+  <div class="game-container h-full"><!-- Formes géométriques de fond -->
+   <div class="bg-shapes">
+    <div class="shape circle-1"></div>
+    <div class="shape square-1"></div>
+    <div class="shape triangle-1"></div>
+   </div><!-- Écran d'accueil -->
+   <div class="welcome-screen" id="welcome-screen">
+    <div class="logo-area">
+     <div class="game-logo">
+      🌍
+     </div>
+     <h1 class="game-title" id="game-title">Le Voyage du Héros</h1>
+     <p class="game-subtitle" id="game-subtitle">Découvre ton profil de voyageur européen</p>
+    </div><button class="start-button" id="start-btn"> <span id="cta-text">Commencer l'aventure</span> </button>
+   </div><!-- Écran de jeu -->
+   <div class="game-screen hidden" id="game-screen"><!-- Timeline -->
+    <div class="timeline-container">
+     <svg class="timeline-svg" id="timeline-svg" viewbox="0 0 1200 80"></svg>
+    </div><!-- Carte de scénario -->
+    <div class="scenario-card"><span class="act-label" id="act-label">ACTE 1</span>
+     <h2 class="scenario-title" id="scenario-title"></h2>
+     <p class="scenario-description" id="scenario-description"></p>
+    </div><!-- Choix -->
+    <div class="choices-grid" id="choices-grid"></div><!-- Bouton continuer --> <button class="continue-button" id="continue-btn" disabled>Continuer</button>
+   </div><!-- Écran de résultats -->
+   <div class="results-screen hidden" id="results-screen">
+    <div class="results-card">
+     <div class="profile-badge" id="profile-badge"></div>
+     <h2 class="profile-title" id="profile-title"></h2>
+     <p class="profile-description" id="profile-description"></p>
+     <div class="badges-section">
+      <h3 class="section-title">Tes badges de compétences</h3>
+      <div class="badges-grid" id="badges-grid"></div>
+     </div>
+    </div>
+    <div class="erasmus-cta">
+     <h3 class="erasmus-title">🚀 Prêt pour l'aventure ?</h3>
+     <p class="erasmus-text">Transforme cette expérience virtuelle en réalité avec Erasmus+ !</p><a href="https://erasmus-plus.ec.europa.eu/" target="_blank" rel="noopener noreferrer" class="erasmus-link"> Découvrir Erasmus+ </a>
+    </div><button class="restart-button" id="restart-btn">Recommencer</button>
+   </div><!-- Popup info -->
+   <div class="popup-overlay" id="popup-overlay"></div>
+   <div class="info-popup" id="info-popup">
+    <h3 class="info-popup-title" id="popup-title"></h3>
+    <p class="info-popup-text" id="popup-text"></p><button class="info-popup-close" id="popup-close">Compris !</button>
+   </div>
+  </div>
+  <script>
+    // Configuration
+    const defaultConfig = {
+      game_title: "Le Voyage du Héros",
+      game_subtitle: "Découvre ton profil de voyageur européen",
+      cta_button: "Commencer l'aventure"
+    };
+    
+    // Données du jeu
+    const gameData = {
+      acts: [
+        {
+          id: 1,
+          name: "ACTE 1 : PRÉPARATION",
+          scenarios: [
+            {
+              id: "prep_1",
+              title: "📋 L'organisation du départ",
+              description: "Tu as décidé de partir en mobilité Erasmus+. Comment organises-tu ta préparation ?",
+              choices: [
+                {
+                  id: "prep_1_a",
+                  emoji: "📅",
+                  title: "Le planificateur",
+                  description: "Je crée un tableau détaillé avec toutes les étapes : documents, vaccins, logement, budget...",
+                  skills: ["Organisation", "Anticipation"],
+                  skillColors: ["red", "blue"]
+                },
+                {
+                  id: "prep_1_b",
+                  emoji: "🤝",
+                  title: "Le collaboratif",
+                  description: "Je contacte d'autres jeunes qui sont déjà partis pour avoir leurs conseils et créer un réseau.",
+                  skills: ["Communication", "Réseautage"],
+                  skillColors: ["yellow", "red"]
+                },
+                {
+                  id: "prep_1_c",
+                  emoji: "🎒",
+                  title: "Le minimaliste",
+                  description: "Je fais l'essentiel : passeport, quelques affaires. Le reste, je m'adapterai sur place !",
+                  skills: ["Adaptabilité", "Confiance"],
+                  skillColors: ["blue", "yellow"]
+                }
+              ]
+            },
+            {
+              id: "prep_2",
+              title: "💰 La gestion du budget",
+              description: "Erasmus+ finance une partie, mais il faut anticiper tes dépenses. Comment gères-tu ton argent ?",
+              choices: [
+                {
+                  id: "prep_2_a",
+                  emoji: "📊",
+                  title: "Le gestionnaire",
+                  description: "J'utilise une appli pour suivre chaque euro : loyer, nourriture, transports, sorties...",
+                  skills: ["Gestion", "Rigueur"],
+                  skillColors: ["red", "blue"]
+                },
+                {
+                  id: "prep_2_b",
+                  emoji: "🔍",
+                  title: "Le chercheur de bons plans",
+                  description: "Je trouve des astuces : covoiturage, auberges, marchés locaux, événements gratuits.",
+                  skills: ["Débrouillardise", "Créativité"],
+                  skillColors: ["yellow", "red"]
+                },
+                {
+                  id: "prep_2_c",
+                  emoji: "💼",
+                  title: "L'entrepreneur",
+                  description: "Je cherche un petit job ou des missions freelance pour financer des extras.",
+                  skills: ["Initiative", "Autonomie"],
+                  skillColors: ["blue", "yellow"]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          id: 2,
+          name: "ACTE 2 : VOYAGE",
+          scenarios: [
+            {
+              id: "journey_1",
+              title: "✈️ L'arrivée dans un nouveau pays",
+              description: "Tu arrives dans un pays dont tu ne parles pas la langue. Comment réagis-tu ?",
+              info: {
+                title: "💡 Le savais-tu ?",
+                text: "Plus de 70% des participants Erasmus+ déclarent avoir amélioré leurs compétences linguistiques, même en partant avec un niveau débutant !"
+              },
+              choices: [
+                {
+                  id: "journey_1_a",
+                  emoji: "📱",
+                  title: "Le tech-savvy",
+                  description: "J'utilise des apps de traduction et j'apprends les bases avec des cours en ligne.",
+                  skills: ["Numérique", "Apprentissage"],
+                  skillColors: ["red", "blue"]
+                },
+                {
+                  id: "journey_1_b",
+                  emoji: "🗣️",
+                  title: "L'audacieux",
+                  description: "Je me lance directement ! Gestes, sourires, et je n'ai pas peur de faire des erreurs.",
+                  skills: ["Communication", "Courage"],
+                  skillColors: ["yellow", "red"]
+                },
+                {
+                  id: "journey_1_c",
+                  emoji: "👥",
+                  title: "Le social",
+                  description: "Je rejoins des groupes de langues, tandem linguistique, soirées internationales.",
+                  skills: ["Sociabilité", "Ouverture"],
+                  skillColors: ["blue", "yellow"]
+                }
+              ]
+            },
+            {
+              id: "journey_2",
+              title: "�� Le choc culturel",
+              description: "Les habitudes locales sont très différentes des tiennes. Comment t'adaptes-tu ?",
+              info: {
+                title: "💡 Le savais-tu ?",
+                text: "L'adaptabilité culturelle est l'une des 8 compétences clés européennes. Elle booste ton employabilité de 40% !"
+              },
+              choices: [
+                {
+                  id: "journey_2_a",
+                  emoji: "📖",
+                  title: "L'observateur",
+                  description: "J'observe attentivement, je pose des questions, j'apprends les codes progressivement.",
+                  skills: ["Observation", "Empathie"],
+                  skillColors: ["red", "blue"]
+                },
+                {
+                  id: "journey_2_b",
+                  emoji: "🎭",
+                  title: "L'explorateur",
+                  description: "Je participe à tout : festivals, traditions, cuisine. Je veux tout vivre !",
+                  skills: ["Curiosité", "Participation"],
+                  skillColors: ["yellow", "red"]
+                },
+                {
+                  id: "journey_2_c",
+                  emoji: "🌉",
+                  title: "Le médiateur",
+                  description: "Je crée des ponts entre ma culture et la leur, j'organise des échanges culturels.",
+                  skills: ["Médiation", "Leadership"],
+                  skillColors: ["blue", "yellow"]
+                }
+              ]
+            },
+            {
+              id: "journey_3",
+              title: "😰 Un moment de doute",
+              description: "Tu te sens seul(e), fatigué(e), tu as le mal du pays. Comment gères-tu ce moment ?",
+              choices: [
+                {
+                  id: "journey_3_a",
+                  emoji: "🧘",
+                  title: "Le résilient",
+                  description: "Je prends du recul, je note mes émotions, je me rappelle pourquoi je suis là.",
+                  skills: ["Résilience", "Auto-analyse"],
+                  skillColors: ["red", "blue"]
+                },
+                {
+                  id: "journey_3_b",
+                  emoji: "💬",
+                  title: "Le communicant",
+                  description: "J'en parle : à ma famille, mes nouveaux amis, les responsables du programme.",
+                  skills: ["Expression", "Demande d'aide"],
+                  skillColors: ["yellow", "red"]
+                },
+                {
+                  id: "journey_3_c",
+                  emoji: "⚡",
+                  title: "L'actif",
+                  description: "Je transforme cette énergie : sport, découverte d'un nouveau quartier, nouveau projet.",
+                  skills: ["Action", "Transformation"],
+                  skillColors: ["blue", "yellow"]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          id: 3,
+          name: "ACTE 3 : RETOUR",
+          scenarios: [
+            {
+              id: "return_1",
+              title: "🎓 La valorisation de l'expérience",
+              description: "Tu rentres avec plein d'apprentissages. Comment valorises-tu cette expérience ?",
+              choices: [
+                {
+                  id: "return_1_a",
+                  emoji: "📄",
+                  title: "Le professionnel",
+                  description: "Je mets à jour mon CV, LinkedIn, je décris mes compétences acquises avec des exemples concrets.",
+                  skills: ["Valorisation", "Marketing perso"],
+                  skillColors: ["red", "blue"]
+                },
+                {
+                  id: "return_1_b",
+                  emoji: "🎤",
+                  title: "Le storyteller",
+                  description: "Je crée du contenu : blog, vidéos, présentations dans des écoles pour inspirer d'autres jeunes.",
+                  skills: ["Communication", "Inspiration"],
+                  skillColors: ["yellow", "red"]
+                },
+                {
+                  id: "return_1_c",
+                  emoji: "🌱",
+                  title: "Le passeur",
+                  description: "Je rejoins des associations, je deviens ambassadeur Erasmus+, je guide les futurs partants.",
+                  skills: ["Mentorat", "Engagement"],
+                  skillColors: ["blue", "yellow"]
+                }
+              ]
+            },
+            {
+              id: "return_2",
+              title: "🚀 La suite de l'aventure",
+              description: "Cette expérience t'a transformé(e). Quel est ton prochain projet ?",
+              choices: [
+                {
+                  id: "return_2_a",
+                  emoji: "🎯",
+                  title: "Le stratège",
+                  description: "J'utilise cette expérience pour construire mon projet professionnel : formations, stages ciblés.",
+                  skills: ["Projet pro", "Stratégie"],
+                  skillColors: ["red", "blue"]
+                },
+                {
+                  id: "return_2_b",
+                  emoji: "🌍",
+                  title: "Le nomade",
+                  description: "Je repars ! Corps européen de solidarité, stage à l'étranger, PVT... Le monde m'attend !",
+                  skills: ["Mobilité", "Aventure"],
+                  skillColors: ["yellow", "red"]
+                },
+                {
+                  id: "return_2_c",
+                  emoji: "🏗️",
+                  title: "Le bâtisseur",
+                  description: "Je monte un projet local inspiré de ce que j'ai vu : asso, événement, entreprise sociale.",
+                  skills: ["Entrepreneuriat", "Impact"],
+                  skillColors: ["blue", "yellow"]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      
+      profiles: {
+        "aaa": { emoji: "📋", name: "L'architecte méthodique", description: "Tu es structuré(e), organisé(e), et tu aimes avoir un plan clair. Ta force : transformer les idées en actions concrètes avec rigueur et précision." },
+        "aab": { emoji: "🎯", name: "Le stratège pragmatique", description: "Tu combines planification et action. Tu sais t'organiser tout en gardant une capacité d'adaptation. Ta force : allier vision et exécution." },
+        "aba": { emoji: "🤝", name: "Le coordinateur", description: "Tu excelles dans la mise en relation et l'organisation collective. Ta force : créer des synergies et structurer les collaborations." },
+        "abb": { emoji: "🌟", name: "Le communicant inspirant", description: "Tu combines réseau et créativité. Tu sais mobiliser les autres autour de projets porteurs de sens. Ta force : fédérer par l'exemple." },
+        "baa": { emoji: "���", name: "L'adaptateur créatif", description: "Tu sais improviser avec méthode. Face à l'imprévu, tu trouves des solutions innovantes. Ta force : transformer les contraintes en opportunités." },
+        "bab": { emoji: "🚀", name: "L'explorateur agile", description: "Tu es à l'aise dans l'inconnu et tu aimes tester de nouvelles approches. Ta force : oser sans perdre de vue l'objectif." },
+        "bba": { emoji: "🌊", name: "Le voyageur intuitif", description: "Tu te laisses porter par les rencontres et les opportunités. Ta force : ta capacité à créer des liens authentiques spontanément." },
+        "bbb": { emoji: "🦋", name: "L'esprit libre", description: "Tu incarnes la spontanéité et l'ouverture totale. Tu t'adaptes naturellement à toutes les situations. Ta force : ta liberté intérieure." }
+      }
+    };
+    
+    // État du jeu
+    let currentAct = 0;
+    let currentScenario = 0;
+    let userChoices = [];
+    let selectedChoice = null;
+    let userProfile = "";
+    let earnedBadges = new Set();
+    
+    // DOM
+    const welcomeScreen = document.getElementById('welcome-screen');
+    const gameScreen = document.getElementById('game-screen');
+    const resultsScreen = document.getElementById('results-screen');
+    const startBtn = document.getElementById('start-btn');
+    const continueBtn = document.getElementById('continue-btn');
+    const restartBtn = document.getElementById('restart-btn');
+    const timelineSvg = document.getElementById('timeline-svg');
+    const actLabel = document.getElementById('act-label');
+    const scenarioTitle = document.getElementById('scenario-title');
+    const scenarioDescription = document.getElementById('scenario-description');
+    const choicesGrid = document.getElementById('choices-grid');
+    const popupOverlay = document.getElementById('popup-overlay');
+    const infoPopup = document.getElementById('info-popup');
+    const popupTitle = document.getElementById('popup-title');
+    const popupText = document.getElementById('popup-text');
+    const popupClose = document.getElementById('popup-close');
+    
+    // Data SDK
+    let storedRecords = [];
+    
+    const dataHandler = {
+      onDataChanged(data) {
+        storedRecords = data;
+      }
+    };
+    
+    (async function initDataSdk() {
+      if (window.dataSdk) {
+        await window.dataSdk.init(dataHandler);
+      }
+    })();
+    
+    // Démarrer le jeu
+    startBtn.addEventListener('click', () => {
+      welcomeScreen.classList.add('hidden');
+      gameScreen.classList.remove('hidden');
+      startGame();
+    });
+    
+    function startGame() {
+      currentAct = 0;
+      currentScenario = 0;
+      userChoices = [];
+      earnedBadges.clear();
+      renderTimeline();
+      showScenario();
+    }
+    
+    // Timeline
+    function renderTimeline() {
+      const totalSteps = gameData.acts.reduce((sum, act) => sum + act.scenarios.length, 0);
+      const stepWidth = 1100 / (totalSteps - 1);
+      let svg = '';
+      
+      // Ligne de fond
+      svg += `<path d="M 50 40 Q 600 20, 1150 40" stroke="#E5E5E5" stroke-width="4" fill="none"/>`;
+      
+      // Étapes
+      let stepIndex = 0;
+      gameData.acts.forEach((act, actIdx) => {
+        act.scenarios.forEach((scenario, scenIdx) => {
+          const x = 50 + stepIndex * stepWidth;
+          const y = 40 - 15 * Math.sin((stepIndex / totalSteps) * Math.PI);
+          
+          const isCompleted = actIdx < currentAct || (actIdx === currentAct && scenIdx < currentScenario);
+          const isActive = actIdx === currentAct && scenIdx === currentScenario;
+          
+          const fillColor = isCompleted ? '#FF0000' : isActive ? '#0000FF' : '#FFFFFF';
+          const strokeColor = '#000000';
+          
+          svg += `<g class="timeline-step ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}">`;
+          svg += `<circle cx="${x}" cy="${y}" r="12" fill="${fillColor}" stroke="${strokeColor}" stroke-width="3"/>`;
+          svg += `</g>`;
+          
+          stepIndex++;
+        });
+      });
+      
+      timelineSvg.innerHTML = svg;
+    }
+    
+    // Afficher scénario
+    function showScenario() {
+      const act = gameData.acts[currentAct];
+      const scenario = act.scenarios[currentScenario];
+      
+      actLabel.textContent = act.name;
+      scenarioTitle.textContent = scenario.title;
+      scenarioDescription.textContent = scenario.description;
+      
+      renderChoices(scenario.choices);
+      selectedChoice = null;
+      continueBtn.disabled = true;
+      
+      // Afficher popup info si présente
+      if (scenario.info) {
+        setTimeout(() => showInfoPopup(scenario.info), 1000);
+      }
+    }
+    
+    // Afficher popup
+    function showInfoPopup(info) {
+      popupTitle.textContent = info.title;
+      popupText.textContent = info.text;
+      popupOverlay.classList.add('show');
+      infoPopup.classList.add('show');
+    }
+    
+    popupClose.addEventListener('click', () => {
+      popupOverlay.classList.remove('show');
+      infoPopup.classList.remove('show');
+    });
+    
+    popupOverlay.addEventListener('click', () => {
+      popupOverlay.classList.remove('show');
+      infoPopup.classList.remove('show');
+    });
+    
+    // Afficher les choix
+    function renderChoices(choices) {
+      choicesGrid.innerHTML = choices.map(choice => `
+        <div class="choice-card" data-choice="${choice.id}">
+          <span class="choice-emoji">${choice.emoji}</span>
+          <h3 class="choice-title">${choice.title}</h3>
+          <p class="choice-description">${choice.description}</p>
+          <div class="choice-skills">
+            ${choice.skills.map((skill, idx) => 
+              `<span class="skill-tag ${choice.skillColors[idx]}">${skill}</span>`
+            ).join('')}
+          </div>
+        </div>
+      `).join('');
+      
+      document.querySelectorAll('.choice-card').forEach(card => {
+        card.addEventListener('click', () => selectChoice(card, choices));
+      });
+    }
+    
+    function selectChoice(card, choices) {
+      document.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      
+      const choiceId = card.dataset.choice;
+      selectedChoice = choices.find(c => c.id === choiceId);
+      
+      // Ajouter les badges
+      selectedChoice.skills.forEach(skill => earnedBadges.add(skill));
+      
+      continueBtn.disabled = false;
+    }
+    
+    // Continuer
+    continueBtn.addEventListener('click', () => {
+      if (!selectedChoice) return;
+      
+      // Enregistrer le choix (type a, b, ou c)
+      const choiceType = selectedChoice.id.slice(-1);
+      userChoices.push(choiceType);
+      
+      // Avancer
+      currentScenario++;
+      
+      if (currentScenario >= gameData.acts[currentAct].scenarios.length) {
+        currentScenario = 0;
+        currentAct++;
+        
+        if (currentAct >= gameData.acts.length) {
+          showResults();
+          return;
+        }
+      }
+      
+      renderTimeline();
+      showScenario();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    
+    // Résultats
+    async function showResults() {
+      gameScreen.classList.add('hidden');
+      resultsScreen.classList.remove('hidden');
+      
+      // Calculer le profil
+      const profileKey = userChoices.slice(0, 3).join('');
+      const profile = gameData.profiles[profileKey] || gameData.profiles['aaa'];
+      userProfile = profile.name;
+      
+      document.getElementById('profile-badge').textContent = profile.emoji;
+      document.getElementById('profile-title').textContent = profile.name;
+      document.getElementById('profile-description').textContent = profile.description;
+      
+      // Afficher les badges
+      const badgesGrid = document.getElementById('badges-grid');
+      const badgesList = Array.from(earnedBadges);
+      const badgeIcons = ['🎯', '🌟', '💡', '🚀', '🤝', '🎨', '⚡', '🌊', '🔥', '💪', '🧠', '❤️'];
+      
+      badgesGrid.innerHTML = badgesList.map((badge, idx) => `
+        <div class="badge-item">
+          <span class="badge-icon">${badgeIcons[idx % badgeIcons.length]}</span>
+          <p class="badge-name">${badge}</p>
+        </div>
+      `).join('');
+      
+      // Sauvegarder dans Data SDK
+      if (window.dataSdk) {
+        const userId = 'user_' + Date.now();
+        await window.dataSdk.create({
+          user_id: userId,
+          profile_type: userProfile,
+          badges: badgesList.join(','),
+          choices: userChoices.join(''),
+          completed_at: new Date().toISOString()
+        });
+      }
+      
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    // Recommencer
+    restartBtn.addEventListener('click', () => {
+      resultsScreen.classList.add('hidden');
+      welcomeScreen.classList.remove('hidden');
+    });
+    
+    // Element SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig: defaultConfig,
+        onConfigChange: async function(config) {
+          document.getElementById('game-title').textContent = config.game_title || defaultConfig.game_title;
+          document.getElementById('game-subtitle').textContent = config.game_subtitle || defaultConfig.game_subtitle;
+          document.getElementById('cta-text').textContent = config.cta_button || defaultConfig.cta_button;
+        },
+        mapToCapabilities: function(config) {
+          return {
+            recolorables: [],
+            borderables: [],
+            fontEditable: undefined,
+            fontSizeable: undefined
+          };
+        },
+        mapToEditPanelValues: function(config) {
+          return new Map([
+            ["game_title", config.game_title || defaultConfig.game_title],
+            ["game_subtitle", config.game_subtitle || defaultConfig.game_subtitle],
+            ["cta_button", config.cta_button || defaultConfig.cta_button]
+          ]);
+        }
+      });
+    }
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9adb844dd5721661',t:'MTc2NTY5MjQwMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
