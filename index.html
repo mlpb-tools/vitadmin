@@ -3,545 +3,604 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Map Ta Mobilité - Pays Basque</title>
+    <title>Map Ta Mobilité - Studio Avancé</title>
     
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
-    <!-- Font & Tailwind -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     
     <style>
-        /* BASE */
-        :root { --primary: #2563eb; --dark: #0f172a; }
         * { font-family: 'Montserrat', sans-serif; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
         body { overscroll-behavior: none; background-color: #f8fafc; }
 
-        /* CARTE */
-        #map-container { position: relative; z-index: 1; height: 100%; width: 100%; }
-        #leaflet-map { width: 100%; height: 100%; z-index: 0; background: #cbd5e1; }
+        header { height: 44px; }
+        footer { height: 24px; font-size: 10px; }
 
-        /* ICONS SUR LA CARTE */
-        .draggable {
-            position: absolute; z-index: 1000; cursor: grab;
-            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+        .cockpit-container {
+            display: flex;
+            height: calc(100vh - 68px);
+            overflow: hidden;
         }
-        .draggable:active { cursor: grabbing; transform: scale(1.1) translate(-50%, -50%); }
+
+        /* COLONNE GAUCHE */
+        .sidebar-left {
+            width: 260px;
+            background: white;
+            border-right: 1px solid #cbd5e1;
+            display: flex;
+            flex-direction: column;
+            z-index: 20;
+            flex-shrink: 0;
+        }
+
+        /* COLONNE DROITE */
+        .sidebar-right {
+            width: 140px;
+            background: white;
+            border-left: 1px solid #cbd5e1;
+            display: flex;
+            flex-direction: column;
+            z-index: 20;
+            flex-shrink: 0;
+            align-items: center;
+            padding-top: 10px;
+        }
+
+        /* ZONE CARTE */
+        .map-stage {
+            flex: 1;
+            background-color: #e2e8f0;
+            background-image: 
+                linear-gradient(45deg, #cbd5e1 25%, transparent 25%), 
+                linear-gradient(-45deg, #cbd5e1 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #cbd5e1 75%), 
+                linear-gradient(-45deg, transparent 75%, #cbd5e1 75%);
+            background-size: 20px 20px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+        }
+
+        #board-container {
+            width: 95%;
+            height: 95%;
+            background: white;
+            position: relative;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            border: 2px solid white;
+            border-radius: 8px;
+            overflow: hidden; /* Important pour masquer ce qui dépasse lors du zoom */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* COUCHE DE TRANSFORMATION (ZOOM) */
+        #map-transform-layer {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-origin: center center;
+            transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #user-map-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .draggable {
+            position: absolute; z-index: 1000; cursor: grab; transition: transform 0.1s;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2)); transform: translate(-50%, -50%);
+        }
+        .draggable:active { cursor: grabbing; transform: translate(-50%, -50%) scale(1.1); }
 
         .icon-content {
-            background: white; border: 2px solid var(--dark); border-radius: 12px;
-            padding: 4px 8px; display: flex; flex-direction: column; align-items: center;
-            min-width: 64px; text-align: center;
+            background: white; border: 1.5px solid #1e293b; border-radius: 6px;
+            padding: 2px; min-width: 40px; text-align: center;
         }
 
-        /* ICONS DANS LA SIDEBAR */
-        .dock-item {
-            background: white; border-radius: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            transition: all 0.1s ease; border: 1px solid #e2e8f0; cursor: pointer;
-        }
-        .dock-item:hover { transform: translateY(-2px); border-color: #94a3b8; }
-        .dock-item:active { transform: scale(0.95); background-color: #f1f5f9; }
+        .vertical-tabs { display: flex; flex-direction: row; overflow-x: auto; background: #f1f5f9; flex-shrink: 0; }
+        .v-tab-btn { flex: 1; padding: 10px 5px; text-align: center; opacity: 0.6; border-bottom: 3px solid transparent; transition: all 0.2s; min-width: 50px; }
+        .v-tab-btn.active { opacity: 1; border-bottom-color: #0f172a; background: white; color: #0f172a; }
+        .v-tab-icon { display: block; font-size: 18px; margin-bottom: 2px; }
+        .v-tab-label { font-size: 7px; font-weight: 800; text-transform: uppercase; }
 
-        /* COULEURS */
-        .icon-type-admin { border-color: #3b82f6; background: #eff6ff; color: #1e40af; } 
-        .icon-type-frein { border-color: #ef4444; background: #fef2f2; color: #991b1b; } 
-        .icon-type-moyen { border-color: #22c55e; background: #f0fdf4; color: #166534; } 
-        .icon-type-horizon { border-color: #a855f7; background: #faf5ff; color: #6b21a8; } 
-        .icon-type-default { border-color: #94a3b8; background: #ffffff; color: #334155; }
+        .tools-grid { padding: 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; overflow-y: auto; }
+        .tool-item { display: flex; flex-direction: column; items-center; justify-center; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 2px; cursor: pointer; transition: all 0.1s; background: white; height: 50px; }
+        .tool-item:hover { transform: scale(1.05); border-color: #94a3b8; }
+        
+        .type-admin { border-color: #bfdbfe; background: #eff6ff; }
+        .type-frein { border-color: #fecaca; background: #fef2f2; }
+        .type-moyen { border-color: #bbf7d0; background: #f0fdf4; }
+        .type-horizon { border-color: #e9d5ff; background: #faf5ff; }
 
-        /* ZONES */
-        .circle-zone {
-            position: absolute; border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; pointer-events: none; border: 2px dashed; z-index: 100;
-        }
+        .zone-btn { width: 90%; margin-bottom: 8px; padding: 8px; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.1s; background: white; border: 1px solid; font-size: 9px; font-weight: 800; text-transform: uppercase; }
+        .zone-btn:active { transform: scale(0.95); }
 
-        /* TABS NAVIGATION */
-        .tab-btn {
-            display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 8px;
-            color: #64748b; transition: all 0.2s; padding: 10px; border-radius: 8px;
-            font-weight: 700; font-size: 11px; text-transform: uppercase;
-        }
-        .tab-btn.active { background-color: #f1f5f9; color: var(--dark); box-shadow: inset 0 0 0 1px #e2e8f0; }
-        .tab-icon { font-size: 18px; }
+        .v-progress-track { width: 8px; height: 100px; background: #e2e8f0; border-radius: 4px; margin: 20px 0; position: relative; overflow: hidden; }
+        .v-progress-fill { width: 100%; background: #22c55e; position: absolute; bottom: 0; left: 0; transition: height 0.5s ease; }
 
-        /* TOOLTIP */
-        #custom-tooltip {
-            pointer-events: none; position: fixed; z-index: 9999; opacity: 0;
-            transition: opacity 0.15s ease; transform: translate(-50%, -100%); margin-top: -12px;
-        }
-        #custom-tooltip::after {
-            content: ''; position: absolute; top: 100%; left: 50%; margin-left: -6px;
-            border-width: 6px; border-style: solid; border-color: #0f172a transparent transparent transparent;
-        }
-
-        /* PROGRESS BAR */
-        .progress-fill { transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); background: linear-gradient(90deg, #3b82f6 0%, #facc15 100%); }
-
-        /* MODAL */
-        #help-modal.hidden { pointer-events: none; opacity: 0; }
-        #help-modal:not(.hidden) { opacity: 1; pointer-events: auto; }
-
-        /* MEDIA QUERY POUR LAYOUT MOBILE vs BUREAU */
         @media (max-width: 768px) {
-            .tab-btn { flex-direction: column; gap: 2px; font-size: 9px; }
-            .sidebar-title { display: none; }
+            .cockpit-container { flex-direction: column; }
+            .sidebar-left { width: 100%; height: 25%; order: 2; border-right: none; border-top: 1px solid #cbd5e1; flex-direction: row; }
+            .vertical-tabs { flex-direction: column; width: 60px; overflow-y: auto; border-right: 1px solid #e2e8f0; }
+            .tools-grid { display: flex; overflow-x: auto; flex: 1; padding: 5px; gap: 5px; grid-template-columns: none; }
+            .tool-item { min-width: 50px; }
+            .sidebar-right { display: none; }
+            .map-stage { height: 75%; order: 1; }
         }
+
+        .circle-zone { position: absolute; border-radius: 50%; border: 2px dashed; pointer-events: none; transform: translate(-50%, -50%); z-index: 100; display:flex; justify-content:center; align-items:center;}
+        .chat-overlay { position: absolute; bottom: 10px; right: 10px; width: 280px; height: 350px; background: white; border: 1px solid #cbd5e1; border-radius: 8px; display: flex; flex-direction: column; z-index: 2000; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 10px; background: #f8fafc; font-size: 11px; }
+        .chat-bubble { padding: 6px 10px; border-radius: 8px; margin-bottom: 6px; max-width: 90%; }
+        .chat-ai { background: #e2e8f0; align-self: flex-start; }
+        .chat-user { background: #2563eb; color: white; align-self: flex-end; margin-left: auto; }
+
+        /* CONTROLES DE ZOOM */
+        .zoom-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 500;
+        }
+        .zoom-btn {
+            width: 32px; height: 32px; background: white; border: 1px solid #94a3b8;
+            border-radius: 6px; font-weight: 900; color: #1e293b;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transition: all 0.1s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .zoom-btn:hover { background: #f1f5f9; }
+        .zoom-btn:active { transform: scale(0.95); }
     </style>
 </head>
-<body class="h-full flex flex-col overflow-hidden text-slate-800 bg-slate-50">
+<body class="flex flex-col h-full overflow-hidden text-slate-800">
 
-    <!-- TOOLTIP -->
-    <div id="custom-tooltip" class="bg-slate-900 text-white text-[11px] font-medium px-4 py-2 rounded-xl shadow-xl max-w-[200px] text-center leading-snug"></div>
-
-    <!-- MODAL AIDE -->
-    <div id="help-modal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/60 backdrop-blur-md hidden px-4 transition-opacity duration-300">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform transition-all">
-            <div class="bg-slate-900 p-4 text-white flex justify-between items-center">
-                <h2 class="font-bold text-lg uppercase">Guide Rapide</h2>
-                <button onclick="toggleHelp()" class="text-white hover:text-gray-300">✕</button>
-            </div>
-            <div class="p-6">
-                <ul class="text-sm space-y-4">
-                    <li>1. <strong>Choisis une catégorie</strong> dans le menu de gauche.</li>
-                    <li>2. <strong>Clique sur un picto</strong> pour le faire apparaître.</li>
-                    <li>3. <strong>Glisse-le</strong> sur la carte.</li>
-                </ul>
-                <div class="mt-6 text-center">
-                    <button onclick="toggleHelp()" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700">OK !</button>
-                </div>
-            </div>
+    <!-- HEADER -->
+    <header class="bg-white border-b border-slate-200 px-4 flex justify-between items-center shadow-sm z-30">
+        <div class="flex items-center gap-2">
+            <img src="https://static.wixstatic.com/media/dd5dab_7e61f61a3fab4046946b861015ab0f2d~mv2.avif/v1/fill/w_124,h_59,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/Design%20sans%20titre.avif" alt="Logo" class="h-5 w-auto">
+            <span class="font-black text-xs uppercase tracking-tight text-slate-700 hidden sm:inline">Map Ta Mobilité</span>
         </div>
-    </div>
-
-    <!-- HEADER (Barre fine en haut) -->
-    <header class="bg-white border-b border-slate-200 px-4 h-14 flex justify-between items-center z-20 shrink-0 shadow-sm relative">
-        <div class="flex items-center gap-3">
-            <img src="https://static.wixstatic.com/media/dd5dab_7e61f61a3fab4046946b861015ab0f2d~mv2.avif/v1/fill/w_124,h_59,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/Design%20sans%20titre.avif" 
-                 alt="Logo" class="h-8 w-auto object-contain">
-            <div class="h-6 w-px bg-slate-200 mx-2 hidden md:block"></div>
-            <h1 class="font-black text-lg uppercase text-slate-900 tracking-tight leading-none">
-                MAP TA <span class="text-blue-600">MOBILITÉ</span>
-            </h1>
-        </div>
-        
-        <!-- Barre de progression intégrée au header sur Desktop -->
-        <div class="hidden md:flex flex-col w-64 mx-4">
-            <div class="flex justify-between items-end mb-1">
-                <span class="text-[9px] font-bold uppercase text-slate-400">Progression</span>
-                <span id="progress-text" class="text-[10px] font-black text-blue-600">0%</span>
-            </div>
-            <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
-                <div id="progress-bar" class="progress-fill h-full w-0 rounded-full"></div>
-            </div>
-        </div>
-        
-        <div class="flex items-center gap-3">
-            <button onclick="toggleHelp()" class="hidden md:flex bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1.5 text-xs font-bold rounded-lg transition-colors items-center gap-2">
-                <span>💡</span> Aide
+        <div class="flex gap-2">
+             <label for="map-upload" class="cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 text-[9px] font-bold rounded border border-slate-300 uppercase flex items-center gap-1 transition-colors">
+                <span>📂</span> Importer
+            </label>
+            <input type="file" id="map-upload" accept="image/*" class="hidden" onchange="handleMapUpload(event)">
+            
+            <button onclick="saveSession()" class="bg-emerald-500 text-white px-2 py-1 text-[9px] font-bold rounded hover:bg-emerald-600 uppercase transition-colors flex items-center gap-1" title="Enregistrer dans le navigateur">
+                💾 Sauver
             </button>
-            <button onclick="openRoadbook()" class="bg-yellow-400 hover:bg-yellow-300 text-slate-900 px-4 py-2 text-xs font-black rounded-lg shadow-sm border border-yellow-500 uppercase tracking-wide transition-all active:scale-95 flex items-center gap-2">
-                <span>💾</span> Sauvegarder
+            <button onclick="loadSession()" class="bg-blue-500 text-white px-2 py-1 text-[9px] font-bold rounded hover:bg-blue-600 uppercase transition-colors flex items-center gap-1" title="Charger la sauvegarde">
+                📂 Restaurer
+            </button>
+
+            <button onclick="analyzeMapWithAI()" id="btn-analyze" class="bg-indigo-600 text-white px-2 py-1 text-[9px] font-bold rounded hover:bg-indigo-500 uppercase transition-colors flex items-center gap-1 ml-2">
+                ✨ IA
+            </button>
+            <button onclick="openRoadbook()" class="bg-yellow-400 text-slate-900 px-2 py-1 text-[9px] font-bold rounded hover:bg-yellow-300 uppercase transition-colors">
+                PDF
             </button>
         </div>
     </header>
 
-    <!-- BARRE PROG (Mobile seulement) -->
-    <div class="md:hidden bg-white px-4 py-2 z-10 border-b border-slate-100">
-        <div class="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
-            <div id="progress-bar-mobile" class="progress-fill h-full w-0 rounded-full bg-blue-600"></div>
-        </div>
-    </div>
-
-    <!-- MAIN CONTAINER (Layout Flexible : Colonne sur mobile, Ligne sur Desktop) -->
-    <div class="flex flex-col md:flex-row flex-1 overflow-hidden relative">
+    <!-- COCKPIT -->
+    <div class="cockpit-container">
         
-        <!-- SIDEBAR GAUCHE (Outils) - RATIO 1/3 -->
-        <!-- Sur mobile: en bas (order-2). Sur desktop: à gauche (order-1) -->
-        <aside class="order-2 md:order-1 w-full md:w-1/3 bg-white border-t md:border-t-0 md:border-r border-slate-200 flex flex-col shadow-xl z-30">
+        <!-- GAUCHE -->
+        <aside class="sidebar-left">
+            <div class="vertical-tabs">
+                <button onclick="switchTab('lieux')" id="tab-lieux" class="v-tab-btn active"><span class="v-tab-icon">🏠</span><span class="v-tab-label">Lieux</span></button>
+                <button onclick="switchTab('moyens')" id="tab-moyens" class="v-tab-btn"><span class="v-tab-icon">🚌</span><span class="v-tab-label">Bus</span></button>
+                <button onclick="switchTab('admin')" id="tab-admin" class="v-tab-btn"><span class="v-tab-icon">🆔</span><span class="v-tab-label">Admin</span></button>
+                <button onclick="switchTab('freins')" id="tab-freins" class="v-tab-btn"><span class="v-tab-icon">🚧</span><span class="v-tab-label">Freins</span></button>
+                <button onclick="switchTab('horizons')" id="tab-horizons" class="v-tab-btn"><span class="v-tab-icon">🌍</span><span class="v-tab-label">Futur</span></button>
+            </div>
             
-            <!-- Navigation des onglets -->
-            <nav class="flex md:grid md:grid-cols-3 md:gap-2 p-2 border-b border-slate-100 bg-white overflow-x-auto md:overflow-visible">
-                <button onclick="switchTab('lieux')" id="tab-lieux" class="flex-1 tab-btn active group">
-                    <span class="tab-icon">🏠</span><span class="tab-label">Lieux</span>
-                </button>
-                <button onclick="switchTab('moyens')" id="tab-moyens" class="flex-1 tab-btn group">
-                    <span class="tab-icon">🚌</span><span class="tab-label">Transports</span>
-                </button>
-                <button onclick="switchTab('admin')" id="tab-admin" class="flex-1 tab-btn group">
-                    <span class="tab-icon">🆔</span><span class="tab-label">Papiers</span>
-                </button>
-                <button onclick="switchTab('freins')" id="tab-freins" class="flex-1 tab-btn group">
-                    <span class="tab-icon">🚧</span><span class="tab-label">Ça bloque</span>
-                </button>
-                <button onclick="switchTab('horizons')" id="tab-horizons" class="flex-1 tab-btn group">
-                    <span class="tab-icon">🌍</span><span class="tab-label">Horizons</span>
-                </button>
-                <button onclick="switchTab('zones')" id="tab-zones" class="flex-1 tab-btn group bg-slate-50">
-                    <span class="tab-icon">⭕</span><span class="tab-label">Zones</span>
-                </button>
-            </nav>
-
-            <!-- Zone de contenu scrollable -->
-            <div class="flex-1 overflow-y-auto p-4 bg-slate-50/50 custom-scrollbar relative h-48 md:h-auto">
-                <div id="content-lieux" class="grid grid-cols-4 md:grid-cols-3 gap-3 content-start"></div>
-                <div id="content-moyens" class="hidden grid grid-cols-4 md:grid-cols-3 gap-3 content-start"></div>
-                <div id="content-admin" class="hidden grid grid-cols-4 md:grid-cols-3 gap-3 content-start"></div>
-                <div id="content-freins" class="hidden grid grid-cols-4 md:grid-cols-3 gap-3 content-start"></div>
-                <div id="content-horizons" class="hidden grid grid-cols-4 md:grid-cols-3 gap-3 content-start"></div>
-                
-                <!-- ZONES (Liste Verticale) -->
-                <div id="content-zones" class="hidden flex flex-col gap-3">
-                    <p class="text-xs text-center text-slate-400 font-bold uppercase mb-2">Définis tes territoires</p>
-                    <button onclick="addZone(200, 'rgba(34, 197, 94, 0.15)', '#16a34a', 'Zone CONFORT')" 
-                            class="w-full py-3 rounded-lg border-2 border-green-500 bg-white text-green-700 font-bold flex items-center justify-between px-4 shadow-sm hover:bg-green-50 transition-colors">
-                        <div class="flex items-center gap-3"><span class="text-xl">😎</span> <span class="text-xs">MA ZONE CONFORT</span></div>
-                        <span class="text-lg">+</span>
-                    </button>
-                    <button onclick="addZone(500, 'rgba(234, 179, 8, 0.15)', '#ca8a04', 'Zone EFFORT')" 
-                            class="w-full py-3 rounded-lg border-2 border-yellow-500 bg-white text-yellow-700 font-bold flex items-center justify-between px-4 shadow-sm hover:bg-yellow-50 transition-colors">
-                        <div class="flex items-center gap-3"><span class="text-xl">🤔</span> <span class="text-xs">MA ZONE EFFORT</span></div>
-                        <span class="text-lg">+</span>
-                    </button>
-                    <button onclick="addZone(1000, 'rgba(239, 68, 68, 0.15)', '#ef4444', 'Zone GALÈRE')" 
-                            class="w-full py-3 rounded-lg border-2 border-red-500 bg-white text-red-700 font-bold flex items-center justify-between px-4 shadow-sm hover:bg-red-50 transition-colors">
-                        <div class="flex items-center gap-3"><span class="text-xl">🚫</span> <span class="text-xs">MA ZONE GALÈRE</span></div>
-                        <span class="text-lg">+</span>
-                    </button>
-                </div>
+            <div class="flex-1 overflow-y-auto bg-slate-50 relative custom-scrollbar">
+                <div id="content-lieux" class="tools-grid"></div>
+                <div id="content-moyens" class="tools-grid hidden"></div>
+                <div id="content-admin" class="tools-grid hidden"></div>
+                <div id="content-freins" class="tools-grid hidden"></div>
+                <div id="content-horizons" class="tools-grid hidden"></div>
             </div>
         </aside>
 
-        <!-- CARTE (Droite) - RATIO 2/3 (Flex-1 prend le reste) -->
-        <div id="map-container" class="order-1 md:order-2 flex-1 relative h-full">
-            <div id="leaflet-map"></div>
+        <!-- CENTRE : MAP STAGE -->
+        <main class="map-stage">
+            <div id="board-container">
+                <!-- COUCHE DE TRANSFORMATION POUR LE ZOOM -->
+                <div id="map-transform-layer">
+                    <div id="placeholder-text" class="absolute flex flex-col items-center justify-center text-slate-400 pointer-events-none opacity-60">
+                        <span class="text-4xl mb-2">🗺️</span>
+                        <span class="font-bold text-xs uppercase">Ta carte ici</span>
+                    </div>
+                    <img id="user-map-img" src="" class="hidden" alt="Fond">
+                    <div id="drop-zone" class="absolute inset-0 z-10 w-full h-full"></div>
+                </div>
+                
+                <!-- BOUTONS ZOOM -->
+                <div class="zoom-controls">
+                    <button class="zoom-btn" onclick="zoomIn()">+</button>
+                    <button class="zoom-btn" onclick="resetZoom()">1:1</button>
+                    <button class="zoom-btn" onclick="zoomOut()">-</button>
+                </div>
+
+                <!-- Chat Overlay -->
+                <div id="chat-overlay" class="chat-overlay hidden">
+                    <div class="bg-slate-800 text-white p-2 rounded-t flex justify-between items-center text-xs font-bold">
+                        <span>🤖 Coach IA</span>
+                        <button onclick="toggleChat()" class="hover:text-red-400">✕</button>
+                    </div>
+                    <div id="chat-messages" class="chat-messages">
+                        <div class="chat-bubble chat-ai">Pose ta question !</div>
+                    </div>
+                    <div class="p-2 bg-white border-t border-slate-100 flex gap-1">
+                        <input type="text" id="chat-input" class="flex-1 border text-xs p-1 rounded" onkeypress="handleChatKey(event)">
+                        <button onclick="sendMessage()" class="bg-blue-600 text-white px-2 rounded text-xs">➤</button>
+                    </div>
+                </div>
+            </div>
             
-            <!-- Controle Reseau -->
-            <button onclick="toggleNetwork()" id="btn-network" class="absolute top-4 right-4 bg-white/90 backdrop-blur text-slate-800 px-4 py-2 text-[11px] font-bold rounded-full shadow-lg border border-white/50 z-[500] flex items-center gap-2 active:scale-95 transition-all hover:shadow-xl group">
-                <span class="w-2.5 h-2.5 rounded-full bg-slate-300 group-hover:bg-green-500 transition-colors" id="network-indicator"></span>
-                Réseau Txik Txak
+            <div id="toast-message" class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-slate-800/90 text-white px-3 py-1 rounded-full shadow-lg z-50 text-[10px] font-bold hidden backdrop-blur-sm pointer-events-none"></div>
+        </main>
+
+        <!-- DROITE -->
+        <aside class="sidebar-right">
+            <span class="text-[9px] font-black uppercase text-slate-400 mb-2 tracking-widest">Zones</span>
+            <button onclick="addZone(150, 'rgba(34, 197, 94, 0.15)', '#16a34a', 'CONFORT')" class="zone-btn border-green-500 text-green-700 hover:bg-green-50">
+                <span class="text-xl">😎</span> Confort
+            </button>
+            <button onclick="addZone(250, 'rgba(234, 179, 8, 0.15)', '#ca8a04', 'EFFORT')" class="zone-btn border-yellow-500 text-yellow-700 hover:bg-yellow-50">
+                <span class="text-xl">🤔</span> Effort
+            </button>
+            <button onclick="addZone(350, 'rgba(239, 68, 68, 0.15)', '#ef4444', 'GALÈRE')" class="zone-btn border-red-500 text-red-700 hover:bg-red-50">
+                <span class="text-xl">🚫</span> Galère
             </button>
 
-            <div id="drop-zone" class="absolute inset-0 z-10 pointer-events-none"></div>
-            <div id="toast-message" class="absolute top-16 left-1/2 transform -translate-x-1/2 bg-slate-800/90 backdrop-blur text-white px-4 py-2 rounded-full shadow-xl z-50 text-[11px] font-bold hidden transition-opacity flex items-center gap-2 pointer-events-none"></div>
-        </div>
+            <div class="flex-1"></div>
+            
+            <span class="text-[9px] font-black uppercase text-slate-400 mb-1 tracking-widest">Score</span>
+            <span id="progress-text" class="text-xs font-bold text-blue-600">0%</span>
+            <div class="v-progress-track">
+                <div id="progress-bar" class="v-progress-fill h-0"></div>
+            </div>
+
+            <button onclick="toggleChat()" class="mt-4 mb-4 bg-slate-900 text-white w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg">
+                <span class="text-lg">💬</span>
+            </button>
+        </aside>
 
     </div>
 
-    <!-- SCRIPTS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-200 flex items-center justify-center text-slate-400 uppercase tracking-widest">
+        Mission Locale Pays Basque - Atelier Numérique
+    </footer>
 
     <script>
-        // CONFIGURATION DONNÉES
-        const taxonomy = {
-            lieux: [
-                { icon: "🏠", label: "Maison", type: "default", desc: "Ta base. Là où tu dors." },
-                { icon: "🏢", label: "Mission Loc.", type: "default", desc: "Ton point de rendez-vous avec ton conseiller." },
-                { icon: "💼", label: "Job / Stage", type: "default", desc: "L'endroit où tu travailles." },
-                { icon: "🎓", label: "Formation", type: "default", desc: "Ton école ou centre de formation." },
-                { icon: "👪", label: "Famille", type: "default", desc: "Chez tes parents ou ta famille." },
-                { icon: "🤝", label: "Potes", type: "default", desc: "Le QG où tu retrouves tes amis." },
-                { icon: "🏥", label: "Santé", type: "default", desc: "Médecin, hôpital." },
-                { icon: "🛒", label: "Courses", type: "default", desc: "Supermarché." }
-            ],
-            moyens: [
-                { icon: "👟", label: "A Pied", type: "moyen", desc: "Marche à pied." },
-                { icon: "🚲", label: "Vélo", type: "moyen", desc: "Vélo perso / élec." },
-                { icon: "🚌", label: "Bus", type: "moyen", desc: "Txik Txak / Car." },
-                { icon: "🚐", label: "Covoit'", type: "moyen", desc: "Covoiturage." },
-                { icon: "🛵", label: "Scooter", type: "moyen", desc: "Deux-roues." },
-                { icon: "🚗", label: "Passager", type: "moyen", desc: "On te dépose." },
-                { icon: "🚘", label: "Voiture", type: "moyen", desc: "Tu conduis." },
-                { icon: "🚆", label: "Train", type: "moyen", desc: "Gare / TER." }
-            ],
-            admin: [
-                { icon: "🚦", label: "Code OK", type: "admin", desc: "Code validé." },
-                { icon: "📚", label: "Code", type: "admin", desc: "En révision." },
-                { icon: "🔢", label: "NEPH", type: "admin", desc: "Numéro permis." },
-                { icon: "🅿️", label: "Permis B", type: "admin", desc: "Permis voiture." },
-                { icon: "🆔", label: "C.I.", type: "admin", desc: "Carte identité." },
-                { icon: "🎟️", label: "Solidair.", type: "admin", desc: "Carte Transport." },
-                { icon: "👮", label: "BSR", type: "admin", desc: "Permis AM." },
-                { icon: "💶", label: "Aide", type: "admin", desc: "Aide financière." }
-            ],
-            freins: [
-                { icon: "💸", label: "Cher", type: "frein", desc: "Coût trop élevé." },
-                { icon: "😨", label: "Peur", type: "frein", desc: "Stress / Insécurité." },
-                { icon: "⏳", label: "Long", type: "frein", desc: "Trajet trop long." },
-                { icon: "🌑", label: "Horaires", type: "frein", desc: "Pas de bus." },
-                { icon: "🧭", label: "Perdu", type: "frein", desc: "Je connais pas." },
-                { icon: "❌", label: "Aucun", type: "frein", desc: "Zone blanche." },
-                { icon: "📅", label: "Organis.", type: "frein", desc: "Planning dur." },
-                { icon: "🏚️", label: "Loin", type: "frein", desc: "Trop de km." }
-            ],
-            horizons: [
-                { icon: "✈️", label: "Voyage", type: "horizon", desc: "Vacances." },
-                { icon: "🇪🇺", label: "Erasmus", type: "horizon", desc: "Europe." },
-                { icon: "🎒", label: "Stage", type: "horizon", desc: "Stage étranger." },
-                { icon: "🌴", label: "Rêve", type: "horizon", desc: "Destination top." },
-                { icon: "🇫🇷", label: "France", type: "horizon", desc: "Ailleurs FR." },
-                { icon: "💼", label: "Saison", type: "horizon", desc: "Job saisonnier." },
-                { icon: "🤝", label: "Volont.", type: "horizon", desc: "Service Civique." },
-                { icon: "📦", label: "Déménag.", type: "horizon", desc: "Nouveau logement." }
-            ]
-        };
-
-        const mainCities = [
-            { name: "BAYONNE", loc: [43.4929, -1.4748] },
-            { name: "HENDAYE", loc: [43.3600, -1.7740] },
-            { name: "TARDETS", loc: [43.1100, -0.8600] }, // Point Est
-            { name: "ST-JEAN-P-P", loc: [43.1636, -1.2374] }, // Point Sud
-            { name: "MAULEON", loc: [43.2234, -0.8906] },
-            { name: "ST-PALAIS", loc: [43.3283, -1.0333] }
-        ];
-
-        let map;
-        let networkLayer; 
-        let isNetworkVisible = false;
-        let progressCount = 0; 
+        const apiKey = ""; 
+        const contextPrompt = `Tu es l'assistant MLPB. Infos : Txik Txak -28 ans = 20€/mois. Aide permis FAJ.`;
+        let placedItems = [];
         
-        const HORIZONS_CENTER = [46.2, 2.2]; 
-        const HORIZONS_ZOOM = 5;
-        let basqueBounds;
-
-        window.addEventListener('load', () => {
-            initMap();
-            renderAllTools();
-            initNetworkLayer();
-        });
-
-        function initMap() {
-            map = L.map('leaflet-map', {
-                zoomControl: false, attributionControl: false,
-                minZoom: 3, zoomSnap: 0.5
-            });
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
-
-            const latLngs = mainCities.map(city => city.loc);
-            basqueBounds = L.latLngBounds(latLngs);
-            // Padding pour s'assurer que tout le PB est visible
-            map.fitBounds(basqueBounds, { padding: [50, 50] });
-
-            setTimeout(() => map.invalidateSize(), 500);
-        }
-
-        // TOOLTIPS & UI
-        const tooltip = document.getElementById('custom-tooltip');
-        function showTooltip(e, text) {
-            tooltip.innerText = text; tooltip.style.opacity = '1';
-            tooltip.style.left = e.clientX + 'px'; tooltip.style.top = (e.clientY - 15) + 'px';
-            document.addEventListener('mousemove', moveTooltip);
-        }
-        function moveTooltip(e) {
-            tooltip.style.left = e.clientX + 'px'; tooltip.style.top = (e.clientY - 15) + 'px';
-        }
-        function hideTooltip() {
-            tooltip.style.opacity = '0';
-            document.removeEventListener('mousemove', moveTooltip);
-        }
-
-        function toggleHelp() {
-            const modal = document.getElementById('help-modal');
-            modal.classList.toggle('hidden');
-        }
-
-        // RESEAU TXIK TXAK
-        function initNetworkLayer() {
-            const t1 = L.polyline([[43.5042, -1.4552], [43.4933, -1.4751], [43.4812, -1.5150], [43.4750, -1.5580]], { color: '#e11d48', weight: 4 });
-            const t2 = L.polyline([[43.5200, -1.4650], [43.4933, -1.4751], [43.4800, -1.4850], [43.4650, -1.5050]], { color: '#16a34a', weight: 4 });
-            // Ligne fictive pour mailler l'intérieur
-            const interieur = L.polyline([[43.4933, -1.4751], [43.3280, -1.0330], [43.2200, -0.8900]], { color: '#9333ea', weight: 3 });
-            networkLayer = L.layerGroup([t1, t2, interieur]);
+        // --- ZOOM LOGIC ---
+        let currentScale = 1;
+        
+        function zoomIn() {
+            currentScale += 0.1;
+            updateTransform();
         }
         
-        function toggleNetwork() {
-            const indicator = document.getElementById('network-indicator');
-            if (isNetworkVisible) {
-                map.removeLayer(networkLayer); isNetworkVisible = false;
-                indicator.classList.replace('bg-green-500', 'bg-slate-300');
-            } else {
-                map.addLayer(networkLayer); isNetworkVisible = true;
-                indicator.classList.replace('bg-slate-300', 'bg-green-500');
-                showToast("🚌", "Réseau affiché");
+        function zoomOut() {
+            if (currentScale > 0.2) currentScale -= 0.1;
+            updateTransform();
+        }
+        
+        function resetZoom() {
+            currentScale = 1;
+            updateTransform();
+        }
+        
+        function updateTransform() {
+            const layer = document.getElementById('map-transform-layer');
+            layer.style.transform = `scale(${currentScale})`;
+        }
+
+        // --- SAVE / LOAD LOGIC ---
+        function saveSession() {
+            const itemsToSave = placedItems.map(item => ({
+                label: item.label,
+                type: item.type,
+                icon: item.icon,
+                // On doit récupérer les coordonnées depuis le DOM
+                left: item.el.style.left,
+                top: item.el.style.top
+            }));
+            
+            const imgSrc = document.getElementById('user-map-img').src;
+            const hasImage = !document.getElementById('user-map-img').classList.contains('hidden');
+            
+            const data = {
+                items: itemsToSave,
+                image: hasImage ? imgSrc : null,
+                date: new Date().toISOString()
+            };
+            
+            try {
+                localStorage.setItem('mlpb_map_data', JSON.stringify(data));
+                showToast("💾", "Carte sauvegardée !");
+            } catch (e) {
+                showToast("⚠️", "Erreur: Image trop lourde ?");
+                console.error(e);
             }
         }
 
-        // RENDU TOOLS
+        function loadSession() {
+            const savedData = localStorage.getItem('mlpb_map_data');
+            if (!savedData) {
+                showToast("⚠️", "Aucune sauvegarde trouvée.");
+                return;
+            }
+            
+            const data = JSON.parse(savedData);
+            
+            // 1. Restaurer l'image
+            if (data.image) {
+                const img = document.getElementById('user-map-img');
+                img.src = data.image;
+                img.classList.remove('hidden');
+                document.getElementById('placeholder-text').classList.add('hidden');
+            }
+            
+            // 2. Nettoyer le plateau actuel
+            placedItems = [];
+            document.getElementById('drop-zone').innerHTML = '';
+            
+            // 3. Restaurer les items
+            data.items.forEach(item => {
+                restoreItem(item);
+            });
+            
+            showToast("📂", "Carte restaurée !");
+            updateProgress(0); // Recalculer le score si besoin
+        }
+
+        function restoreItem(itemData) {
+            const dropZone = document.getElementById('drop-zone');
+            const el = document.createElement('div');
+            el.className = 'draggable pointer-events-auto';
+            el.style.left = itemData.left;
+            el.style.top = itemData.top;
+            
+            // Reconstruit l'objet item complet pour le tableau placedItems
+            const itemObj = { label: itemData.label, type: itemData.type, icon: itemData.icon, el: el };
+            placedItems.push(itemObj);
+            
+            let borderColor = "#334155";
+            if(itemData.type === 'admin') borderColor = "#2563eb";
+            if(itemData.type === 'frein') borderColor = "#dc2626";
+            if(itemData.type === 'moyen') borderColor = "#16a34a";
+
+            el.innerHTML = `<div class="icon-content shadow-sm" style="border-color:${borderColor}"><span class="text-lg leading-none">${itemData.icon}</span><span class="text-[7px] font-bold uppercase mt-0.5 leading-none text-slate-800">${itemData.label}</span></div><button class="absolute -top-1.5 -right-1.5 bg-slate-800 text-white rounded-full w-3.5 h-3.5 flex items-center justify-center text-[8px] font-bold border border-white shadow-sm z-50" onmousedown="event.stopPropagation(); removeItem(this, '${itemData.label}')">×</button>`;
+            
+            enableDrag(el);
+            dropZone.appendChild(el);
+        }
+
+        // UI LOGIC
+        window.addEventListener('load', () => renderAllTools());
+
+        function switchTab(id) {
+            document.querySelectorAll('.v-tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-'+id).classList.add('active');
+            document.querySelectorAll('.tools-grid').forEach(g => g.classList.add('hidden'));
+            document.getElementById('content-'+id).classList.remove('hidden');
+        }
+
         function renderAllTools() {
-            renderSection('lieux', taxonomy.lieux);
-            renderSection('moyens', taxonomy.moyens);
-            renderSection('admin', taxonomy.admin);
-            renderSection('freins', taxonomy.freins);
-            renderSection('horizons', taxonomy.horizons);
+            const taxonomy = {
+                lieux: [ { icon: "🏠", label: "Maison", type: "default" }, { icon: "🏢", label: "Milo", type: "default" }, { icon: "💼", label: "Job", type: "default" }, { icon: "🎓", label: "École", type: "default" }, { icon: "🏥", label: "Santé", type: "default" }, { icon: "🛒", label: "Shop", type: "default" } ],
+                moyens: [ { icon: "👟", label: "Pied", type: "moyen" }, { icon: "🚲", label: "Vélo", type: "moyen" }, { icon: "🚌", label: "Bus", type: "moyen" }, { icon: "🚗", label: "Auto", type: "moyen" }, { icon: "🚐", label: "Covoit", type: "moyen" } ],
+                admin: [ { icon: "🚦", label: "Code", type: "admin" }, { icon: "🅿️", label: "Permis", type: "admin" }, { icon: "🔢", label: "NEPH", type: "admin" }, { icon: "🎟️", label: "Tarif", type: "admin" } ],
+                freins: [ { icon: "💸", label: "Cher", type: "frein" }, { icon: "😨", label: "Peur", type: "frein" }, { icon: "⏳", label: "Long", type: "frein" }, { icon: "🌑", label: "Nuit", type: "frein" } ],
+                horizons: [ { icon: "✈️", label: "Voyage", type: "horizon" }, { icon: "🇪🇺", label: "Erasmus", type: "horizon" } ]
+            };
+
+            for (const [cat, items] of Object.entries(taxonomy)) {
+                const container = document.getElementById(`content-${cat}`);
+                items.forEach(item => {
+                    const div = document.createElement('div');
+                    let typeClass = "";
+                    if(item.type === 'admin') typeClass = "type-admin";
+                    if(item.type === 'frein') typeClass = "type-frein";
+                    if(item.type === 'moyen') typeClass = "type-moyen";
+                    if(item.type === 'horizon') typeClass = "type-horizon";
+                    
+                    div.className = `tool-item ${typeClass}`;
+                    div.innerHTML = `<span class="text-xl leading-none mb-1">${item.icon}</span><span class="text-[8px] font-bold uppercase text-slate-700 truncate w-full text-center">${item.label}</span>`;
+                    div.onclick = () => addToMap(item);
+                    container.appendChild(div);
+                });
+            }
         }
 
-        function renderSection(id, items) {
-            const container = document.getElementById(`content-${id}`);
-            items.forEach(item => {
-                const btn = document.createElement('div');
-                let typeClass = "icon-type-default";
-                if(item.type === 'admin') typeClass = "icon-type-admin";
-                if(item.type === 'frein') typeClass = "icon-type-frein";
-                if(item.type === 'moyen') typeClass = "icon-type-moyen";
-                if(item.type === 'horizon') typeClass = "icon-type-horizon";
-
-                btn.className = `dock-item flex flex-col items-center justify-center p-2 h-[80px] w-full ${typeClass} bg-opacity-20 border-opacity-60`;
-                // Pour le dock, on garde le fond blanc mais la bordure colorée
-                btn.style.backgroundColor = "white";
-
-                btn.innerHTML = `
-                    <span class="text-2xl mb-1 filter drop-shadow-sm">${item.icon}</span>
-                    <span class="text-[9px] font-bold uppercase text-slate-700 truncate w-full text-center leading-tight">${item.label}</span>
-                `;
-                btn.onmouseenter = (e) => showTooltip(e, item.desc);
-                btn.onmouseleave = hideTooltip;
-                btn.onclick = () => addToMap(item);
-                container.appendChild(btn);
-            });
+        function handleMapUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('user-map-img');
+                    img.src = e.target.result;
+                    img.classList.remove('hidden');
+                    document.getElementById('placeholder-text').classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
         }
 
-        // NAVIGATION
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-            
-            ['lieux', 'moyens', 'admin', 'freins', 'horizons', 'zones'].forEach(id => {
-                document.getElementById(`content-${id}`).classList.add('hidden');
-                document.getElementById(`content-${id}`).classList.remove('grid', 'flex');
-            });
-            
-            const content = document.getElementById(`content-${tabId}`);
-            content.classList.remove('hidden');
-            if(tabId === 'zones') content.classList.add('flex'); else content.classList.add('grid');
-
-            if (tabId === 'horizons') map.flyTo(HORIZONS_CENTER, HORIZONS_ZOOM, { duration: 1.5 });
-            else if (basqueBounds) map.fitBounds(basqueBounds, { padding: [30, 30], duration: 1.5 });
-        }
-
-        // LOGIQUE AJOUT
         function addToMap(item) {
             const dropZone = document.getElementById('drop-zone');
             const el = document.createElement('div');
             el.className = 'draggable pointer-events-auto';
             el.style.left = '50%'; el.style.top = '50%';
             
-            let typeClass = "";
-            if(item.type === 'admin') typeClass = "icon-type-admin";
-            if(item.type === 'frein') typeClass = "icon-type-frein";
-            if(item.type === 'moyen') typeClass = "icon-type-moyen";
-            if(item.type === 'horizon') typeClass = "icon-type-horizon";
+            // Important : stocker la réf de l'élément pour la sauvegarde
+            const itemObj = { ...item, el: el };
+            placedItems.push(itemObj);
+            
+            let borderColor = "#334155";
+            if(item.type === 'admin') borderColor = "#2563eb";
+            if(item.type === 'frein') borderColor = "#dc2626";
+            if(item.type === 'moyen') borderColor = "#16a34a";
 
-            el.innerHTML = `
-                <div class="icon-content shadow-lg ${typeClass}">
-                    <span class="text-2xl">${item.icon}</span>
-                    <span class="text-[8px] font-bold uppercase mt-1 leading-none text-slate-800">${item.label}</span>
-                </div>
-                <button class="absolute -top-2 -right-2 bg-slate-800 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold border-2 border-white shadow-md z-50 hover:bg-red-500 transition-colors hover:scale-110"
-                        ontouchstart="event.stopPropagation(); this.parentElement.remove();"
-                        onmousedown="event.stopPropagation(); this.parentElement.remove();">✕</button>
-            `;
-            el.onmouseenter = (e) => showTooltip(e, item.desc);
-            el.onmouseleave = hideTooltip;
-
+            el.innerHTML = `<div class="icon-content shadow-sm" style="border-color:${borderColor}"><span class="text-lg leading-none">${item.icon}</span><span class="text-[7px] font-bold uppercase mt-0.5 leading-none text-slate-800">${item.label}</span></div><button class="absolute -top-1.5 -right-1.5 bg-slate-800 text-white rounded-full w-3.5 h-3.5 flex items-center justify-center text-[8px] font-bold border border-white shadow-sm z-50" onmousedown="event.stopPropagation(); removeItem(this, '${item.label}')">×</button>`;
             enableDrag(el);
             dropZone.appendChild(el);
-            updateProgress();
-            showToast(item.icon, "Ajouté");
+            updateProgress(1);
         }
 
-        function addZone(sizePx, colorBg, colorBorder, label) {
+        function removeItem(btn, label) {
+            btn.parentElement.remove();
+            const index = placedItems.findIndex(i => i.label === label);
+            if (index > -1) placedItems.splice(index, 1);
+            updateProgress(-1);
+        }
+
+        function addZone(size, bg, border, label) {
             const dropZone = document.getElementById('drop-zone');
             const zone = document.createElement('div');
             zone.className = 'circle-zone group';
-            let currentSize = sizePx || 150;
-            zone.style.width = currentSize + 'px'; zone.style.height = currentSize + 'px';
+            zone.style.width = size + 'px'; zone.style.height = size + 'px';
             zone.style.left = '50%'; zone.style.top = '50%';
-            zone.style.transform = 'translate(-50%, -50%)';
-            zone.style.backgroundColor = colorBg; zone.style.borderColor = colorBorder;
-
-            zone.innerHTML = `
-                <span class="text-[9px] font-bold text-slate-700 bg-white/95 px-2 py-0.5 rounded-full absolute top-2 border border-slate-200 shadow-sm whitespace-nowrap z-20 pointer-events-none select-none">${label}</span>
-                <button class="absolute -top-3 -right-3 w-6 h-6 bg-slate-900 text-white rounded-full flex items-center justify-center font-bold border-2 border-white shadow-md pointer-events-auto hover:bg-red-600 z-30 touch-manipulation"
-                    ontouchstart="event.stopPropagation(); this.parentElement.remove();"
-                    onmousedown="event.stopPropagation(); this.parentElement.remove();">✕</button>
-                <div class="absolute -bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 pointer-events-auto z-30">
-                    <button class="w-8 h-8 bg-white text-slate-900 rounded-full flex items-center justify-center font-bold border border-slate-200 shadow hover:bg-slate-50 touch-manipulation text-lg" 
-                        onmousedown="event.stopPropagation(); resizeZone(this, -30)">-</button>
-                    <button class="w-8 h-8 bg-white text-slate-900 rounded-full flex items-center justify-center font-bold border border-slate-200 shadow hover:bg-slate-50 touch-manipulation text-lg" 
-                        onmousedown="event.stopPropagation(); resizeZone(this, 30)">+</button>
-                </div>
-                <div class="absolute w-10 h-10 bg-white/40 rounded-full border-2 border-slate-900/20 pointer-events-auto flex items-center justify-center cursor-move text-xs text-slate-700 z-10 hover:bg-white/60">✥</div>
-            `;
-            const handle = zone.querySelector('.cursor-move');
-            enableDrag(zone, handle);
+            zone.style.backgroundColor = bg; zone.style.borderColor = border;
+            
+            // Pour les zones, on ne les sauvegarde pas dans placedItems dans cette version simple,
+            // mais on pourrait l'ajouter si besoin.
+            
+            zone.innerHTML = `<span class="text-[8px] font-bold text-slate-700 bg-white/90 px-1.5 py-0.5 rounded absolute top-2 border border-slate-200 shadow-sm pointer-events-none select-none whitespace-nowrap">${label}</span><button class="absolute -top-2 -right-2 w-4 h-4 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold border border-white shadow-sm pointer-events-auto z-30 text-[8px]" onmousedown="event.stopPropagation(); this.parentElement.remove();">×</button><div class="absolute w-8 h-8 bg-white/30 rounded-full pointer-events-auto flex items-center justify-center cursor-move text-[10px] text-slate-700 z-10 hover:bg-white/50">✥</div>`;
+            enableDrag(zone, zone.querySelector('.cursor-move'));
             dropZone.appendChild(zone);
-            updateProgress();
-        }
-
-        function resizeZone(btn, delta) {
-            const zone = btn.closest('.circle-zone');
-            let size = parseInt(zone.style.width);
-            let newSize = Math.max(50, size + delta);
-            zone.style.width = newSize + 'px'; zone.style.height = newSize + 'px';
+            updateProgress(1);
         }
 
         function enableDrag(el, handle = null) {
             let isDragging = false, startX, startY, initialLeft, initialTop;
             const target = handle || el;
-            const container = document.getElementById('drop-zone');
-
+            
             function onStart(e) {
                 if(e.target.tagName === 'BUTTON') return;
-                e.stopPropagation(); if(e.cancelable) e.preventDefault();
-                isDragging = true; el.style.zIndex = 2000;
-                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                startX = clientX; startY = clientY;
-                initialLeft = parseFloat(el.style.left) || 50; initialTop = parseFloat(el.style.top) || 50;
-                document.addEventListener('mousemove', onMove); document.addEventListener('touchmove', onMove, {passive: false});
-                document.addEventListener('mouseup', onEnd); document.addEventListener('touchend', onEnd);
+                e.stopPropagation(); 
+                isDragging = true; 
+                el.style.zIndex = 2000;
+                
+                const cx = e.touches ? e.touches[0].clientX : e.clientX;
+                const cy = e.touches ? e.touches[0].clientY : e.clientY;
+                startX = cx; 
+                startY = cy;
+                initialLeft = parseFloat(el.style.left) || 50; 
+                initialTop = parseFloat(el.style.top) || 50;
+                
+                document.addEventListener('mousemove', onMove, { passive: false });
+                document.addEventListener('touchmove', onMove, { passive: false });
+                document.addEventListener('mouseup', onEnd); 
+                document.addEventListener('touchend', onEnd);
             }
+
             function onMove(e) {
-                if (!isDragging) return; e.preventDefault();
-                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                const rect = container.getBoundingClientRect();
-                el.style.left = (initialLeft + ((clientX - startX) / rect.width) * 100) + '%';
-                el.style.top = (initialTop + ((clientY - startY) / rect.height) * 100) + '%';
+                if(!isDragging) return; 
+                e.preventDefault();
+                
+                const cx = e.touches ? e.touches[0].clientX : e.clientX;
+                const cy = e.touches ? e.touches[0].clientY : e.clientY;
+                
+                // On récupère le rectangle de la zone de dépôt. 
+                // Comme elle est dans un conteneur zoomé, getBoundingClientRect() renvoie la taille visuelle (zoomée).
+                const rect = document.getElementById('drop-zone').getBoundingClientRect();
+                
+                // Le déplacement doit être calculé relativement à la taille VISUELLE pour que le pourcentage soit correct.
+                // Donc la formule standard fonctionne même avec le zoom !
+                let nl = initialLeft + ((cx - startX) / rect.width) * 100;
+                let nt = initialTop + ((cy - startY) / rect.height) * 100;
+                
+                el.style.left = nl + '%';
+                el.style.top = nt + '%';
             }
+
             function onEnd() {
-                isDragging = false; el.style.zIndex = 1000;
-                document.removeEventListener('mousemove', onMove); document.removeEventListener('touchmove', onMove);
-                document.removeEventListener('mouseup', onEnd); document.removeEventListener('touchend', onEnd);
+                isDragging = false; 
+                el.style.zIndex = 1000; 
+                document.removeEventListener('mousemove', onMove); 
+                document.removeEventListener('touchmove', onMove);
+                document.removeEventListener('mouseup', onEnd); 
+                document.removeEventListener('touchend', onEnd);
             }
-            target.addEventListener('mousedown', onStart); target.addEventListener('touchstart', onStart, { passive: false });
+
+            target.addEventListener('mousedown', onStart); 
+            target.addEventListener('touchstart', onStart, { passive: false });
         }
 
-        function updateProgress() {
-            progressCount++;
-            let percentage = Math.min((progressCount / 10) * 100, 100);
-            document.getElementById('progress-bar').style.width = percentage + '%';
-            document.getElementById('progress-text').innerText = Math.round(percentage) + '%';
-            if (document.getElementById('progress-bar-mobile')) document.getElementById('progress-bar-mobile').style.width = percentage + '%';
+        let progress = 0;
+        function updateProgress(delta) {
+            progress = Math.max(0, Math.min(10, progress + delta));
+            let pct = progress * 10;
+            document.getElementById('progress-bar').style.height = pct + '%';
+            document.getElementById('progress-text').innerText = pct + '%';
         }
 
-        function showToast(icon, msg) {
-            const toast = document.getElementById('toast-message');
-            toast.innerHTML = `<span>${icon}</span> <span>${msg}</span>`;
-            toast.classList.remove('hidden'); toast.style.opacity = 1;
-            setTimeout(() => { toast.style.opacity = 0; setTimeout(() => toast.classList.add('hidden'), 300); }, 1500);
+        // IA Functions
+        function toggleChat() { document.getElementById('chat-overlay').classList.toggle('hidden'); }
+        function handleChatKey(e) { if(e.key === 'Enter') sendMessage(); }
+        async function sendMessage() {
+            const input = document.getElementById('chat-input'); const msg = input.value.trim(); if(!msg) return;
+            addMsg(msg, 'user'); input.value = '';
+            addMsg("...", 'ai', true);
+            const res = await callGemini(msg);
+            document.querySelector('.animate-pulse').parentElement.remove();
+            addMsg(res, 'ai');
         }
-
-        // ROADBOOK GENERATOR (Identique V12)
+        function addMsg(txt, sender, load=false) {
+            const div = document.createElement('div');
+            div.className = `chat-bubble ${sender === 'user' ? 'chat-user' : 'chat-ai'}`;
+            if(load) div.innerHTML = '<span class="animate-pulse">...</span>';
+            else if(sender === 'ai') div.innerHTML = marked.parse(txt);
+            else div.innerText = txt;
+            document.getElementById('chat-messages').appendChild(div);
+        }
+        async function analyzeMapWithAI() {
+             if(placedItems.length === 0) return alert("Carte vide !");
+             toggleChat(); addMsg("Analyse en cours...", 'ai');
+             const prompt = `Analyse cette carte : ${placedItems.map(i=>i.label).join(', ')}. Donne 1 conseil court.`;
+             const res = await callGemini(prompt);
+             addMsg(res, 'ai');
+        }
+        async function callGemini(msg) {
+             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+             const body = { contents: [{ parts: [{ text: msg }] }], systemInstruction: { parts: [{ text: contextPrompt }] } };
+             try { const r = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)}); const d = await r.json(); return d.candidates?.[0]?.content?.parts?.[0]?.text || "Erreur"; } catch(e) { return "Erreur"; }
+        }
         function openRoadbook() {
-            const roadbookWindow = window.open('', '_blank');
-            if (!roadbookWindow) { alert("Veuillez autoriser les pop-ups."); return; }
-            const htmlContent = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Roadbook</title><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet"><style>@page{margin:0}body{font-family:'Montserrat',sans-serif;margin:0;padding:20px}.container{max-width:210mm;margin:0 auto;border:4px solid black;padding:20px;height:290mm}header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:4px solid black;padding-bottom:20px;margin-bottom:20px}h1{font-size:42px;font-weight:900;text-transform:uppercase;margin:0}img{height:50px}.photo-zone{width:100%;height:240px;background:#f8fafc;border:2px dashed black;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:25px}.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}.section{margin-bottom:15px}.section-title{font-weight:900;text-transform:uppercase}.check-item{display:flex;align-items:center;margin-bottom:6px;font-size:11px;font-weight:700}.checkbox{width:14px;height:14px;border:2px solid black;margin-right:8px}.footer{margin-top:auto;text-align:center;font-size:9px;font-weight:bold;text-transform:uppercase;color:#94a3b8}</style></head><body><div class="container"><header><div><img src="https://static.wixstatic.com/media/dd5dab_7e61f61a3fab4046946b861015ab0f2d~mv2.avif/v1/fill/w_124,h_59,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/Design%20sans%20titre.avif"></div><h1>Map ta<br>Mobilité</h1><div>DATE : ${new Date().toLocaleDateString('fr-FR')}</div></header><div class="photo-zone"><div>TA CARTE</div><div style="font-size:11px;background:black;color:white;padding:4px 10px;margin-top:10px">Colle ta capture ici</div></div><div class="grid-2"><div><div class="section"><div class="section-title">🏠 MA ZONE</div><div class="check-item"><span class="checkbox"></span>Quartier</div><div class="check-item"><span class="checkbox"></span>Ville</div><div class="check-item"><span class="checkbox"></span>Pays Basque</div></div><div class="section"><div class="section-title">🆔 ADMIN</div><div class="check-item"><span class="checkbox"></span>Papiers OK</div><div class="check-item"><span class="checkbox"></span>Carte Solidaire</div><div class="check-item"><span class="checkbox"></span>NEPH</div></div></div><div><div class="section"><div class="section-title">🛑 CA BLOQUE</div><div class="check-item"><span class="checkbox"></span>Budget</div><div class="check-item"><span class="checkbox"></span>Stress</div><div class="check-item"><span class="checkbox"></span>Horaires</div></div><div class="section"><div class="section-title">🌍 HORIZONS</div><div class="check-item"><span class="checkbox"></span>Vacances</div><div class="check-item"><span class="checkbox"></span>Job Ailleurs</div></div></div></div><div style="border:4px solid black;padding:20px;background:#fffbeb;margin-top:20px"><div style="font-weight:800;margin-bottom:10px">MON OBJECTIF :</div><div style="border-bottom:2px solid black;height:30px;margin-bottom:10px"></div><div style="border-bottom:2px solid black;height:30px"></div></div><div class="footer">Mission Locale Pays Basque</div></div></body></html>`;
-            roadbookWindow.document.write(htmlContent);
-            roadbookWindow.document.close();
-            setTimeout(() => { roadbookWindow.print(); }, 1000);
+            const w = window.open('','_blank'); w.document.write('<html><body style="text-align:center;padding:50px;font-family:sans-serif;"><h1>Roadbook</h1><p>Capturez votre carte !</p><button onclick="window.print()">Imprimer</button></body></html>');
+        }
+        
+        function showToast(icon, msg) {
+            const t = document.getElementById('toast-message');
+            t.innerHTML = `<span>${icon}</span> <span>${msg}</span>`;
+            t.classList.remove('hidden'); t.style.opacity = 1;
+            setTimeout(() => { t.style.opacity = 0; setTimeout(() => t.classList.add('hidden'), 300); }, 1500);
         }
     </script>
 </body>
-</html
+</html>
