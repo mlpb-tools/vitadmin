@@ -149,15 +149,21 @@
         
         .map-preview { width: 100%; height: 100%; object-fit: cover; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: #cbd5e1; font-size: 24px; }
         
-        /* Mise à jour design titre multilingue */
+        /* Design amélioré des titres de cartes pour lisibilité */
         .map-title { 
             position: absolute; bottom: 0; left: 0; width: 100%; 
-            background: rgba(255,255,255,0.95); padding: 8px 4px; 
-            font-size: 10px; font-weight: 800; text-align: center; 
-            text-transform: uppercase; border-top: 1px solid #e2e8f0;
-            line-height: 1.3;
+            background: #ffffff; /* Fond blanc opaque */
+            padding: 6px 4px; 
+            font-size: 11px; /* Un peu plus grand */
+            font-weight: 700; 
+            text-align: center; 
+            color: #1e293b; /* Couleur sombre contrastée */
+            border-top: 1px solid #e2e8f0;
+            line-height: 1.2;
             white-space: normal;
-            min-height: 40px; display: flex; align-items: center; justify-content: center;
+            min-height: 40px; /* Hauteur suffisante */
+            display: flex; align-items: center; justify-content: center;
+            z-index: 20;
         }
 
         .chat-overlay { position: absolute; bottom: 10px; right: 10px; width: 280px; height: 350px; background: white; border: 1px solid #cbd5e1; border-radius: 8px; display: flex; flex-direction: column; z-index: 2000; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
@@ -428,6 +434,8 @@
             customLibrary.forEach(m => { 
                 const c = document.createElement('div'); 
                 c.className = 'map-card'; 
+                // Ajout de l'attribut title pour le tooltip
+                c.title = m.name; 
                 
                 const style = m.url 
                     ? `background-image:url('${m.url}');background-size:cover;background-position:center;` 
