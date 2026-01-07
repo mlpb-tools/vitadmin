@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Map Ta Mobilité - App</title>
+    <title>Map Ta Mobilité - Diag360 Intégré</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -68,13 +68,14 @@
         .type-loisir { border-left: 3px solid #10b981; }     
         .type-frein { border-left: 3px solid #ef4444; }      
 
-        /* MAP AREA - Format 3:2 */
+        /* MAP AREA */
         .map-stage {
             flex: 1; background-color: #e2e8f0;
             background-image: linear-gradient(45deg, #cbd5e1 25%, transparent 25%), linear-gradient(-45deg, #cbd5e1 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #cbd5e1 75%), linear-gradient(-45deg, transparent 75%, #cbd5e1 75%);
             background-size: 20px 20px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
         }
         
+        /* FORMAT 3:2 */
         #board-container {
             aspect-ratio: 3 / 2;
             height: 95%; width: auto; max-width: 95%;
@@ -127,27 +128,10 @@
         .library-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(4px); z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .library-modal.active { opacity: 1; pointer-events: auto; }
         .library-content { background: white; width: 90%; max-width: 600px; max-height: 80vh; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
-        
-        .library-grid { padding: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; overflow-y: auto; }
-        
-        .map-card { 
-            border: 2px solid #e2e8f0; border-radius: 8px; overflow: hidden; cursor: pointer; 
-            aspect-ratio: 1/1; position: relative; transition: transform 0.1s, box-shadow 0.1s; background: #f1f5f9;
-        }
-        .map-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-color: #3b82f6; }
-        
-        .map-preview { width: 100%; height: 100%; object-fit: cover; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: #cbd5e1; font-size: 24px; }
-        
-        /* Mise à jour design titre multilingue */
-        .map-title { 
-            position: absolute; bottom: 0; left: 0; width: 100%; 
-            background: rgba(255,255,255,0.95); padding: 8px 4px; 
-            font-size: 10px; font-weight: 800; text-align: center; 
-            text-transform: uppercase; border-top: 1px solid #e2e8f0;
-            line-height: 1.3;
-            white-space: normal;
-            min-height: 40px; display: flex; align-items: center; justify-content: center;
-        }
+        .library-grid { padding: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; overflow-y: auto; }
+        .map-card { border: 2px solid #e2e8f0; border-radius: 8px; overflow: hidden; cursor: pointer; aspect-ratio: 1/1; position: relative; }
+        .map-preview { width: 100%; height: 100%; object-fit: cover; background: #f1f5f9; }
+        .map-title { position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(255,255,255,0.9); padding: 4px; font-size: 9px; font-weight: 800; text-align: center; text-transform: uppercase; }
 
         .chat-overlay { position: absolute; bottom: 10px; right: 10px; width: 280px; height: 350px; background: white; border: 1px solid #cbd5e1; border-radius: 8px; display: flex; flex-direction: column; z-index: 2000; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
         .zoom-controls { position: absolute; bottom: 20px; left: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 500; }
@@ -172,7 +156,7 @@
             <span class="font-black text-xs uppercase tracking-tight text-slate-700 hidden sm:inline">Map Ta Mobilité</span>
         </div>
         <div class="flex gap-2">
-            <!-- BOUTON DIAG 360 -->
+            <!-- NOUVEAU BOUTON DIAG 360 -->
             <a href="https://mlpb-tools.github.io/diagmob360/" target="_blank" class="bg-purple-100 hover:bg-purple-200 text-purple-700 border border-purple-300 px-2 py-1 text-[9px] font-bold rounded uppercase flex items-center gap-1 transition-colors">
                 <span>📊</span> Diag 360
             </a>
@@ -266,14 +250,9 @@
                 <h3 class="font-black text-sm uppercase text-slate-700">Bibliothèque de cartes</h3>
                 <button onclick="toggleLibrary()" class="text-slate-400 hover:text-red-500 font-bold">✕</button>
             </div>
-            <!-- Zone d'info -->
-            <div class="bg-blue-50 text-blue-800 text-[10px] px-4 py-2 font-medium border-b border-blue-100 flex items-center gap-2">
-                <span>ℹ️</span> 
-                <span>Placez vos fichiers images dans le dossier <b>"cartes"</b> pour qu'ils s'affichent ici.</span>
-            </div>
             <div class="library-grid" id="library-grid">
                 <label for="lib-upload-input" class="map-card" style="border: 2px dashed #94a3b8; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#f8fafc; color:#64748b;">
-                    <span style="font-size:32px;">+</span><span style="font-size:10px; font-weight:800; text-transform:uppercase;">Importer</span>
+                    <span style="font-size:32px;">+</span><span style="font-size:10px; font-weight:800; text-transform:uppercase;">Ajouter</span>
                     <input type="file" id="lib-upload-input" class="hidden" accept="image/*" onchange="handleLibraryUpload(event)">
                 </label>
             </div>
@@ -321,7 +300,9 @@
                 { icon: "🧑‍🔧", label: "Stage Immersion", type: "pro" }
             ],
             admin: [
+                /* AJOUT : Résultat du Diag360 */
                 { icon: "📊", label: "Mon Score Diag360", type: "admin", editable: true, placeholder: "Résultat / Frein" },
+                
                 { icon: "📂", label: "Administration", type: "admin", editable: true, placeholder: "Nom Admin" },
                 { icon: "🏥", label: "Hôpital / Urgences", type: "admin" },
                 { icon: "🩺", label: "Médecin / CPAM", type: "admin" },
@@ -362,7 +343,9 @@
             if(btnElement) btnElement.classList.add('active');
             document.querySelectorAll('.tools-grid').forEach(g => g.classList.add('hidden'));
             document.getElementById('content-'+id).classList.remove('hidden');
-            document.getElementById('tools-title').innerText = { lieux:"Ancrage & Vie", transports:"Mobilité & Permis", pro:"Emploi & Avenir", admin:"Santé & Papiers", loisirs:"Vie Sociale", freins:"Obstacles" }[id];
+            
+            const titles = { lieux:"Ancrage & Vie", transports:"Mobilité & Permis", pro:"Emploi & Avenir", admin:"Santé & Papiers", loisirs:"Vie Sociale", freins:"Obstacles" };
+            document.getElementById('tools-title').innerText = titles[id];
         }
 
         function renderAllTools() {
@@ -378,135 +361,42 @@
             }
         }
 
-        // --- LIBRARY LOGIC ---
-        
-        let customLibrary = [
-            // Cartes issues des PDFs (à mettre dans le dossier 'cartes')
-            { id: 'loc-pb', name: "Pays Basque (Global)", url: "cartes/carte_pb.jpg", isDefault: true },
-            { id: 'loc-anglet', name: "Anglet (Bus/Vélo)", url: "cartes/carte_anglet.jpg", isDefault: true },
-            { id: 'loc-conduite', name: "Schéma Conduite", url: "cartes/schema_conduite.jpg", isDefault: true },
-
-            // Cartes Web (Secours)
-            { id: 'web-pb', name: "Pays Basque (Web)", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Pays_basque_%28fr%29.svg/1200px-Pays_basque_%28fr%29.svg.png", isDefault: true },
-            { id: 'web-bab', name: "Cœur d'Agglo (Web)", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Communaut%C3%A9_d%27agglom%C3%A9ration_du_Pays_Basque_-_C%C3%B4te_Basque-Adour.svg/800px-Communaut%C3%A9_d%27agglom%C3%A9ration_du_Pays_Basque_-_C%C3%B4te_Basque-Adour.svg.png", isDefault: true },
-
-            // Fond vierge
-            { id: 'default-blank', name: "Fond Vierge", url: "", color: "#ffffff", isDefault: true }
-        ];
-
-        function loadLibraryFromStorage() { 
-            const s = localStorage.getItem('mlpb_custom_library'); 
-            if(s) {
-                try { 
-                    const stored = JSON.parse(s);
-                    const customs = stored.filter(m => !customLibrary.some(def => def.id === m.id));
-                    customLibrary = [...customLibrary, ...customs];
-                } catch(e){} 
-            }
-        }
-        
-        function saveLibraryToStorage() { 
-            try { 
-                localStorage.setItem('mlpb_custom_library', JSON.stringify(customLibrary.filter(m => !m.isDefault))); 
-            } catch(e) { showToast("⚠️", "Plein"); } 
-        }
-        
-        function renderLibrary() { 
-            const g = document.getElementById('library-grid'); 
-            const btn = g.firstElementChild;
-            g.innerHTML=''; 
-            g.appendChild(btn); 
-            
-            customLibrary.forEach(m => { 
-                const c = document.createElement('div'); 
-                c.className = 'map-card'; 
-                
-                const imgStyle = m.url ? `background-image:url('${m.url}');background-size:cover;background-position:center;` : `background-color:${m.color||'#fff'};`;
-                const deleteBtn = !m.isDefault ? `<div class="delete-map-btn" onclick="event.stopPropagation();deleteFromLibrary('${m.id}')">✕</div>` : '';
-                
-                c.innerHTML = `
-                    <div class="map-preview" style="${imgStyle}">
-                        ${!m.url && !m.color ? '🖼️' : ''} 
-                    </div>
-                    <div class="map-title">${m.name}</div>
-                    ${deleteBtn}
-                `; 
-                c.onclick = () => selectMapTemplate(m.url); 
-                g.appendChild(c); 
-            }); 
-        }
-
-        function handleLibraryUpload(e) { 
-            const f=e.target.files[0]; if(!f)return; 
-            const r=new FileReader(); 
-            r.onload=function(ev){ 
-                customLibrary.push({ id:'map-'+Date.now(), name:f.name.substring(0,20), url:ev.target.result, isDefault:false }); 
-                saveLibraryToStorage(); 
-                renderLibrary(); 
-                showToast("✅","Ajouté"); 
-            }; 
-            r.readAsDataURL(f); 
-            e.target.value=''; 
-        }
-        
-        function deleteFromLibrary(id) { 
-            if(confirm("Supprimer ?")) { 
-                customLibrary = customLibrary.filter(m => m.id !== id); 
-                saveLibraryToStorage(); 
-                renderLibrary(); 
-            } 
-        }
-        
-        function toggleLibrary() { document.getElementById('library-modal').classList.toggle('active'); }
-        
-        function selectMapTemplate(url) { 
-            const i=document.getElementById('user-map-img'); 
-            if(url){ 
-                i.src=url; i.classList.remove('hidden'); 
-                document.getElementById('placeholder-text').classList.add('hidden');
-                
-                // Gestion erreur chargement image
-                i.onerror = function() {
-                    if (url.startsWith('cartes/')) {
-                        alert("Image non trouvée ! Vérifiez que le fichier '" + url + "' est bien dans le dossier 'cartes'.");
-                    }
-                    // Ne pas masquer l'image tout de suite pour laisser le 'broken image' du navigateur si besoin
-                };
-            } else { 
-                i.classList.add('hidden'); 
-                document.getElementById('placeholder-text').classList.remove('hidden'); 
-            } 
-            toggleLibrary(); 
-        }
-
-        function handleMapUpload(e) { 
-            const f=e.target.files[0]; if(f) { 
-                const r=new FileReader(); 
-                r.onload=function(ev){ 
-                    document.getElementById('user-map-img').src=ev.target.result; 
-                    document.getElementById('user-map-img').classList.remove('hidden'); 
-                    document.getElementById('placeholder-text').classList.add('hidden'); 
-                }; 
-                r.readAsDataURL(f); 
-            } 
-        }
-
-        // --- MAP LOGIC (STICKERS & INPUTS) ---
+        // --- MAP LOGIC (AVEC INPUTS) ---
         function addToMap(item) {
             const dropZone = document.getElementById('drop-zone');
             const el = document.createElement('div');
             el.className = 'draggable pointer-events-auto';
             el.style.left = '50%'; el.style.top = '50%';
-            placedItems.push({ ...item, el: el });
+            
+            const itemData = { ...item, el: el };
+            placedItems.push(itemData);
 
             let contentHtml = '';
             if (item.editable) {
-                contentHtml = `<div class="icon-content"><span class="sticker-emoji">${item.icon}</span><input type="text" class="sticker-input" placeholder="${item.placeholder || 'Nom...'}" value="" onclick="event.stopPropagation(); this.focus();" onmousedown="event.stopPropagation();" ontouchstart="event.stopPropagation();"></div>`;
+                contentHtml = `
+                    <div class="icon-content">
+                        <span class="sticker-emoji">${item.icon}</span>
+                        <input type="text" class="sticker-input" placeholder="${item.placeholder || 'Nom...'}" 
+                               value="" 
+                               onclick="event.stopPropagation(); this.focus();" 
+                               onmousedown="event.stopPropagation();"
+                               ontouchstart="event.stopPropagation();">
+                    </div>
+                `;
             } else {
-                contentHtml = `<div class="icon-content"><span class="sticker-emoji">${item.icon}</span><span class="sticker-label">${item.label}</span></div>`;
+                contentHtml = `
+                    <div class="icon-content">
+                        <span class="sticker-emoji">${item.icon}</span>
+                        <span class="sticker-label">${item.label}</span>
+                    </div>
+                `;
             }
 
-            el.innerHTML = `${contentHtml}<div class="delete-sticker-btn" onclick="event.stopPropagation(); removeItem(this, '${item.label}')">✕</div>`;
+            el.innerHTML = `
+                ${contentHtml}
+                <div class="delete-sticker-btn" onclick="event.stopPropagation(); removeItem(this, '${item.label}')">✕</div>
+            `;
+            
             enableDrag(el);
             dropZone.appendChild(el);
             updateProgress(1);
@@ -516,7 +406,10 @@
 
         function enableDrag(el, handle = null) {
             let isDragging=false, startX, startY, iL, iT; const t=handle||el;
-            function start(e) { if(e.target.classList.contains('delete-sticker-btn') || e.target.tagName === 'INPUT') return; e.stopPropagation(); isDragging=true; el.style.zIndex=2000; const cx=e.touches?e.touches[0].clientX:e.clientX; const cy=e.touches?e.touches[0].clientY:e.clientY; startX=cx; startY=cy; iL=parseFloat(el.style.left)||50; iT=parseFloat(el.style.top)||50; document.addEventListener('mousemove', move, {passive:false}); document.addEventListener('touchmove', move, {passive:false}); document.addEventListener('mouseup', end); document.addEventListener('touchend', end); }
+            function start(e) { 
+                if(e.target.classList.contains('delete-sticker-btn') || e.target.tagName === 'INPUT') return; 
+                e.stopPropagation(); isDragging=true; el.style.zIndex=2000; const cx=e.touches?e.touches[0].clientX:e.clientX; const cy=e.touches?e.touches[0].clientY:e.clientY; startX=cx; startY=cy; iL=parseFloat(el.style.left)||50; iT=parseFloat(el.style.top)||50; document.addEventListener('mousemove', move, {passive:false}); document.addEventListener('touchmove', move, {passive:false}); document.addEventListener('mouseup', end); document.addEventListener('touchend', end); 
+            }
             function move(e) { if(!isDragging)return; e.preventDefault(); const cx=e.touches?e.touches[0].clientX:e.clientX; const cy=e.touches?e.touches[0].clientY:e.clientY; const r=document.getElementById('drop-zone').getBoundingClientRect(); el.style.left=(iL+((cx-startX)/r.width)*100)+'%'; el.style.top=(iT+((cy-startY)/r.height)*100)+'%'; }
             function end() { isDragging=false; el.style.zIndex=1000; document.removeEventListener('mousemove', move); document.removeEventListener('touchmove', move); document.removeEventListener('mouseup', end); document.removeEventListener('touchend', end); }
             t.addEventListener('mousedown', start); t.addEventListener('touchstart', start, {passive:false});
@@ -524,8 +417,39 @@
 
         function addZone(size, bg, border, label) { const z=document.createElement('div'); z.className='circle-zone group'; z.style.width=size+'px'; z.style.height=size+'px'; z.style.left='50%'; z.style.top='50%'; z.style.backgroundColor=bg; z.style.borderColor=border; z.innerHTML=`<span class="text-[8px] font-bold text-slate-700 bg-white/90 px-1.5 py-0.5 rounded absolute top-2 border border-slate-200 shadow-sm pointer-events-none select-none whitespace-nowrap">${label}</span><button class="absolute -top-2 -right-2 w-4 h-4 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold border border-white shadow-sm pointer-events-auto z-30 text-[8px]" onmousedown="event.stopPropagation(); this.parentElement.remove();">×</button><div class="absolute w-8 h-8 bg-white/30 rounded-full pointer-events-auto flex items-center justify-center cursor-move text-[10px] text-slate-700 z-10 hover:bg-white/50">✥</div>`; enableDrag(z, z.querySelector('.cursor-move')); document.getElementById('drop-zone').appendChild(z); updateProgress(1); }
 
+        // --- LIBRARY LOGIC ---
+        let customLibrary = [{ id: 'default-blank', name: "Fond Blanc", url: "", color: "#ffffff", isDefault: true }];
+        function loadLibraryFromStorage() { const s = localStorage.getItem('mlpb_custom_library'); if(s) try { customLibrary = [...customLibrary, ...JSON.parse(s).filter(m=>m.id!=='default-blank')]; } catch(e){} }
+        function saveLibraryToStorage() { try { localStorage.setItem('mlpb_custom_library', JSON.stringify(customLibrary.filter(m=>!m.isDefault))); } catch(e) { showToast("⚠️", "Plein"); } }
+        function renderLibrary() { const g = document.getElementById('library-grid'); const btn = g.firstElementChild; g.innerHTML=''; g.appendChild(btn); customLibrary.forEach(m => { const c=document.createElement('div'); c.className='map-card'; const s=m.url?`background-image:url('${m.url}');background-size:cover;`:`background-color:${m.color||'#fff'};`; const d=!m.isDefault?`<div class="delete-map-btn" onclick="event.stopPropagation();deleteFromLibrary('${m.id}')">✕</div>`:''; c.innerHTML=`<div class="map-preview" style="${s}"></div><div class="map-title">${m.name}</div>${d}`; c.onclick=()=>selectMapTemplate(m.url); g.appendChild(c); }); }
+        function handleLibraryUpload(e) { const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=function(ev){ customLibrary.push({id:'map-'+Date.now(), name:f.name.substr(0,12), url:ev.target.result, isDefault:false}); saveLibraryToStorage(); renderLibrary(); showToast("✅","Ajouté"); }; r.readAsDataURL(f); e.target.value=''; }
+        function deleteFromLibrary(id) { if(confirm("Supprimer ?")) { customLibrary=customLibrary.filter(m=>m.id!==id); saveLibraryToStorage(); renderLibrary(); } }
+        function toggleLibrary() { document.getElementById('library-modal').classList.toggle('active'); }
+        function selectMapTemplate(url) { const i=document.getElementById('user-map-img'); if(url){ i.src=url; i.classList.remove('hidden'); document.getElementById('placeholder-text').classList.add('hidden'); } else { i.classList.add('hidden'); document.getElementById('placeholder-text').classList.remove('hidden'); } toggleLibrary(); }
+        function handleMapUpload(e) { const f=e.target.files[0]; if(f) { const r=new FileReader(); r.onload=function(ev){ document.getElementById('user-map-img').src=ev.target.result; document.getElementById('user-map-img').classList.remove('hidden'); document.getElementById('placeholder-text').classList.add('hidden'); }; r.readAsDataURL(f); } }
+
+        // --- SAVE/RESTORE (AVEC DONNÉES INPUT) ---
+        function saveSession() {
+            const itemsToSave = placedItems.map(item => {
+                let userText = null;
+                if(item.editable) {
+                    const input = item.el.querySelector('input');
+                    if(input) userText = input.value;
+                }
+                return {
+                    label: item.label, type: item.type, icon: item.icon,
+                    left: item.el.style.left, top: item.el.style.top,
+                    editable: item.editable, placeholder: item.placeholder, customValue: userText
+                };
+            });
+            const imgSrc = document.getElementById('user-map-img').src;
+            const hasImage = !document.getElementById('user-map-img').classList.contains('hidden');
+            const data = { items: itemsToSave, image: hasImage ? imgSrc : null, date: new Date().toISOString() };
+            try { localStorage.setItem('mlpb_map_data', JSON.stringify(data)); showToast("💾", "Sauvé !"); } catch(e) { showToast("⚠️", "Erreur"); }
+        }
+
+        // --- UTILS ---
         function zoomIn() { currentScale+=0.1; updT(); } function zoomOut() { if(currentScale>0.2)currentScale-=0.1; updT(); } function resetZoom() { currentScale=1; updT(); } function updT() { document.getElementById('map-transform-layer').style.transform=`scale(${currentScale})`; }
-        function saveSession() { const itemsToSave = placedItems.map(item => { let userText = null; if(item.editable) { const input = item.el.querySelector('input'); if(input) userText = input.value; } return { label: item.label, type: item.type, icon: item.icon, left: item.el.style.left, top: item.el.style.top, editable: item.editable, placeholder: item.placeholder, customValue: userText }; }); const imgSrc = document.getElementById('user-map-img').src; const hasImage = !document.getElementById('user-map-img').classList.contains('hidden'); const data = { items: itemsToSave, image: hasImage ? imgSrc : null, date: new Date().toISOString() }; try { localStorage.setItem('mlpb_map_data', JSON.stringify(data)); showToast("💾", "Sauvé !"); } catch(e) { showToast("⚠️", "Erreur"); } }
         let progress=0; function updateProgress(d) { progress=Math.max(0,Math.min(10,progress+d)); let p=progress*10; document.getElementById('progress-bar').style.height=p+'%'; document.getElementById('progress-text').innerText=p+'%'; }
         function toggleChat() { document.getElementById('chat-overlay').classList.toggle('hidden'); }
         function handleChatKey(e) { if(e.key==='Enter') sendMessage(); }
