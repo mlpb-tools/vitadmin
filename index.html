@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Map Ta Mobilité </title>
+    <title>Map Ta Mobilité - Diag360 Intégré</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -16,591 +16,449 @@
         header { height: 44px; }
         footer { height: 24px; font-size: 10px; }
 
-        .cockpit-container {
-            display: flex;
-            height: calc(100vh - 68px);
-            overflow: hidden;
-        }
+        .cockpit-container { display: flex; height: calc(100vh - 68px); overflow: hidden; }
 
-        /* COLONNE GAUCHE */
+        /* SIDEBAR GAUCHE */
         .sidebar-left {
-            width: 260px;
-            background: white;
-            border-right: 1px solid #cbd5e1;
-            display: flex;
-            flex-direction: column;
-            z-index: 20;
-            flex-shrink: 0;
+            width: 230px; background: white; border-right: 1px solid #cbd5e1;
+            display: flex; flex-direction: row; z-index: 20; flex-shrink: 0;
         }
 
-        /* COLONNE DROITE */
-        .sidebar-right {
-            width: 140px;
-            background: white;
-            border-left: 1px solid #cbd5e1;
-            display: flex;
-            flex-direction: column;
-            z-index: 20;
-            flex-shrink: 0;
-            align-items: center;
-            padding-top: 10px;
+        .nav-column {
+            width: 50px; background: #f1f5f9; border-right: 1px solid #e2e8f0;
+            display: flex; flex-direction: column; align-items: center; padding-top: 10px;
+            overflow-y: auto; flex-shrink: 0;
         }
 
-        /* ZONE CARTE */
-        .map-stage {
-            flex: 1;
-            background-color: #e2e8f0;
-            background-image: 
-                linear-gradient(45deg, #cbd5e1 25%, transparent 25%), 
-                linear-gradient(-45deg, #cbd5e1 25%, transparent 25%), 
-                linear-gradient(45deg, transparent 75%, #cbd5e1 75%), 
-                linear-gradient(-45deg, transparent 75%, #cbd5e1 75%);
-            background-size: 20px 20px;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+        .nav-btn {
+            width: 100%; height: 50px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: #64748b; cursor: pointer; transition: all 0.2s; border-left: 3px solid transparent; margin-bottom: 4px;
         }
-
-        #board-container {
-            width: 95%;
-            height: 95%;
-            background: white;
-            position: relative;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-            border: 2px solid white;
-            border-radius: 8px;
-            overflow: hidden; /* Important pour masquer ce qui dépasse lors du zoom */
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .nav-btn:hover { background: #e2e8f0; color: #334155; }
+        .nav-btn.active {
+            background: white; color: #0f172a; border-left-color: #0f172a;
+            box-shadow: -4px 0 0 white; width: 51px; z-index: 10;
         }
-
-        /* COUCHE DE TRANSFORMATION (ZOOM) */
-        #map-transform-layer {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform-origin: center center;
-            transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #user-map-img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .draggable {
-            position: absolute; z-index: 1000; cursor: grab; transition: transform 0.1s;
-            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2)); transform: translate(-50%, -50%);
-        }
-        .draggable:active { cursor: grabbing; transform: translate(-50%, -50%) scale(1.1); }
-
-        .icon-content {
-            background: white; border: 1.5px solid #1e293b; border-radius: 6px;
-            padding: 2px; min-width: 40px; text-align: center;
-        }
-
-        .vertical-tabs { display: flex; flex-direction: row; overflow-x: auto; background: #f1f5f9; flex-shrink: 0; }
-        .v-tab-btn { flex: 1; padding: 10px 5px; text-align: center; opacity: 0.6; border-bottom: 3px solid transparent; transition: all 0.2s; min-width: 50px; }
-        .v-tab-btn.active { opacity: 1; border-bottom-color: #0f172a; background: white; color: #0f172a; }
-        .v-tab-icon { display: block; font-size: 18px; margin-bottom: 2px; }
-        .v-tab-label { font-size: 7px; font-weight: 800; text-transform: uppercase; }
-
-        .tools-grid { padding: 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; overflow-y: auto; }
-        .tool-item { display: flex; flex-direction: column; items-center; justify-center; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 2px; cursor: pointer; transition: all 0.1s; background: white; height: 50px; }
-        .tool-item:hover { transform: scale(1.05); border-color: #94a3b8; }
+        .nav-icon { font-size: 22px; margin-bottom: 0px; }
         
-        .type-admin { border-color: #bfdbfe; background: #eff6ff; }
-        .type-frein { border-color: #fecaca; background: #fef2f2; }
-        .type-moyen { border-color: #bbf7d0; background: #f0fdf4; }
-        .type-horizon { border-color: #e9d5ff; background: #faf5ff; }
+        /* COLONNE OUTILS */
+        .tools-column { flex: 1; background: white; display: flex; flex-direction: column; overflow: hidden; }
+        
+        .tools-header {
+            padding: 12px 8px; border-bottom: 1px solid #f1f5f9;
+            font-size: 9px; font-weight: 900; text-transform: uppercase;
+            color: #64748b; text-align: center; letter-spacing: 0.05em;
+            background: #f8fafc;
+        }
 
-        .zone-btn { width: 90%; margin-bottom: 8px; padding: 8px; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.1s; background: white; border: 1px solid; font-size: 9px; font-weight: 800; text-transform: uppercase; }
-        .zone-btn:active { transform: scale(0.95); }
+        .tools-grid { padding: 8px; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; }
 
+        .tool-item {
+            display: flex; flex-direction: row; align-items: center; justify-content: flex-start;
+            border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 10px;
+            cursor: pointer; transition: all 0.1s; background: white; min-height: 40px;
+        }
+        .tool-item:hover { transform: translateX(2px); border-color: #94a3b8; background: #f1f5f9; }
+
+        /* CATEGORIES COULEURS */
+        .type-lieu { border-left: 3px solid #64748b; }       
+        .type-transport { border-left: 3px solid #f59e0b; }  
+        .type-pro { border-left: 3px solid #0ea5e9; }        
+        .type-admin { border-left: 3px solid #6366f1; }      
+        .type-loisir { border-left: 3px solid #10b981; }     
+        .type-frein { border-left: 3px solid #ef4444; }      
+
+        /* MAP AREA */
+        .map-stage {
+            flex: 1; background-color: #e2e8f0;
+            background-image: linear-gradient(45deg, #cbd5e1 25%, transparent 25%), linear-gradient(-45deg, #cbd5e1 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #cbd5e1 75%), linear-gradient(-45deg, transparent 75%, #cbd5e1 75%);
+            background-size: 20px 20px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
+        }
+        
+        /* FORMAT 3:2 */
+        #board-container {
+            aspect-ratio: 3 / 2;
+            height: 95%; width: auto; max-width: 95%;
+            background: white; position: relative; 
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); 
+            border: 2px solid white; border-radius: 8px; overflow: hidden; 
+            display: flex; align-items: center; justify-content: center; 
+        }
+        @media (max-aspect-ratio: 3/2) {
+            #board-container { width: 95%; height: auto; }
+        }
+
+        #map-transform-layer { width: 100%; height: 100%; position: relative; transform-origin: center center; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; }
+        #user-map-img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; z-index: 0; }
+
+        /* STICKERS ET INPUTS */
+        .draggable { position: absolute; z-index: 1000; cursor: grab; transform: translate(-50%, -50%); width: auto; height: auto; transition: transform 0.1s; display: flex; justify-content: center; }
+        .draggable:active { cursor: grabbing; transform: translate(-50%, -50%) scale(1.1); z-index: 1500; }
+        
+        .icon-content { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .sticker-emoji { font-size: 26px; line-height: 1; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2)); margin-bottom: 2px; }
+        
+        .sticker-label { 
+            font-size: 8px; font-weight: 800; text-transform: uppercase; color: #1e293b; 
+            background-color: rgba(255, 255, 255, 0.85); padding: 2px 4px; border-radius: 4px; 
+            margin-top: -4px; white-space: nowrap; backdrop-filter: blur(2px); box-shadow: 0 1px 2px rgba(0,0,0,0.1); pointer-events: none;
+        }
+
+        .sticker-input {
+            font-size: 9px; font-weight: 700; color: #1e293b; text-align: center;
+            background-color: rgba(255, 255, 255, 0.95); 
+            border: 1px solid #94a3b8; border-radius: 4px;
+            padding: 2px 4px; width: 80px; margin-top: -2px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            outline: none; transition: all 0.2s;
+        }
+        .sticker-input:focus { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2); transform: scale(1.05); z-index: 2000; }
+        .sticker-input::placeholder { color: #94a3b8; font-style: italic; font-weight: 400; }
+
+        .delete-sticker-btn { position: absolute; top: -6px; right: -6px; width: 14px; height: 14px; background: #ef4444; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: bold; border: 1px solid white; opacity: 0; transition: opacity 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.2); z-index: 10; cursor: pointer; }
+        .draggable:hover .delete-sticker-btn { opacity: 1; }
+
+        /* SIDEBAR DROITE */
+        .sidebar-right { width: 130px; background: white; border-left: 1px solid #cbd5e1; display: flex; flex-direction: column; z-index: 20; flex-shrink: 0; align-items: center; padding-top: 10px; }
+        .zone-btn { width: 90%; margin-bottom: 8px; padding: 8px; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; background: white; border: 1px solid; font-size: 9px; font-weight: 800; text-transform: uppercase; }
         .v-progress-track { width: 8px; height: 100px; background: #e2e8f0; border-radius: 4px; margin: 20px 0; position: relative; overflow: hidden; }
         .v-progress-fill { width: 100%; background: #22c55e; position: absolute; bottom: 0; left: 0; transition: height 0.5s ease; }
 
+        /* LIBRARY & CHAT */
+        .library-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(4px); z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .library-modal.active { opacity: 1; pointer-events: auto; }
+        .library-content { background: white; width: 90%; max-width: 600px; max-height: 80vh; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+        .library-grid { padding: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; overflow-y: auto; }
+        .map-card { border: 2px solid #e2e8f0; border-radius: 8px; overflow: hidden; cursor: pointer; aspect-ratio: 1/1; position: relative; }
+        .map-preview { width: 100%; height: 100%; object-fit: cover; background: #f1f5f9; }
+        .map-title { position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(255,255,255,0.9); padding: 4px; font-size: 9px; font-weight: 800; text-align: center; text-transform: uppercase; }
+
+        .chat-overlay { position: absolute; bottom: 10px; right: 10px; width: 280px; height: 350px; background: white; border: 1px solid #cbd5e1; border-radius: 8px; display: flex; flex-direction: column; z-index: 2000; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .zoom-controls { position: absolute; bottom: 20px; left: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 500; }
+        .zoom-btn { width: 32px; height: 32px; background: white; border: 1px solid #94a3b8; border-radius: 6px; font-weight: 900; color: #1e293b; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        
+        .circle-zone { position: absolute; border-radius: 50%; border: 2px dashed; pointer-events: none; transform: translate(-50%, -50%); z-index: 100; display:flex; justify-content:center; align-items:center;}
+
         @media (max-width: 768px) {
             .cockpit-container { flex-direction: column; }
-            .sidebar-left { width: 100%; height: 25%; order: 2; border-right: none; border-top: 1px solid #cbd5e1; flex-direction: row; }
-            .vertical-tabs { flex-direction: column; width: 60px; overflow-y: auto; border-right: 1px solid #e2e8f0; }
-            .tools-grid { display: flex; overflow-x: auto; flex: 1; padding: 5px; gap: 5px; grid-template-columns: none; }
-            .tool-item { min-width: 50px; }
+            .sidebar-left { width: 100%; height: 35%; border-right: none; border-top: 1px solid #cbd5e1; flex-direction: row; order: 2; }
+            .nav-column { width: 60px; }
             .sidebar-right { display: none; }
-            .map-stage { height: 75%; order: 1; }
+            .map-stage { height: 65%; order: 1; }
         }
-
-        .circle-zone { position: absolute; border-radius: 50%; border: 2px dashed; pointer-events: none; transform: translate(-50%, -50%); z-index: 100; display:flex; justify-content:center; align-items:center;}
-        .chat-overlay { position: absolute; bottom: 10px; right: 10px; width: 280px; height: 350px; background: white; border: 1px solid #cbd5e1; border-radius: 8px; display: flex; flex-direction: column; z-index: 2000; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-        .chat-messages { flex: 1; overflow-y: auto; padding: 10px; background: #f8fafc; font-size: 11px; }
-        .chat-bubble { padding: 6px 10px; border-radius: 8px; margin-bottom: 6px; max-width: 90%; }
-        .chat-ai { background: #e2e8f0; align-self: flex-start; }
-        .chat-user { background: #2563eb; color: white; align-self: flex-end; margin-left: auto; }
-
-        /* CONTROLES DE ZOOM */
-        .zoom-controls {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            z-index: 500;
-        }
-        .zoom-btn {
-            width: 32px; height: 32px; background: white; border: 1px solid #94a3b8;
-            border-radius: 6px; font-weight: 900; color: #1e293b;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transition: all 0.1s;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .zoom-btn:hover { background: #f1f5f9; }
-        .zoom-btn:active { transform: scale(0.95); }
     </style>
 </head>
 <body class="flex flex-col h-full overflow-hidden text-slate-800">
 
-    <!-- HEADER -->
     <header class="bg-white border-b border-slate-200 px-4 flex justify-between items-center shadow-sm z-30">
         <div class="flex items-center gap-2">
             <img src="https://static.wixstatic.com/media/dd5dab_7e61f61a3fab4046946b861015ab0f2d~mv2.avif/v1/fill/w_124,h_59,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/Design%20sans%20titre.avif" alt="Logo" class="h-5 w-auto">
             <span class="font-black text-xs uppercase tracking-tight text-slate-700 hidden sm:inline">Map Ta Mobilité</span>
         </div>
         <div class="flex gap-2">
-             <label for="map-upload" class="cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 text-[9px] font-bold rounded border border-slate-300 uppercase flex items-center gap-1 transition-colors">
-                <span>📂</span> Importer
-            </label>
+            <!-- NOUVEAU BOUTON DIAG 360 -->
+            <a href="https://mlpb-tools.github.io/diagmob360/" target="_blank" class="bg-purple-100 hover:bg-purple-200 text-purple-700 border border-purple-300 px-2 py-1 text-[9px] font-bold rounded uppercase flex items-center gap-1 transition-colors">
+                <span>📊</span> Diag 360
+            </a>
+
+            <label for="map-upload" class="cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 text-[9px] font-bold rounded border border-slate-300 uppercase flex items-center gap-1"><span>📂</span> Import</label>
             <input type="file" id="map-upload" accept="image/*" class="hidden" onchange="handleMapUpload(event)">
             
-            <button onclick="saveSession()" class="bg-emerald-500 text-white px-2 py-1 text-[9px] font-bold rounded hover:bg-emerald-600 uppercase transition-colors flex items-center gap-1" title="Enregistrer dans le navigateur">
-                💾 Sauver
-            </button>
-            <button onclick="loadSession()" class="bg-blue-500 text-white px-2 py-1 text-[9px] font-bold rounded hover:bg-blue-600 uppercase transition-colors flex items-center gap-1" title="Charger la sauvegarde">
-                📂 Restaurer
-            </button>
-
-            <button onclick="analyzeMapWithAI()" id="btn-analyze" class="bg-indigo-600 text-white px-2 py-1 text-[9px] font-bold rounded hover:bg-indigo-500 uppercase transition-colors flex items-center gap-1 ml-2">
-                ✨ IA
-            </button>
-            <button onclick="openRoadbook()" class="bg-yellow-400 text-slate-900 px-2 py-1 text-[9px] font-bold rounded hover:bg-yellow-300 uppercase transition-colors">
-                PDF
-            </button>
+            <button onclick="toggleLibrary()" class="bg-blue-500 text-white px-2 py-1 text-[9px] font-bold rounded hover:bg-blue-600 uppercase flex items-center gap-1">📚 Biblio</button>
+            <button onclick="saveSession()" class="bg-emerald-500 text-white px-2 py-1 text-[9px] font-bold rounded hover:bg-emerald-600 uppercase flex items-center gap-1" title="Enregistrer">💾 Sauver</button>
+            <button onclick="analyzeMapWithAI()" id="btn-analyze" class="bg-indigo-600 text-white px-2 py-1 text-[9px] font-bold rounded hover:bg-indigo-500 uppercase flex items-center gap-1 ml-2">✨ IA</button>
+            <button onclick="openRoadbook()" class="bg-yellow-400 text-slate-900 px-2 py-1 text-[9px] font-bold rounded hover:bg-yellow-300 uppercase">PDF</button>
         </div>
     </header>
 
-    <!-- COCKPIT -->
     <div class="cockpit-container">
-        
-        <!-- GAUCHE -->
+        <!-- SIDEBAR GAUCHE -->
         <aside class="sidebar-left">
-            <div class="vertical-tabs">
-                <button onclick="switchTab('lieux')" id="tab-lieux" class="v-tab-btn active"><span class="v-tab-icon">🏠</span><span class="v-tab-label">Lieux</span></button>
-                <button onclick="switchTab('moyens')" id="tab-moyens" class="v-tab-btn"><span class="v-tab-icon">🚌</span><span class="v-tab-label">Bus</span></button>
-                <button onclick="switchTab('admin')" id="tab-admin" class="v-tab-btn"><span class="v-tab-icon">🆔</span><span class="v-tab-label">Admin</span></button>
-                <button onclick="switchTab('freins')" id="tab-freins" class="v-tab-btn"><span class="v-tab-icon">🚧</span><span class="v-tab-label">Freins</span></button>
-                <button onclick="switchTab('horizons')" id="tab-horizons" class="v-tab-btn"><span class="v-tab-icon">🌍</span><span class="v-tab-label">Futur</span></button>
+            <div class="nav-column">
+                <div onclick="switchTab('lieux', this)" class="nav-btn active" title="Lieux de Vie"><span class="nav-icon">🏠</span></div>
+                <div onclick="switchTab('transports', this)" class="nav-btn" title="Transports"><span class="nav-icon">🚌</span></div>
+                <div onclick="switchTab('pro', this)" class="nav-btn" title="Emploi & Formation"><span class="nav-icon">💼</span></div>
+                <div onclick="switchTab('admin', this)" class="nav-btn" title="Admin & Santé"><span class="nav-icon">⚕️</span></div>
+                <div onclick="switchTab('loisirs', this)" class="nav-btn" title="Loisirs & Culture"><span class="nav-icon">🎉</span></div>
+                <div onclick="switchTab('freins', this)" class="nav-btn" title="Freins"><span class="nav-icon">🚧</span></div>
             </div>
             
-            <div class="flex-1 overflow-y-auto bg-slate-50 relative custom-scrollbar">
-                <div id="content-lieux" class="tools-grid"></div>
-                <div id="content-moyens" class="tools-grid hidden"></div>
-                <div id="content-admin" class="tools-grid hidden"></div>
-                <div id="content-freins" class="tools-grid hidden"></div>
-                <div id="content-horizons" class="tools-grid hidden"></div>
+            <div class="tools-column">
+                <div id="tools-title" class="tools-header">Lieux de Vie</div>
+                <div class="flex-1 overflow-y-auto bg-slate-50 relative custom-scrollbar">
+                    <div id="content-lieux" class="tools-grid"></div>
+                    <div id="content-transports" class="tools-grid hidden"></div>
+                    <div id="content-pro" class="tools-grid hidden"></div>
+                    <div id="content-admin" class="tools-grid hidden"></div>
+                    <div id="content-loisirs" class="tools-grid hidden"></div>
+                    <div id="content-freins" class="tools-grid hidden"></div>
+                </div>
             </div>
         </aside>
 
-        <!-- CENTRE : MAP STAGE -->
+        <!-- CENTRE MAP -->
         <main class="map-stage">
             <div id="board-container">
-                <!-- COUCHE DE TRANSFORMATION POUR LE ZOOM -->
                 <div id="map-transform-layer">
                     <div id="placeholder-text" class="absolute flex flex-col items-center justify-center text-slate-400 pointer-events-none opacity-60">
                         <span class="text-4xl mb-2">🗺️</span>
-                        <span class="font-bold text-xs uppercase">Ta carte ici</span>
+                        <span class="font-bold text-xs uppercase text-center">Choisis un modèle<br>ou importe ta carte</span>
                     </div>
                     <img id="user-map-img" src="" class="hidden" alt="Fond">
                     <div id="drop-zone" class="absolute inset-0 z-10 w-full h-full"></div>
                 </div>
                 
-                <!-- BOUTONS ZOOM -->
                 <div class="zoom-controls">
                     <button class="zoom-btn" onclick="zoomIn()">+</button>
                     <button class="zoom-btn" onclick="resetZoom()">1:1</button>
                     <button class="zoom-btn" onclick="zoomOut()">-</button>
                 </div>
 
-                <!-- Chat Overlay -->
                 <div id="chat-overlay" class="chat-overlay hidden">
                     <div class="bg-slate-800 text-white p-2 rounded-t flex justify-between items-center text-xs font-bold">
                         <span>🤖 Coach IA</span>
                         <button onclick="toggleChat()" class="hover:text-red-400">✕</button>
                     </div>
-                    <div id="chat-messages" class="chat-messages">
-                        <div class="chat-bubble chat-ai">Pose ta question !</div>
-                    </div>
+                    <div id="chat-messages" class="chat-messages"><div class="chat-bubble chat-ai">Pose ta question sur le permis ou Txik Txak !</div></div>
                     <div class="p-2 bg-white border-t border-slate-100 flex gap-1">
                         <input type="text" id="chat-input" class="flex-1 border text-xs p-1 rounded" onkeypress="handleChatKey(event)">
                         <button onclick="sendMessage()" class="bg-blue-600 text-white px-2 rounded text-xs">➤</button>
                     </div>
                 </div>
             </div>
-            
             <div id="toast-message" class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-slate-800/90 text-white px-3 py-1 rounded-full shadow-lg z-50 text-[10px] font-bold hidden backdrop-blur-sm pointer-events-none"></div>
         </main>
 
-        <!-- DROITE -->
+        <!-- SIDEBAR DROITE -->
         <aside class="sidebar-right">
             <span class="text-[9px] font-black uppercase text-slate-400 mb-2 tracking-widest">Zones</span>
-            <button onclick="addZone(150, 'rgba(34, 197, 94, 0.15)', '#16a34a', 'CONFORT')" class="zone-btn border-green-500 text-green-700 hover:bg-green-50">
-                <span class="text-xl">😎</span> Confort
-            </button>
-            <button onclick="addZone(250, 'rgba(234, 179, 8, 0.15)', '#ca8a04', 'EFFORT')" class="zone-btn border-yellow-500 text-yellow-700 hover:bg-yellow-50">
-                <span class="text-xl">🤔</span> Effort
-            </button>
-            <button onclick="addZone(350, 'rgba(239, 68, 68, 0.15)', '#ef4444', 'GALÈRE')" class="zone-btn border-red-500 text-red-700 hover:bg-red-50">
-                <span class="text-xl">🚫</span> Galère
-            </button>
-
+            <button onclick="addZone(150, 'rgba(34, 197, 94, 0.15)', '#16a34a', 'CONFORT')" class="zone-btn border-green-500 text-green-700 hover:bg-green-50"><span class="text-xl">😎</span> Confort</button>
+            <button onclick="addZone(250, 'rgba(234, 179, 8, 0.15)', '#ca8a04', 'EFFORT')" class="zone-btn border-yellow-500 text-yellow-700 hover:bg-yellow-50"><span class="text-xl">🤔</span> Effort</button>
+            <button onclick="addZone(350, 'rgba(239, 68, 68, 0.15)', '#ef4444', 'GALÈRE')" class="zone-btn border-red-500 text-red-700 hover:bg-red-50"><span class="text-xl">🚫</span> Galère</button>
             <div class="flex-1"></div>
-            
             <span class="text-[9px] font-black uppercase text-slate-400 mb-1 tracking-widest">Score</span>
             <span id="progress-text" class="text-xs font-bold text-blue-600">0%</span>
-            <div class="v-progress-track">
-                <div id="progress-bar" class="v-progress-fill h-0"></div>
-            </div>
-
-            <button onclick="toggleChat()" class="mt-4 mb-4 bg-slate-900 text-white w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg">
-                <span class="text-lg">💬</span>
-            </button>
+            <div class="v-progress-track"><div id="progress-bar" class="v-progress-fill h-0"></div></div>
+            <button onclick="toggleChat()" class="mt-4 mb-4 bg-slate-900 text-white w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg"><span class="text-lg">💬</span></button>
         </aside>
-
     </div>
 
-    <!-- FOOTER -->
-    <footer class="bg-white border-t border-slate-200 flex items-center justify-center text-slate-400 uppercase tracking-widest">
-        Mission Locale Pays Basque - Atelier Numérique
-    </footer>
+    <!-- MODALE BIBLIOTHÈQUE -->
+    <div id="library-modal" class="library-modal">
+        <div class="library-content">
+            <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                <h3 class="font-black text-sm uppercase text-slate-700">Bibliothèque de cartes</h3>
+                <button onclick="toggleLibrary()" class="text-slate-400 hover:text-red-500 font-bold">✕</button>
+            </div>
+            <div class="library-grid" id="library-grid">
+                <label for="lib-upload-input" class="map-card" style="border: 2px dashed #94a3b8; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#f8fafc; color:#64748b;">
+                    <span style="font-size:32px;">+</span><span style="font-size:10px; font-weight:800; text-transform:uppercase;">Ajouter</span>
+                    <input type="file" id="lib-upload-input" class="hidden" accept="image/*" onchange="handleLibraryUpload(event)">
+                </label>
+            </div>
+        </div>
+    </div>
 
     <script>
         const apiKey = ""; 
-        const contextPrompt = `Tu es l'assistant MLPB. Infos : Txik Txak -28 ans = 20€/mois. Aide permis FAJ.`;
+        const contextPrompt = `Tu es l'assistant virtuel de la Mission Locale Pays Basque pour l'atelier "Map Ta Mobilité". Tu connais le territoire par cœur. Infos clés : Txik Txak (Bus, Tram'Bus, Navette), Offre Solidaire, Permis (Aide Apprentis 500€, FAJ), Locations Vélibleu. Ton but : aider les jeunes NEET à trouver des solutions.`;
+        
         let placedItems = [];
-        
-        // --- ZOOM LOGIC ---
         let currentScale = 1;
-        
-        function zoomIn() {
-            currentScale += 0.1;
-            updateTransform();
-        }
-        
-        function zoomOut() {
-            if (currentScale > 0.2) currentScale -= 0.1;
-            updateTransform();
-        }
-        
-        function resetZoom() {
-            currentScale = 1;
-            updateTransform();
-        }
-        
-        function updateTransform() {
-            const layer = document.getElementById('map-transform-layer');
-            layer.style.transform = `scale(${currentScale})`;
-        }
 
-        // --- SAVE / LOAD LOGIC ---
-        function saveSession() {
-            const itemsToSave = placedItems.map(item => ({
-                label: item.label,
-                type: item.type,
-                icon: item.icon,
-                // On doit récupérer les coordonnées depuis le DOM
-                left: item.el.style.left,
-                top: item.el.style.top
-            }));
-            
-            const imgSrc = document.getElementById('user-map-img').src;
-            const hasImage = !document.getElementById('user-map-img').classList.contains('hidden');
-            
-            const data = {
-                items: itemsToSave,
-                image: hasImage ? imgSrc : null,
-                date: new Date().toISOString()
-            };
-            
-            try {
-                localStorage.setItem('mlpb_map_data', JSON.stringify(data));
-                showToast("💾", "Carte sauvegardée !");
-            } catch (e) {
-                showToast("⚠️", "Erreur: Image trop lourde ?");
-                console.error(e);
-            }
-        }
+        // --- TAXONOMIE ---
+        const taxonomy = {
+            lieux: [
+                { icon: "🏠", label: "Maison / Appart", type: "lieu" },
+                { icon: "🏢", label: "FJT (Foyer)", type: "lieu" },
+                { icon: "🛏️", label: "Hébergé(e)", type: "lieu" },
+                { icon: "🏘️", label: "Mon Quartier", type: "lieu" },
+                { icon: "🌳", label: "Village / Isolé", type: "lieu" }
+            ],
+            transports: [
+                { icon: "🚶", label: "À Pied / Marche", type: "transport" },
+                { icon: "🚌", label: "Bus Txik Txak", type: "transport" },
+                { icon: "🚋", label: "Tram'Bus", type: "transport" },
+                { icon: "🚐", label: "TAD (Demande)", type: "transport" },
+                { icon: "🚍", label: "Car Express", type: "transport" },
+                { icon: "🚆", label: "Train / TER", type: "transport" },
+                { icon: "🚲", label: "Mon Vélo", type: "transport" },
+                { icon: "🚲", label: "Vélibleu (Loc)", type: "transport" },
+                { icon: "🛵", label: "Scooter / BSR", type: "transport" },
+                { icon: "🚘", label: "Voiture Permis B", type: "transport" },
+                { icon: "🚗", label: "Passager / Covoit", type: "transport" },
+                { icon: "👍", label: "Auto-Stop", type: "transport" },
+                { icon: "🚦", label: "Auto-École", type: "transport" },
+                { icon: "📖", label: "Code de la Route", type: "transport" }
+            ],
+            pro: [
+                { icon: "🚀", label: "Mission Locale", type: "pro" },
+                { icon: "🏛️", label: "France Travail", type: "pro" },
+                { icon: "🏢", label: "Entreprise (Usine/BTP)", type: "pro", editable: true, placeholder: "Nom Entreprise" }, 
+                { icon: "🤝", label: "Boîte Intérim", type: "pro", editable: true, placeholder: "Nom Agence" },
+                { icon: "🎓", label: "CFA / Formation", type: "pro", editable: true, placeholder: "Nom Centre" },
+                { icon: "🧑‍🔧", label: "Stage Immersion", type: "pro" }
+            ],
+            admin: [
+                /* AJOUT : Résultat du Diag360 */
+                { icon: "📊", label: "Mon Score Diag360", type: "admin", editable: true, placeholder: "Résultat / Frein" },
+                
+                { icon: "📂", label: "Administration", type: "admin", editable: true, placeholder: "Nom Admin" },
+                { icon: "🏥", label: "Hôpital / Urgences", type: "admin" },
+                { icon: "🩺", label: "Médecin / CPAM", type: "admin" },
+                { icon: "🧠", label: "CMP (Psy)", type: "admin" },
+                { icon: "💊", label: "Pharmacie", type: "admin" },
+                { icon: "👪", label: "Planning Familial", type: "admin" },
+                { icon: "📜", label: "Mairie / CCAS", type: "admin" },
+                { icon: "💶", label: "CAF / Aides", type: "admin" },
+                { icon: "🏦", label: "Banque", type: "admin" }
+            ],
+            loisirs: [
+                { icon: "🤝", label: "Bénévolat", type: "loisir" },
+                { icon: "🏠", label: "Gaztetxe", type: "loisir" },
+                { icon: "🛒", label: "Supermarché", type: "loisir" },
+                { icon: "🥖", label: "Épicerie Solidaire", type: "loisir" },
+                { icon: "🌊", label: "Océan / Plage", type: "loisir" },
+                { icon: "⚽", label: "Stade / Sport", type: "loisir" },
+                { icon: "🎪", label: "Fêtes / Festival", type: "loisir" },
+                { icon: "☕", label: "Tiers-Lieu / Café", type: "loisir" },
+                { icon: "🎮", label: "Médiathèque", type: "loisir" }
+            ],
+            freins: [
+                { icon: "💸", label: "Trop Cher", type: "frein" },
+                { icon: "😨", label: "Peur / Stress", type: "frein" },
+                { icon: "⏳", label: "Trop Long", type: "frein" },
+                { icon: "🌑", label: "Pas d'Horaires", type: "frein" },
+                { icon: "📡", label: "Zone Blanche", type: "frein" },
+                { icon: "🧭", label: "Je suis perdu(e)", type: "frein" },
+                { icon: "🦵", label: "Fatigue Physique", type: "frein" }
+            ]
+        };
 
-        function loadSession() {
-            const savedData = localStorage.getItem('mlpb_map_data');
-            if (!savedData) {
-                showToast("⚠️", "Aucune sauvegarde trouvée.");
-                return;
-            }
-            
-            const data = JSON.parse(savedData);
-            
-            // 1. Restaurer l'image
-            if (data.image) {
-                const img = document.getElementById('user-map-img');
-                img.src = data.image;
-                img.classList.remove('hidden');
-                document.getElementById('placeholder-text').classList.add('hidden');
-            }
-            
-            // 2. Nettoyer le plateau actuel
-            placedItems = [];
-            document.getElementById('drop-zone').innerHTML = '';
-            
-            // 3. Restaurer les items
-            data.items.forEach(item => {
-                restoreItem(item);
-            });
-            
-            showToast("📂", "Carte restaurée !");
-            updateProgress(0); // Recalculer le score si besoin
-        }
+        // --- INIT & UI ---
+        window.addEventListener('load', () => { renderAllTools(); loadLibraryFromStorage(); renderLibrary(); });
 
-        function restoreItem(itemData) {
-            const dropZone = document.getElementById('drop-zone');
-            const el = document.createElement('div');
-            el.className = 'draggable pointer-events-auto';
-            el.style.left = itemData.left;
-            el.style.top = itemData.top;
-            
-            // Reconstruit l'objet item complet pour le tableau placedItems
-            const itemObj = { label: itemData.label, type: itemData.type, icon: itemData.icon, el: el };
-            placedItems.push(itemObj);
-            
-            let borderColor = "#334155";
-            if(itemData.type === 'admin') borderColor = "#2563eb";
-            if(itemData.type === 'frein') borderColor = "#dc2626";
-            if(itemData.type === 'moyen') borderColor = "#16a34a";
-
-            el.innerHTML = `<div class="icon-content shadow-sm" style="border-color:${borderColor}"><span class="text-lg leading-none">${itemData.icon}</span><span class="text-[7px] font-bold uppercase mt-0.5 leading-none text-slate-800">${itemData.label}</span></div><button class="absolute -top-1.5 -right-1.5 bg-slate-800 text-white rounded-full w-3.5 h-3.5 flex items-center justify-center text-[8px] font-bold border border-white shadow-sm z-50" onmousedown="event.stopPropagation(); removeItem(this, '${itemData.label}')">×</button>`;
-            
-            enableDrag(el);
-            dropZone.appendChild(el);
-        }
-
-        // UI LOGIC
-        window.addEventListener('load', () => renderAllTools());
-
-        function switchTab(id) {
-            document.querySelectorAll('.v-tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('tab-'+id).classList.add('active');
+        function switchTab(id, btnElement) {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            if(btnElement) btnElement.classList.add('active');
             document.querySelectorAll('.tools-grid').forEach(g => g.classList.add('hidden'));
             document.getElementById('content-'+id).classList.remove('hidden');
+            
+            const titles = { lieux:"Ancrage & Vie", transports:"Mobilité & Permis", pro:"Emploi & Avenir", admin:"Santé & Papiers", loisirs:"Vie Sociale", freins:"Obstacles" };
+            document.getElementById('tools-title').innerText = titles[id];
         }
 
         function renderAllTools() {
-            const taxonomy = {
-                lieux: [ { icon: "🏠", label: "Maison", type: "default" }, { icon: "🏢", label: "Milo", type: "default" }, { icon: "💼", label: "Job", type: "default" }, { icon: "🎓", label: "École", type: "default" }, { icon: "🏥", label: "Santé", type: "default" }, { icon: "🛒", label: "Shop", type: "default" } ],
-                moyens: [ { icon: "👟", label: "Pied", type: "moyen" }, { icon: "🚲", label: "Vélo", type: "moyen" }, { icon: "🚌", label: "Bus", type: "moyen" }, { icon: "🚗", label: "Auto", type: "moyen" }, { icon: "🚐", label: "Covoit", type: "moyen" } ],
-                admin: [ { icon: "🚦", label: "Code", type: "admin" }, { icon: "🅿️", label: "Permis", type: "admin" }, { icon: "🔢", label: "NEPH", type: "admin" }, { icon: "🎟️", label: "Tarif", type: "admin" } ],
-                freins: [ { icon: "💸", label: "Cher", type: "frein" }, { icon: "😨", label: "Peur", type: "frein" }, { icon: "⏳", label: "Long", type: "frein" }, { icon: "🌑", label: "Nuit", type: "frein" } ],
-                horizons: [ { icon: "✈️", label: "Voyage", type: "horizon" }, { icon: "🇪🇺", label: "Erasmus", type: "horizon" } ]
-            };
-
             for (const [cat, items] of Object.entries(taxonomy)) {
-                const container = document.getElementById(`content-${cat}`);
+                const c = document.getElementById(`content-${cat}`);
                 items.forEach(item => {
-                    const div = document.createElement('div');
-                    let typeClass = "";
-                    if(item.type === 'admin') typeClass = "type-admin";
-                    if(item.type === 'frein') typeClass = "type-frein";
-                    if(item.type === 'moyen') typeClass = "type-moyen";
-                    if(item.type === 'horizon') typeClass = "type-horizon";
-                    
-                    div.className = `tool-item ${typeClass}`;
-                    div.innerHTML = `<span class="text-xl leading-none mb-1">${item.icon}</span><span class="text-[8px] font-bold uppercase text-slate-700 truncate w-full text-center">${item.label}</span>`;
-                    div.onclick = () => addToMap(item);
-                    container.appendChild(div);
+                    const d = document.createElement('div');
+                    d.className = `tool-item type-${item.type}`;
+                    d.innerHTML = `<span style="font-size:20px; margin-right:10px; min-width:24px; text-align:center;">${item.icon}</span><span class="text-[9px] font-bold uppercase text-slate-700 leading-tight">${item.label}</span>`;
+                    d.onclick = () => addToMap(item);
+                    c.appendChild(d);
                 });
             }
         }
 
-        function handleMapUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = document.getElementById('user-map-img');
-                    img.src = e.target.result;
-                    img.classList.remove('hidden');
-                    document.getElementById('placeholder-text').classList.add('hidden');
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
+        // --- MAP LOGIC (AVEC INPUTS) ---
         function addToMap(item) {
             const dropZone = document.getElementById('drop-zone');
             const el = document.createElement('div');
             el.className = 'draggable pointer-events-auto';
             el.style.left = '50%'; el.style.top = '50%';
             
-            // Important : stocker la réf de l'élément pour la sauvegarde
-            const itemObj = { ...item, el: el };
-            placedItems.push(itemObj);
-            
-            let borderColor = "#334155";
-            if(item.type === 'admin') borderColor = "#2563eb";
-            if(item.type === 'frein') borderColor = "#dc2626";
-            if(item.type === 'moyen') borderColor = "#16a34a";
+            const itemData = { ...item, el: el };
+            placedItems.push(itemData);
 
-            el.innerHTML = `<div class="icon-content shadow-sm" style="border-color:${borderColor}"><span class="text-lg leading-none">${item.icon}</span><span class="text-[7px] font-bold uppercase mt-0.5 leading-none text-slate-800">${item.label}</span></div><button class="absolute -top-1.5 -right-1.5 bg-slate-800 text-white rounded-full w-3.5 h-3.5 flex items-center justify-center text-[8px] font-bold border border-white shadow-sm z-50" onmousedown="event.stopPropagation(); removeItem(this, '${item.label}')">×</button>`;
+            let contentHtml = '';
+            if (item.editable) {
+                contentHtml = `
+                    <div class="icon-content">
+                        <span class="sticker-emoji">${item.icon}</span>
+                        <input type="text" class="sticker-input" placeholder="${item.placeholder || 'Nom...'}" 
+                               value="" 
+                               onclick="event.stopPropagation(); this.focus();" 
+                               onmousedown="event.stopPropagation();"
+                               ontouchstart="event.stopPropagation();">
+                    </div>
+                `;
+            } else {
+                contentHtml = `
+                    <div class="icon-content">
+                        <span class="sticker-emoji">${item.icon}</span>
+                        <span class="sticker-label">${item.label}</span>
+                    </div>
+                `;
+            }
+
+            el.innerHTML = `
+                ${contentHtml}
+                <div class="delete-sticker-btn" onclick="event.stopPropagation(); removeItem(this, '${item.label}')">✕</div>
+            `;
+            
             enableDrag(el);
             dropZone.appendChild(el);
             updateProgress(1);
         }
 
-        function removeItem(btn, label) {
-            btn.parentElement.remove();
-            const index = placedItems.findIndex(i => i.label === label);
-            if (index > -1) placedItems.splice(index, 1);
-            updateProgress(-1);
-        }
-
-        function addZone(size, bg, border, label) {
-            const dropZone = document.getElementById('drop-zone');
-            const zone = document.createElement('div');
-            zone.className = 'circle-zone group';
-            zone.style.width = size + 'px'; zone.style.height = size + 'px';
-            zone.style.left = '50%'; zone.style.top = '50%';
-            zone.style.backgroundColor = bg; zone.style.borderColor = border;
-            
-            // Pour les zones, on ne les sauvegarde pas dans placedItems dans cette version simple,
-            // mais on pourrait l'ajouter si besoin.
-            
-            zone.innerHTML = `<span class="text-[8px] font-bold text-slate-700 bg-white/90 px-1.5 py-0.5 rounded absolute top-2 border border-slate-200 shadow-sm pointer-events-none select-none whitespace-nowrap">${label}</span><button class="absolute -top-2 -right-2 w-4 h-4 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold border border-white shadow-sm pointer-events-auto z-30 text-[8px]" onmousedown="event.stopPropagation(); this.parentElement.remove();">×</button><div class="absolute w-8 h-8 bg-white/30 rounded-full pointer-events-auto flex items-center justify-center cursor-move text-[10px] text-slate-700 z-10 hover:bg-white/50">✥</div>`;
-            enableDrag(zone, zone.querySelector('.cursor-move'));
-            dropZone.appendChild(zone);
-            updateProgress(1);
-        }
+        function removeItem(btn, label) { btn.parentElement.remove(); const idx = placedItems.findIndex(i => i.label === label); if(idx>-1) placedItems.splice(idx,1); updateProgress(-1); }
 
         function enableDrag(el, handle = null) {
-            let isDragging = false, startX, startY, initialLeft, initialTop;
-            const target = handle || el;
-            
-            function onStart(e) {
-                if(e.target.tagName === 'BUTTON') return;
-                e.stopPropagation(); 
-                isDragging = true; 
-                el.style.zIndex = 2000;
-                
-                const cx = e.touches ? e.touches[0].clientX : e.clientX;
-                const cy = e.touches ? e.touches[0].clientY : e.clientY;
-                startX = cx; 
-                startY = cy;
-                initialLeft = parseFloat(el.style.left) || 50; 
-                initialTop = parseFloat(el.style.top) || 50;
-                
-                document.addEventListener('mousemove', onMove, { passive: false });
-                document.addEventListener('touchmove', onMove, { passive: false });
-                document.addEventListener('mouseup', onEnd); 
-                document.addEventListener('touchend', onEnd);
+            let isDragging=false, startX, startY, iL, iT; const t=handle||el;
+            function start(e) { 
+                if(e.target.classList.contains('delete-sticker-btn') || e.target.tagName === 'INPUT') return; 
+                e.stopPropagation(); isDragging=true; el.style.zIndex=2000; const cx=e.touches?e.touches[0].clientX:e.clientX; const cy=e.touches?e.touches[0].clientY:e.clientY; startX=cx; startY=cy; iL=parseFloat(el.style.left)||50; iT=parseFloat(el.style.top)||50; document.addEventListener('mousemove', move, {passive:false}); document.addEventListener('touchmove', move, {passive:false}); document.addEventListener('mouseup', end); document.addEventListener('touchend', end); 
             }
-
-            function onMove(e) {
-                if(!isDragging) return; 
-                e.preventDefault();
-                
-                const cx = e.touches ? e.touches[0].clientX : e.clientX;
-                const cy = e.touches ? e.touches[0].clientY : e.clientY;
-                
-                // On récupère le rectangle de la zone de dépôt. 
-                // Comme elle est dans un conteneur zoomé, getBoundingClientRect() renvoie la taille visuelle (zoomée).
-                const rect = document.getElementById('drop-zone').getBoundingClientRect();
-                
-                // Le déplacement doit être calculé relativement à la taille VISUELLE pour que le pourcentage soit correct.
-                // Donc la formule standard fonctionne même avec le zoom !
-                let nl = initialLeft + ((cx - startX) / rect.width) * 100;
-                let nt = initialTop + ((cy - startY) / rect.height) * 100;
-                
-                el.style.left = nl + '%';
-                el.style.top = nt + '%';
-            }
-
-            function onEnd() {
-                isDragging = false; 
-                el.style.zIndex = 1000; 
-                document.removeEventListener('mousemove', onMove); 
-                document.removeEventListener('touchmove', onMove);
-                document.removeEventListener('mouseup', onEnd); 
-                document.removeEventListener('touchend', onEnd);
-            }
-
-            target.addEventListener('mousedown', onStart); 
-            target.addEventListener('touchstart', onStart, { passive: false });
+            function move(e) { if(!isDragging)return; e.preventDefault(); const cx=e.touches?e.touches[0].clientX:e.clientX; const cy=e.touches?e.touches[0].clientY:e.clientY; const r=document.getElementById('drop-zone').getBoundingClientRect(); el.style.left=(iL+((cx-startX)/r.width)*100)+'%'; el.style.top=(iT+((cy-startY)/r.height)*100)+'%'; }
+            function end() { isDragging=false; el.style.zIndex=1000; document.removeEventListener('mousemove', move); document.removeEventListener('touchmove', move); document.removeEventListener('mouseup', end); document.removeEventListener('touchend', end); }
+            t.addEventListener('mousedown', start); t.addEventListener('touchstart', start, {passive:false});
         }
 
-        let progress = 0;
-        function updateProgress(delta) {
-            progress = Math.max(0, Math.min(10, progress + delta));
-            let pct = progress * 10;
-            document.getElementById('progress-bar').style.height = pct + '%';
-            document.getElementById('progress-text').innerText = pct + '%';
+        function addZone(size, bg, border, label) { const z=document.createElement('div'); z.className='circle-zone group'; z.style.width=size+'px'; z.style.height=size+'px'; z.style.left='50%'; z.style.top='50%'; z.style.backgroundColor=bg; z.style.borderColor=border; z.innerHTML=`<span class="text-[8px] font-bold text-slate-700 bg-white/90 px-1.5 py-0.5 rounded absolute top-2 border border-slate-200 shadow-sm pointer-events-none select-none whitespace-nowrap">${label}</span><button class="absolute -top-2 -right-2 w-4 h-4 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold border border-white shadow-sm pointer-events-auto z-30 text-[8px]" onmousedown="event.stopPropagation(); this.parentElement.remove();">×</button><div class="absolute w-8 h-8 bg-white/30 rounded-full pointer-events-auto flex items-center justify-center cursor-move text-[10px] text-slate-700 z-10 hover:bg-white/50">✥</div>`; enableDrag(z, z.querySelector('.cursor-move')); document.getElementById('drop-zone').appendChild(z); updateProgress(1); }
+
+        // --- LIBRARY LOGIC ---
+        let customLibrary = [{ id: 'default-blank', name: "Fond Blanc", url: "", color: "#ffffff", isDefault: true }];
+        function loadLibraryFromStorage() { const s = localStorage.getItem('mlpb_custom_library'); if(s) try { customLibrary = [...customLibrary, ...JSON.parse(s).filter(m=>m.id!=='default-blank')]; } catch(e){} }
+        function saveLibraryToStorage() { try { localStorage.setItem('mlpb_custom_library', JSON.stringify(customLibrary.filter(m=>!m.isDefault))); } catch(e) { showToast("⚠️", "Plein"); } }
+        function renderLibrary() { const g = document.getElementById('library-grid'); const btn = g.firstElementChild; g.innerHTML=''; g.appendChild(btn); customLibrary.forEach(m => { const c=document.createElement('div'); c.className='map-card'; const s=m.url?`background-image:url('${m.url}');background-size:cover;`:`background-color:${m.color||'#fff'};`; const d=!m.isDefault?`<div class="delete-map-btn" onclick="event.stopPropagation();deleteFromLibrary('${m.id}')">✕</div>`:''; c.innerHTML=`<div class="map-preview" style="${s}"></div><div class="map-title">${m.name}</div>${d}`; c.onclick=()=>selectMapTemplate(m.url); g.appendChild(c); }); }
+        function handleLibraryUpload(e) { const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=function(ev){ customLibrary.push({id:'map-'+Date.now(), name:f.name.substr(0,12), url:ev.target.result, isDefault:false}); saveLibraryToStorage(); renderLibrary(); showToast("✅","Ajouté"); }; r.readAsDataURL(f); e.target.value=''; }
+        function deleteFromLibrary(id) { if(confirm("Supprimer ?")) { customLibrary=customLibrary.filter(m=>m.id!==id); saveLibraryToStorage(); renderLibrary(); } }
+        function toggleLibrary() { document.getElementById('library-modal').classList.toggle('active'); }
+        function selectMapTemplate(url) { const i=document.getElementById('user-map-img'); if(url){ i.src=url; i.classList.remove('hidden'); document.getElementById('placeholder-text').classList.add('hidden'); } else { i.classList.add('hidden'); document.getElementById('placeholder-text').classList.remove('hidden'); } toggleLibrary(); }
+        function handleMapUpload(e) { const f=e.target.files[0]; if(f) { const r=new FileReader(); r.onload=function(ev){ document.getElementById('user-map-img').src=ev.target.result; document.getElementById('user-map-img').classList.remove('hidden'); document.getElementById('placeholder-text').classList.add('hidden'); }; r.readAsDataURL(f); } }
+
+        // --- SAVE/RESTORE (AVEC DONNÉES INPUT) ---
+        function saveSession() {
+            const itemsToSave = placedItems.map(item => {
+                let userText = null;
+                if(item.editable) {
+                    const input = item.el.querySelector('input');
+                    if(input) userText = input.value;
+                }
+                return {
+                    label: item.label, type: item.type, icon: item.icon,
+                    left: item.el.style.left, top: item.el.style.top,
+                    editable: item.editable, placeholder: item.placeholder, customValue: userText
+                };
+            });
+            const imgSrc = document.getElementById('user-map-img').src;
+            const hasImage = !document.getElementById('user-map-img').classList.contains('hidden');
+            const data = { items: itemsToSave, image: hasImage ? imgSrc : null, date: new Date().toISOString() };
+            try { localStorage.setItem('mlpb_map_data', JSON.stringify(data)); showToast("💾", "Sauvé !"); } catch(e) { showToast("⚠️", "Erreur"); }
         }
 
-        // IA Functions
+        // --- UTILS ---
+        function zoomIn() { currentScale+=0.1; updT(); } function zoomOut() { if(currentScale>0.2)currentScale-=0.1; updT(); } function resetZoom() { currentScale=1; updT(); } function updT() { document.getElementById('map-transform-layer').style.transform=`scale(${currentScale})`; }
+        let progress=0; function updateProgress(d) { progress=Math.max(0,Math.min(10,progress+d)); let p=progress*10; document.getElementById('progress-bar').style.height=p+'%'; document.getElementById('progress-text').innerText=p+'%'; }
         function toggleChat() { document.getElementById('chat-overlay').classList.toggle('hidden'); }
-        function handleChatKey(e) { if(e.key === 'Enter') sendMessage(); }
-        async function sendMessage() {
-            const input = document.getElementById('chat-input'); const msg = input.value.trim(); if(!msg) return;
-            addMsg(msg, 'user'); input.value = '';
-            addMsg("...", 'ai', true);
-            const res = await callGemini(msg);
-            document.querySelector('.animate-pulse').parentElement.remove();
-            addMsg(res, 'ai');
-        }
-        function addMsg(txt, sender, load=false) {
-            const div = document.createElement('div');
-            div.className = `chat-bubble ${sender === 'user' ? 'chat-user' : 'chat-ai'}`;
-            if(load) div.innerHTML = '<span class="animate-pulse">...</span>';
-            else if(sender === 'ai') div.innerHTML = marked.parse(txt);
-            else div.innerText = txt;
-            document.getElementById('chat-messages').appendChild(div);
-        }
-        async function analyzeMapWithAI() {
-             if(placedItems.length === 0) return alert("Carte vide !");
-             toggleChat(); addMsg("Analyse en cours...", 'ai');
-             const prompt = `Analyse cette carte : ${placedItems.map(i=>i.label).join(', ')}. Donne 1 conseil court.`;
-             const res = await callGemini(prompt);
-             addMsg(res, 'ai');
-        }
-        async function callGemini(msg) {
-             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-             const body = { contents: [{ parts: [{ text: msg }] }], systemInstruction: { parts: [{ text: contextPrompt }] } };
-             try { const r = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)}); const d = await r.json(); return d.candidates?.[0]?.content?.parts?.[0]?.text || "Erreur"; } catch(e) { return "Erreur"; }
-        }
-        function openRoadbook() {
-            const w = window.open('','_blank'); w.document.write('<html><body style="text-align:center;padding:50px;font-family:sans-serif;"><h1>Roadbook</h1><p>Capturez votre carte !</p><button onclick="window.print()">Imprimer</button></body></html>');
-        }
-        
-        function showToast(icon, msg) {
-            const t = document.getElementById('toast-message');
-            t.innerHTML = `<span>${icon}</span> <span>${msg}</span>`;
-            t.classList.remove('hidden'); t.style.opacity = 1;
-            setTimeout(() => { t.style.opacity = 0; setTimeout(() => t.classList.add('hidden'), 300); }, 1500);
-        }
+        function handleChatKey(e) { if(e.key==='Enter') sendMessage(); }
+        async function sendMessage() { const i=document.getElementById('chat-input'); const m=i.value.trim(); if(!m)return; addMsg(m,'user'); i.value=''; addMsg("...",'ai',true); const r=await callGemini(m); document.querySelector('.animate-pulse').parentElement.remove(); addMsg(r,'ai'); }
+        function addMsg(t,s,l=false) { const d=document.createElement('div'); d.className=`chat-bubble ${s==='user'?'chat-user':'chat-ai'}`; if(l)d.innerHTML='<span class="animate-pulse">...</span>'; else if(s==='ai')d.innerHTML=marked.parse(t); else d.innerText=t; document.getElementById('chat-messages').appendChild(d); }
+        async function analyzeMapWithAI() { if(!placedItems.length)return alert("Carte vide!"); toggleChat(); addMsg("Analyse...",'ai'); const p=`Carte: ${placedItems.map(i=>i.label).join(', ')}. Conseil court.`; const r=await callGemini(p); addMsg(r,'ai'); }
+        async function callGemini(m) { try { const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:m}]}],systemInstruction:{parts:[{text:contextPrompt}]}})}); const d=await r.json(); return d.candidates?.[0]?.content?.parts?.[0]?.text||"Erreur"; } catch(e){return "Erreur";} }
+        function openRoadbook() { const w=window.open('','_blank'); w.document.write('<html><body style="text-align:center;padding:50px;font-family:sans-serif;"><h1>Roadbook</h1><button onclick="window.print()">Imprimer</button></body></html>'); }
+        function showToast(i,m) { const t=document.getElementById('toast-message'); t.innerHTML=`<span>${i}</span> <span>${m}</span>`; t.classList.remove('hidden'); t.style.opacity=1; setTimeout(()=>{t.style.opacity=0;setTimeout(()=>t.classList.add('hidden'),300);},1500); }
     </script>
 </body>
 </html>
