@@ -6,6 +6,9 @@
     <title>Map Ta Mobilité - Bauhaus Edition</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <!-- Scripts pour le PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     
@@ -297,13 +300,12 @@
                 <span>📊</span> Diag 360
             </a>
 
-            <label for="map-upload" class="btn-bauhaus px-2 py-1 text-[10px] flex items-center gap-1"><span>📂</span> Import</label>
-            <input type="file" id="map-upload" accept="image/*" class="hidden" onchange="handleMapUpload(event)">
+            <!-- SUPPRESSION DU BOUTON IMPORT (REDONDANT) -->
+            <!-- SUPPRESSION DU BOUTON SAUVER (REMPLACÉ PAR PDF) -->
             
             <button onclick="toggleLibrary()" class="btn-bauhaus btn-orange px-2 py-1 text-[10px] flex items-center gap-1">📚 Biblio</button>
-            <button onclick="saveSession()" class="btn-bauhaus btn-green px-2 py-1 text-[10px] flex items-center gap-1" title="Enregistrer">💾 Sauver</button>
             <button onclick="analyzeMapWithAI()" id="btn-analyze" class="btn-bauhaus btn-blue px-2 py-1 text-[10px] flex items-center gap-1 ml-2">✨ IA</button>
-            <button onclick="openRoadbook()" class="btn-bauhaus btn-black px-2 py-1 text-[10px]">PDF</button>
+            <button onclick="downloadMapPDF()" class="btn-bauhaus btn-black px-2 py-1 text-[10px] flex items-center gap-1"><span>📄</span> PDF</button>
         </div>
     </header>
 
@@ -734,7 +736,7 @@
         function addZone(size, bg, border, label) { const z=document.createElement('div'); z.className='circle-zone group'; z.style.width=size+'px'; z.style.height=size+'px'; z.style.left='50%'; z.style.top='50%'; z.style.backgroundColor=bg; z.style.borderColor=border; z.innerHTML=`<span class="text-[8px] font-bold text-slate-700 bg-white/90 px-1.5 py-0.5 rounded absolute top-2 border border-slate-200 shadow-sm pointer-events-none select-none whitespace-nowrap">${label}</span><button class="absolute -top-2 -right-2 w-4 h-4 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold border border-white shadow-sm pointer-events-auto z-30 text-[8px]" onmousedown="event.stopPropagation(); this.parentElement.remove();">×</button><div class="absolute w-8 h-8 bg-white/30 rounded-full pointer-events-auto flex items-center justify-center cursor-move text-[10px] text-slate-700 z-10 hover:bg-white/50">✥</div>`; enableDrag(z, z.querySelector('.cursor-move')); document.getElementById('drop-zone').appendChild(z); updateProgress(1); }
 
         function zoomIn() { currentScale+=0.1; updT(); } function zoomOut() { if(currentScale>0.2)currentScale-=0.1; updT(); } function resetZoom() { currentScale=1; updT(); } function updT() { document.getElementById('map-transform-layer').style.transform=`scale(${currentScale})`; }
-        function saveSession() { const itemsToSave = placedItems.map(item => { let userText = null; if(item.editable) { const input = item.el.querySelector('input'); if(input) userText = input.value; } return { label: item.label, type: item.type, icon: item.icon, left: item.el.style.left, top: item.el.style.top, editable: item.editable, placeholder: item.placeholder, customValue: userText }; }); const imgSrc = document.getElementById('user-map-img').src; const hasImage = !document.getElementById('user-map-img').classList.contains('hidden'); const data = { items: itemsToSave, image: hasImage ? imgSrc : null, date: new Date().toISOString() }; try { localStorage.setItem('mlpb_map_data', JSON.stringify(data)); showToast("💾", "Sauvé !"); } catch(e) { showToast("⚠️", "Erreur"); } }
+        
         let progress=0; function updateProgress(d) { progress=Math.max(0,Math.min(10,progress+d)); let p=progress*10; document.getElementById('progress-bar').style.height=p+'%'; document.getElementById('progress-text').innerText=p+'%'; }
         function toggleChat() { document.getElementById('chat-overlay').classList.toggle('hidden'); }
         function handleChatKey(e) { if(e.key==='Enter') sendMessage(); }
@@ -742,7 +744,71 @@
         function addMsg(t,s,l=false) { const d=document.createElement('div'); d.className=`chat-bubble ${s==='user'?'chat-user':'chat-ai'}`; if(l)d.innerHTML='<span class="animate-pulse">...</span>'; else if(s==='ai')d.innerHTML=marked.parse(t); else d.innerText=t; document.getElementById('chat-messages').appendChild(d); }
         async function analyzeMapWithAI() { if(!placedItems.length)return alert("Carte vide!"); toggleChat(); addMsg("Analyse...",'ai'); const p=`Carte: ${placedItems.map(i=>i.label).join(', ')}. Conseil court.`; const r=await callGemini(p); addMsg(r,'ai'); }
         async function callGemini(m) { try { const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:m}]}],systemInstruction:{parts:[{text:contextPrompt}]}})}); const d=await r.json(); return d.candidates?.[0]?.content?.parts?.[0]?.text||"Erreur"; } catch(e){return "Erreur";} }
-        function openRoadbook() { const w=window.open('','_blank'); w.document.write('<html><body style="text-align:center;padding:50px;font-family:sans-serif;"><h1>Roadbook</h1><button onclick="window.print()">Imprimer</button></body></html>'); }
+        
+        // --- NOUVELLE FONCTION PDF AVEC HTML2CANVAS ---
+        async function downloadMapPDF() {
+            showToast("⏳", "Génération PDF...");
+            
+            // 1. Capture du cockpit (zone carte)
+            const element = document.getElementById('board-container');
+            if(!element) return;
+
+            // Masquer temporairement les éléments d'interface flottants (zoom, chat) pour la capture
+            const zoomControls = document.querySelector('.zoom-controls');
+            const chatOverlay = document.getElementById('chat-overlay');
+            if(zoomControls) zoomControls.style.display = 'none';
+            if(chatOverlay) chatOverlay.style.display = 'none';
+
+            try {
+                // Utilisation de html2canvas
+                const canvas = await html2canvas(element, {
+                    scale: 2, // Meilleure qualité
+                    useCORS: true, // Pour les images externes si possible
+                    backgroundColor: '#ffffff'
+                });
+
+                // 2. Création du PDF
+                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('landscape', 'mm', 'a4');
+
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+                
+                // Calcul ratio pour remplir la page
+                const imgProps = pdf.getImageProperties(imgData);
+                const ratio = imgProps.width / imgProps.height;
+                const pdfRatio = pdfWidth / pdfHeight;
+                
+                let w, h;
+                if (ratio > pdfRatio) {
+                    w = pdfWidth;
+                    h = pdfWidth / ratio;
+                } else {
+                    h = pdfHeight;
+                    w = pdfHeight * ratio;
+                }
+
+                const x = (pdfWidth - w) / 2;
+                const y = (pdfHeight - h) / 2;
+
+                pdf.addImage(imgData, 'JPEG', x, y, w, h);
+                pdf.save('Ma_Carte_Mobilite.pdf');
+                
+                showToast("✅", "Téléchargement lancé !");
+
+            } catch (err) {
+                console.error("Erreur PDF:", err);
+                showToast("⚠️", "Erreur PDF");
+            } finally {
+                // Rétablir l'affichage des contrôles
+                if(zoomControls) zoomControls.style.display = 'flex';
+                // Le chat reste caché sauf s'il était ouvert, on peut le laisser caché ou gérer l'état, ici on reset simple
+                if(chatOverlay && !chatOverlay.classList.contains('hidden')) chatOverlay.style.display = 'flex';
+                else if(chatOverlay) chatOverlay.style.display = ''; // reset to default css rule
+            }
+        }
+
         function showToast(i,m) { const t=document.getElementById('toast-message'); t.innerHTML=`<span>${i}</span> <span>${m}</span>`; t.classList.remove('hidden'); t.style.opacity=1; setTimeout(()=>{t.style.opacity=0;setTimeout(()=>t.classList.add('hidden'),300);},1500); }
     </script>
 </body>
