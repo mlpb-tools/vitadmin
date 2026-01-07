@@ -106,26 +106,17 @@
         .type-loisir { border-left: 6px solid var(--c-green); }     
         .type-frein { border-left: 6px solid #ef4444; }      
 
-        /* MAP AREA - Format 3:2 */
+        /* MAP AREA - FULL SIZE */
         .map-stage {
-            flex: 1; background-color: #f0f0f0;
-            /* Motif Géométrique Bauhaus */
-            background-image: radial-gradient(var(--c-black) 1px, transparent 1px), radial-gradient(var(--c-black) 1px, transparent 1px);
-            background-size: 20px 20px; background-position: 0 0, 10px 10px;
+            flex: 1; background-color: var(--c-white);
             position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
         }
         
         #board-container {
-            aspect-ratio: 3 / 2;
-            height: 95%; width: auto; max-width: 95%;
+            width: 100%; height: 100%; /* Prend toute la place */
             background: var(--c-white); position: relative; 
-            border: 3px solid var(--c-black); /* Cadre noir épais */
-            box-shadow: 8px 8px 0 rgba(0,0,0,0.1); 
             overflow: hidden; 
             display: flex; align-items: center; justify-content: center; 
-        }
-        @media (max-aspect-ratio: 3/2) {
-            #board-container { width: 95%; height: auto; }
         }
 
         #map-transform-layer { width: 100%; height: 100%; position: relative; transform-origin: center center; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; }
