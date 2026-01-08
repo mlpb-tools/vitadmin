@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Map Ta Mob - V63</title>
+    <title>Map Ta Mob - V64</title>
     
-    <!-- Typographies : Mulish (Textes) et Barlow Condensed (Titres) -->
+    <!-- Typographies -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700;900&family=Mulish:wght@400;600;800&display=swap" rel="stylesheet">
@@ -16,7 +16,6 @@
     
     <style>
         :root {
-            /* Palette MLPB */
             --c-orange: #f39200;  
             --c-green: #95c11f;   
             --c-blue: #2897d5;    
@@ -28,167 +27,60 @@
             --c-light-grey: #f8f9fa;
         }
 
-        body { 
-            font-family: 'Mulish', sans-serif; 
-            color: var(--c-black); 
-            background-color: #f0f2f5; 
-            overscroll-behavior: none;
-        }
-
+        body { font-family: 'Mulish', sans-serif; color: var(--c-black); background-color: #f0f2f5; overscroll-behavior: none; }
         h1, h2, h3, .title-font { font-family: 'Barlow Condensed', sans-serif; }
 
-        /* --- UI COMPONENTS --- */
+        /* UI */
         .btn-mlpb {
-            background: var(--c-white);
-            border: 1px solid #e2e8f0;
-            color: var(--c-black);
-            font-weight: 700;
-            text-transform: uppercase;
-            border-radius: 9999px;
-            padding: 8px 16px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            transition: all 0.2s ease;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 11px;
-            letter-spacing: 0.5px;
-            text-decoration: none;
+            background: var(--c-white); border: 1px solid #e2e8f0; color: var(--c-black);
+            font-weight: 700; text-transform: uppercase; border-radius: 9999px; padding: 8px 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: all 0.2s ease; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 6px; font-size: 11px; letter-spacing: 0.5px; text-decoration: none;
         }
-        .btn-mlpb:hover { 
-            transform: translateY(-1px); 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
-            border-color: var(--c-blue);
-            color: var(--c-blue);
-        }
-        
-        .btn-primary {
-            background: var(--c-blue);
-            color: white;
-            border: none;
-        }
+        .btn-mlpb:hover { transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-color: var(--c-blue); color: var(--c-blue); }
+        .btn-primary { background: var(--c-blue); color: white; border: none; }
         .btn-primary:hover { background: #1e7bb3; color: white; }
 
-        /* --- LAYOUT --- */
-        header { 
-            height: 60px; 
-            background: var(--c-white); 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            display: flex; justify-content: space-between; align-items: center; padding: 0 20px; 
-            z-index: 50; position: relative;
-        }
+        /* HEADER */
+        header { height: 60px; background: var(--c-white); box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 50; }
 
+        /* LAYOUT */
         .cockpit-container { display: flex; height: calc(100vh - 60px); overflow: hidden; gap: 0; }
-
-        /* SIDEBAR GAUCHE */
-        .sidebar-left { 
-            width: 260px; 
-            background: var(--c-white); 
-            display: flex; 
-            flex-direction: row; 
-            flex-shrink: 0; 
-            box-shadow: 2px 0 5px rgba(0,0,0,0.02);
-            z-index: 20;
-        }
-
-        .nav-column { 
-            width: 70px; 
-            background: var(--c-light-grey); 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            padding-top: 10px;
-            border-right: 1px solid #eee;
-        }
-
-        .nav-btn { 
-            width: 50px; height: 50px; 
-            margin-bottom: 10px;
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center; 
-            color: #64748b; 
-            cursor: pointer; 
-            transition: all 0.2s; 
-            font-size: 22px;
-            background: white;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        }
+        .sidebar-left { width: 260px; background: var(--c-white); display: flex; flex-direction: row; flex-shrink: 0; box-shadow: 2px 0 5px rgba(0,0,0,0.02); z-index: 20; }
+        .nav-column { width: 70px; background: var(--c-light-grey); display: flex; flex-direction: column; align-items: center; padding-top: 10px; border-right: 1px solid #eee; }
+        
+        .nav-btn { width: 50px; height: 50px; margin-bottom: 10px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #64748b; cursor: pointer; transition: all 0.2s; font-size: 22px; background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .nav-btn:hover { transform: scale(1.05); color: var(--c-blue); }
         .nav-btn.active { background: var(--c-blue); color: white; box-shadow: 0 4px 6px rgba(40, 151, 213, 0.3); }
         
-        .nav-btn[data-cat="lieux"].active { background: var(--c-red); box-shadow: 0 4px 6px rgba(159, 61, 63, 0.3); }
+        /* Couleurs onglets */
+        .nav-btn[data-cat="lieux"].active { background: var(--c-red); }
         .nav-btn[data-cat="transports"].active { background: var(--c-blue); }
-        .nav-btn[data-cat="pro"].active { background: var(--c-orange); box-shadow: 0 4px 6px rgba(243, 146, 0, 0.3); }
-        .nav-btn[data-cat="demarches"].active { background: var(--c-purple); box-shadow: 0 4px 6px rgba(163, 25, 91, 0.3); }
-        .nav-btn[data-cat="loisirs"].active { background: var(--c-pink); box-shadow: 0 4px 6px rgba(214, 11, 82, 0.3); }
+        .nav-btn[data-cat="pro"].active { background: var(--c-orange); }
+        .nav-btn[data-cat="demarches"].active { background: var(--c-purple); }
+        .nav-btn[data-cat="loisirs"].active { background: var(--c-pink); }
         .nav-btn[data-cat="freins"].active { background: var(--c-black); }
 
         .tools-column { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: white; }
-        .tools-header { 
-            padding: 20px; 
-            font-size: 18px; font-weight: 700; text-transform: uppercase; 
-            color: var(--c-black); 
-            font-family: 'Barlow Condensed', sans-serif;
-            border-bottom: 1px solid #f0f0f0;
-        }
+        .tools-header { padding: 20px; font-size: 18px; font-weight: 700; text-transform: uppercase; color: var(--c-black); font-family: 'Barlow Condensed', sans-serif; border-bottom: 1px solid #f0f0f0; }
 
-        .tool-item {
-            margin: 0 15px 10px 15px;
-            padding: 10px 15px;
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            display: flex; align-items: center; gap: 12px;
-            cursor: pointer; transition: all 0.2s;
-            font-size: 13px; font-weight: 600; color: #334155;
-        }
-        .tool-item:hover { 
-            border-color: var(--c-blue); 
-            background: #f8fafc;
-            transform: translateX(2px);
-        }
+        .tool-item { margin: 0 15px 10px 15px; padding: 10px 15px; background: white; border: 1px solid #e2e8f0; border-radius: 12px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: all 0.2s; font-size: 13px; font-weight: 600; color: #334155; }
+        .tool-item:hover { border-color: var(--c-blue); background: #f8fafc; transform: translateX(2px); }
         .border-l-4 { border-left-width: 4px; }
         
-        .tool-highlight {
-            background: linear-gradient(135deg, var(--c-blue) 0%, #1e7bb3 100%) !important;
-            color: white !important;
-            border: none !important;
-            justify-content: center;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(40, 151, 213, 0.3);
-        }
-        .tool-highlight:hover { transform: translateY(-2px) !important; box-shadow: 0 6px 12px rgba(40, 151, 213, 0.4) !important; }
+        .tool-highlight { background: linear-gradient(135deg, var(--c-blue) 0%, #1e7bb3 100%) !important; color: white !important; border: none !important; justify-content: center; box-shadow: 0 4px 10px rgba(40, 151, 213, 0.3); }
 
-        /* MAP AREA */
+        /* MAP STAGE */
         .map-stage { flex: 1; position: relative; overflow: hidden; background: #e5e7eb; display: flex; align-items: center; justify-content: center; }
-        #board-container { 
-            width: 100%; height: 100%; 
-            background: white; 
-            position: relative; overflow: hidden; 
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
-        }
+        #board-container { width: 100%; height: 100%; background: white; position: relative; overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.05); }
         #map-transform-layer { width: 100%; height: 100%; position: relative; transform-origin: center; display: flex; align-items: center; justify-content: center; }
         #user-map-img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
 
         /* STICKERS */
-        .draggable { 
-            position: absolute; z-index: 100; 
-            transform: translate(-50%, -100%);
-            display: flex; flex-direction: column; align-items: center; 
-            cursor: grab; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
-            transition: transform 0.1s;
-        }
-        .draggable:active { cursor: grabbing; transform: translate(-50%, -100%) scale(1.1); z-index: 150; }
+        .draggable { position: absolute; z-index: 100; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; cursor: grab; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); transition: transform 0.1s; }
+        .draggable:active { cursor: grabbing; transform: scale(1.1); z-index: 150; }
 
-        .bubble-container {
-            position: relative;
-            background: white;
-            border-radius: 50%;
-            width: 40px; height: 40px;
-            display: flex; align-items: center; justify-content: center;
-            border: 2px solid white;
-        }
+        .bubble-container { position: relative; background: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border: 2px solid white; }
         .bubble-lieu { background: var(--c-red); color: white; }
         .bubble-transport { background: var(--c-blue); color: white; }
         .bubble-pro { background: var(--c-orange); color: white; }
@@ -197,154 +89,47 @@
         .bubble-frein { background: var(--c-black); color: white; }
 
         .sticker-emoji { font-size: 20px; line-height: 1; }
-        .sticker-label { 
-            margin-top: 6px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 11px; font-weight: 700;
-            color: #1e293b;
-            text-align: center;
-            white-space: pre-wrap;
-            max-width: 140px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            border: 1px solid rgba(0,0,0,0.05);
-        }
-        .sticker-input {
-            margin-top: 6px;
-            background: white;
-            padding: 4px 8px;
-            border-radius: 8px;
-            border: 1px solid #cbd5e1;
-            font-size: 11px;
-            text-align: center;
-            width: 110px;
-            outline: none;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .sticker-input:focus { border-color: var(--c-blue); }
-
-        .delete-btn {
-            position: absolute;
-            top: -5px; right: -5px;
-            width: 18px; height: 18px;
-            background: #ef4444;
-            color: white;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 12px; font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            opacity: 0;
-            transform: scale(0.8);
-            transition: all 0.2s;
-            border: 2px solid white;
-        }
+        .sticker-label { margin-top: 6px; background: rgba(255,255,255,0.95); padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; color: #1e293b; text-align: center; max-width: 140px; border: 1px solid rgba(0,0,0,0.05); }
+        .sticker-input { margin-top: 6px; background: white; padding: 4px 8px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 11px; text-align: center; width: 110px; outline: none; }
+        
+        .delete-btn { position: absolute; top: -5px; right: -5px; width: 18px; height: 18px; background: #ef4444; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; cursor: pointer; opacity: 0; transform: scale(0.8); transition: all 0.2s; border: 2px solid white; }
         .draggable:hover .delete-btn { opacity: 1; transform: scale(1); }
 
-        /* SIDEBAR DROITE */
-        .sidebar-right { 
-            width: 200px; 
-            background: var(--c-white); 
-            border-left: 1px solid #eee; 
-            display: flex; flex-direction: column; 
-            z-index: 20;
-        }
-        .resources-header { 
-            padding: 20px; 
-            background: var(--c-white); 
-            color: var(--c-black); 
-            font-family: 'Barlow Condensed'; 
-            font-weight: 700; font-size: 16px; text-transform: uppercase; 
-            border-bottom: 2px solid var(--c-orange);
-            text-align: center;
-        }
-
-        .resource-item { 
-            display: flex; align-items: center; gap: 10px; 
-            padding: 12px 15px; 
-            border-bottom: 1px solid #f8f9fa; 
-            cursor: pointer; transition: all 0.2s; 
-            font-size: 12px; font-weight: 600; color: #475569;
-        }
+        /* SIDEBAR RIGHT */
+        .sidebar-right { width: 200px; background: var(--c-white); border-left: 1px solid #eee; display: flex; flex-direction: column; z-index: 20; }
+        .resources-header { padding: 20px; background: var(--c-white); color: var(--c-black); font-family: 'Barlow Condensed'; font-weight: 700; font-size: 16px; text-transform: uppercase; border-bottom: 2px solid var(--c-orange); text-align: center; }
+        .resource-item { display: flex; align-items: center; gap: 10px; padding: 12px 15px; border-bottom: 1px solid #f8f9fa; cursor: pointer; transition: all 0.2s; font-size: 12px; font-weight: 600; color: #475569; }
         .resource-item:hover { background: #f0f9ff; padding-left: 20px; color: var(--c-blue); }
-        .res-icon { font-size: 18px; width: 24px; text-align: center; }
 
-        /* MODALS */
-        .modal-overlay { 
-            position: fixed; inset: 0; 
-            background: rgba(23, 23, 24, 0.6); 
-            backdrop-filter: blur(4px); 
-            z-index: 1000; 
-            display: none; align-items: center; justify-content: center; 
-            opacity: 0; transition: opacity 0.3s;
-        }
-        .modal-overlay.active { display: flex; opacity: 1; }
+        /* LIBRARY GRID */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(23, 23, 24, 0.6); backdrop-filter: blur(4px); z-index: 1000; display: none; align-items: center; justify-content: center; }
+        .modal-overlay.active { display: flex; }
+        .modal-card { background: white; width: 95%; max-width: 900px; max-height: 85vh; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; }
         
-        .modal-card { 
-            background: white; width: 95%; max-width: 900px; max-height: 85vh; 
-            border-radius: 20px; 
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            overflow: hidden; display: flex; flex-direction: column; 
-        }
-
-        .modal-header { padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .modal-title { font-family: 'Barlow Condensed'; font-size: 24px; font-weight: 800; text-transform: uppercase; color: var(--c-blue); }
-        .modal-close { font-size: 28px; color: #94a3b8; cursor: pointer; transition: color 0.2s; line-height: 1; }
-        .modal-close:hover { color: var(--c-black); }
-
-        .library-grid { 
-            padding: 30px; 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; 
-            overflow-y: auto; background: #f8fafc; flex: 1;
-        }
+        .library-grid { padding: 30px; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; overflow-y: auto; background: #f8fafc; flex: 1; }
         
-        .map-card { 
-            background: white; border-radius: 12px; overflow: hidden; 
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); 
-            transition: all 0.3s; cursor: pointer; border: 1px solid transparent;
-            position: relative;
-        }
-        .map-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border-color: var(--c-orange); }
-        .map-thumb { 
-            height: 140px; background: #e2e8f0; overflow: hidden; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 40px; 
-            position: relative;
-        }
+        .map-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: all 0.3s; cursor: pointer; border: 1px solid transparent; position: relative; }
+        .map-card:hover { transform: translateY(-5px); border-color: var(--c-orange); }
+        
+        .map-thumb { height: 140px; background: #e2e8f0; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
         .map-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
         .map-card:hover img { transform: scale(1.05); }
         
-        /* Titre sur la carte */
-        .map-overlay-title {
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            background: rgba(0,0,0,0.75);
-            color: white;
-            padding: 8px 10px;
-            font-family: 'Barlow Condensed', sans-serif;
-            font-size: 14px;
-            font-weight: 700;
-            text-transform: uppercase;
-            text-align: center;
-            backdrop-filter: blur(2px);
-        }
+        /* Fallback placeholder style */
+        .map-fallback { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #f0f2f5 0%, #dbeafe 100%); color: #64748b; text-align: center; padding: 10px; }
+        .map-fallback-icon { font-size: 32px; margin-bottom: 5px; }
+        .map-fallback-text { font-size: 10px; font-weight: bold; text-transform: uppercase; }
 
+        .map-overlay-title { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.75); color: white; padding: 8px 10px; font-family: 'Barlow Condensed'; font-size: 14px; font-weight: 700; text-transform: uppercase; text-align: center; backdrop-filter: blur(2px); z-index: 10; }
         .map-info { padding: 10px; display: flex; justify-content: center; }
         .map-tag { display: inline-block; padding: 2px 10px; background: #e0f2fe; color: var(--c-blue); border-radius: 10px; font-size: 10px; font-weight: 700; }
 
-        .input-mlpb { 
-            width: 100%; padding: 10px 15px; border-radius: 8px; border: 1px solid #cbd5e1; 
-            font-family: 'Mulish'; font-size: 14px; outline: none; transition: border-color 0.2s; 
-        }
+        .input-mlpb { width: 100%; padding: 10px 15px; border-radius: 8px; border: 1px solid #cbd5e1; font-family: 'Mulish'; font-size: 14px; outline: none; }
         .input-mlpb:focus { border-color: var(--c-blue); ring: 2px solid var(--c-blue); }
         .label-mlpb { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 6px; }
 
         .zoom-controls { position: absolute; bottom: 30px; left: 30px; display: flex; flex-direction: column; gap: 8px; }
-        .zoom-btn { 
-            width: 44px; height: 44px; background: white; border-radius: 12px; 
-            display: flex; align-items: center; justify-content: center; 
-            font-size: 20px; color: var(--c-black); 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer; transition: all 0.2s; 
-        }
+        .zoom-btn { width: 44px; height: 44px; background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--c-black); box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer; transition: all 0.2s; }
         .zoom-btn:hover { background: var(--c-light-grey); transform: scale(1.05); }
 
         @media (max-width: 768px) {
@@ -352,7 +137,6 @@
             .sidebar-left, .sidebar-right { width: 100%; height: auto; }
             .sidebar-left { border-right: none; border-bottom: 1px solid #eee; }
             .nav-column { flex-direction: row; width: 100%; overflow-x: auto; padding: 10px; gap: 10px; }
-            .nav-btn { margin: 0; flex-shrink: 0; }
             .tools-column { display: none; }
             .map-stage { height: 60vh; }
         }
@@ -376,7 +160,7 @@
                 <span class="text-lg">📚</span> Bibliothèque
             </button>
             <button onclick="downloadMapPDF()" class="btn-mlpb" style="background:#1e293b; color:white; border:none;">
-                <span class="text-lg">📄</span> Exporter PDF
+                <span class="text-lg">📄</span> PDF
             </button>
         </div>
     </header>
@@ -402,12 +186,33 @@
         <main class="map-stage">
             <div id="board-container">
                 <div id="map-transform-layer">
-                    <div id="empty-state" class="flex flex-col items-center opacity-40 select-none pointer-events-none">
-                        <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-4xl shadow-inner">🗺️</div>
-                        <h2 class="font-bold text-gray-400 uppercase tracking-widest text-center">Aucune carte chargée</h2>
-                        <p class="text-sm text-gray-400 mt-2">Ouvrez la bibliothèque pour commencer</p>
+                    <!-- Message d'accueil explicatif -->
+                    <div id="empty-state" class="flex flex-col items-center justify-center h-full p-8 text-center select-none">
+                        <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 text-4xl shadow-lg border-2 border-gray-100">🗺️</div>
+                        <h2 class="font-black text-2xl text-slate-800 uppercase tracking-wide mb-2">Prêt à commencer ?</h2>
+                        <p class="text-sm text-slate-500 max-w-md mb-6">
+                            Ouvrez la bibliothèque pour choisir une carte.<br>
+                            <em class="text-xs text-orange-500 block mt-2">Note: Si vos images ne s'affichent pas, assurez-vous de placer ce fichier HTML dans le même dossier que vos fichiers .jpg</em>
+                        </p>
+                        <button onclick="toggleLibrary()" class="btn-mlpb btn-primary py-3 px-6 shadow-lg transform hover:scale-105 transition-all">
+                            Ouvrir la Bibliothèque
+                        </button>
                     </div>
-                    <img id="user-map-img" class="hidden shadow-xl" src="" alt="Fond de carte">
+                    
+                    <img id="user-map-img" class="hidden shadow-xl" src="" alt="Fond de carte" onerror="handleMainImageError(this)">
+                    
+                    <!-- Fallback visual pour la carte principale -->
+                    <div id="map-fallback-display" class="hidden flex-col items-center justify-center bg-white p-10 shadow-2xl rounded-xl border-4 border-dashed border-gray-300">
+                        <div class="text-6xl mb-4">🖼️</div>
+                        <h3 class="font-bold text-xl text-gray-700 uppercase">Image non trouvée</h3>
+                        <p class="text-sm text-gray-500 text-center mt-2 max-w-xs">
+                            Le fichier <code id="missing-filename" class="bg-gray-100 p-1 rounded font-mono text-xs text-red-500">...</code> est introuvable.
+                        </p>
+                        <p class="text-xs text-gray-400 mt-4 text-center">
+                            Vérifiez que l'image est bien dans le même dossier<br>que ce fichier HTML.
+                        </p>
+                    </div>
+
                     <div id="drop-zone" class="absolute inset-0 z-10"></div>
                 </div>
                 
@@ -419,7 +224,7 @@
             </div>
         </main>
 
-        <!-- Sidebar Droite (Mes Ressources) -->
+        <!-- Sidebar Droite -->
         <aside class="sidebar-right">
             <div class="resources-header">Mes Ressources</div>
             <div class="flex-1 overflow-y-auto w-full py-2">
@@ -428,13 +233,13 @@
         </aside>
     </div>
 
-    <!-- BIBLIOTHÈQUE MODAL -->
+    <!-- MODALS -->
     <div id="library-modal" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header">
                 <div>
                     <h2 class="modal-title">Bibliothèque de Cartes</h2>
-                    <p class="text-sm text-gray-500 mt-1">Sélectionnez un fond de carte (fichiers locaux)</p>
+                    <p class="text-xs text-orange-600 mt-1 font-bold">⚠️ Les images s'afficheront uniquement si les fichiers .jpg sont présents à côté du fichier HTML.</p>
                 </div>
                 <div class="modal-close" onclick="toggleLibrary()">×</div>
             </div>
@@ -444,14 +249,14 @@
                     <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">🔍</span>
                     <input type="text" id="searchInput" placeholder="Rechercher..." oninput="handleSearch(this.value)" class="input-mlpb pl-10">
                 </div>
-                <button class="btn-mlpb btn-primary" onclick="openAddMapModal()">+ Importer une carte</button>
+                <button class="btn-mlpb btn-primary" onclick="openAddMapModal()">+ Import</button>
             </div>
             
             <div class="library-grid" id="libraryContainer"></div>
         </div>
     </div>
 
-    <!-- AJOUT CARTE MODAL -->
+    <!-- MODAL AJOUT -->
     <div id="add-map-modal" class="modal-overlay" style="z-index: 1100;">
         <div class="modal-card" style="max-width: 500px; height: auto;">
             <div class="modal-header">
@@ -459,18 +264,8 @@
                 <div class="modal-close" onclick="closeAddMapModal()">×</div>
             </div>
             <form onsubmit="handleAddMap(event)" class="p-8">
-                <div class="mb-6">
-                    <label class="label-mlpb">Nom de la carte</label>
-                    <input type="text" id="newMapName" required class="input-mlpb" placeholder="Ex: Mon Quartier">
-                </div>
-                <div class="mb-8">
-                    <label class="label-mlpb">Fichier Image</label>
-                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:bg-gray-50 transition-colors relative">
-                        <input type="file" id="newMapFile" accept="image/*" required class="absolute inset-0 opacity-0 cursor-pointer">
-                        <span class="text-2xl block mb-2">📁</span>
-                        <span class="text-sm font-bold text-gray-500">Cliquez pour déposer un fichier</span>
-                    </div>
-                </div>
+                <div class="mb-6"><label class="label-mlpb">Nom</label><input type="text" id="newMapName" required class="input-mlpb"></div>
+                <div class="mb-8"><label class="label-mlpb">Fichier</label><input type="file" id="newMapFile" accept="image/*" required class="input-mlpb"></div>
                 <div class="flex justify-end gap-3">
                     <button type="button" onclick="closeAddMapModal()" class="btn-mlpb">Annuler</button>
                     <button type="submit" class="btn-mlpb btn-primary">Valider</button>
@@ -479,35 +274,30 @@
         </div>
     </div>
 
-    <!-- COVOITURAGE MODAL -->
+    <!-- MODAL COVOIT -->
     <div id="covoit-modal" class="modal-overlay" style="z-index: 1200;">
         <div class="modal-card" style="max-width: 650px; height: auto;">
             <div class="modal-header bg-gradient-to-r from-orange-500 to-pink-500 text-white border-none">
-                <h3 class="font-black text-2xl uppercase tracking-wider text-white">🚘 Je propose un Covoit'</h3>
-                <div class="modal-close text-white hover:text-white opacity-80 hover:opacity-100" onclick="closeCovoitModal()">×</div>
+                <h3 class="font-black text-2xl uppercase text-white">🚘 Je propose un Covoit'</h3>
+                <div class="modal-close text-white hover:text-white" onclick="closeCovoitModal()">×</div>
             </div>
-            
             <div class="flex p-2 bg-gray-100 gap-2">
                 <button class="flex-1 py-3 rounded-lg font-bold text-sm uppercase transition-colors bg-white shadow-sm text-orange-600" id="tab-regulier" onclick="switchCovoitTab('regulier')">📅 Régulier</button>
                 <button class="flex-1 py-3 rounded-lg font-bold text-sm uppercase transition-colors text-gray-500 hover:bg-white" id="tab-ponctuel" onclick="switchCovoitTab('ponctuel')">📍 Ponctuel</button>
             </div>
-
             <div class="p-8">
-                <!-- REGULIER -->
                 <div id="form-regulier" class="block">
                     <div class="grid grid-cols-2 gap-5 mb-5">
-                        <div><label class="label-mlpb">Départ</label><input type="text" id="reg-depart" class="input-mlpb" placeholder="Ville ou quartier"></div>
-                        <div><label class="label-mlpb">Arrivée</label><input type="text" id="reg-arrivee" class="input-mlpb" placeholder="Lieu de travail/étude"></div>
+                        <div><label class="label-mlpb">Départ</label><input type="text" id="reg-depart" class="input-mlpb"></div>
+                        <div><label class="label-mlpb">Arrivée</label><input type="text" id="reg-arrivee" class="input-mlpb"></div>
                     </div>
                     <div class="grid grid-cols-2 gap-5 mb-5">
                         <div><label class="label-mlpb">Heure Aller</label><input type="time" id="reg-h-aller" class="input-mlpb"></div>
                         <div><label class="label-mlpb">Heure Retour</label><input type="time" id="reg-h-retour" class="input-mlpb"></div>
                     </div>
-                    <div class="mb-6"><label class="label-mlpb">Infos (Jours, participation...)</label><textarea id="reg-infos" rows="2" class="input-mlpb"></textarea></div>
-                    <button onclick="submitCovoit('regulier')" class="w-full btn-mlpb btn-primary justify-center py-3 text-sm">Publier l'annonce</button>
+                    <div class="mb-6"><label class="label-mlpb">Infos</label><textarea id="reg-infos" rows="2" class="input-mlpb"></textarea></div>
+                    <button onclick="submitCovoit('regulier')" class="w-full btn-mlpb btn-primary justify-center py-3 text-sm">Publier</button>
                 </div>
-
-                <!-- PONCTUEL -->
                 <div id="form-ponctuel" class="hidden">
                     <div class="grid grid-cols-2 gap-5 mb-5">
                         <div><label class="label-mlpb">Date</label><input type="date" id="ponc-date" class="input-mlpb"></div>
@@ -517,14 +307,14 @@
                         <div><label class="label-mlpb">De</label><input type="text" id="ponc-depart" class="input-mlpb"></div>
                         <div><label class="label-mlpb">Vers</label><input type="text" id="ponc-arrivee" class="input-mlpb"></div>
                     </div>
-                    <button onclick="submitCovoit('ponctuel')" class="w-full btn-mlpb btn-primary justify-center py-3 text-sm">Publier l'annonce</button>
+                    <button onclick="submitCovoit('ponctuel')" class="w-full btn-mlpb btn-primary justify-center py-3 text-sm">Publier</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // CONFIGURATION MISE À JOUR AVEC VOS CARTES
+        // CONFIGURATION
         const config = {
             "maps": [
                 { id: 1,  name: "Errobi – Sud Pays Basque", url: "Errobi-sud-pays-basque.jpg", tag: "Sud Pays Basque" },
@@ -603,21 +393,35 @@
             { icon: "🏫", label: "Mon Auto-École" }, { icon: "📖", label: "Code de la route" }
         ];
 
-        let currentScale = 1;
-        let currentSearch = "";
+        let currentScale = 1, currentSearch = "";
 
-        // --- INIT ---
         window.onload = () => {
             switchTab('lieux', document.querySelector('.nav-btn[data-cat="lieux"]'));
             renderLibrary();
             renderResources();
         };
 
-        // --- LOGIQUE METIER ---
+        function handleThumbError(img, name) {
+            // Remplace l'image cassée dans la bibliothèque par une jolie div
+            img.style.display = 'none';
+            const fallback = document.createElement('div');
+            fallback.className = 'map-fallback';
+            fallback.innerHTML = `<span class="map-fallback-icon">🗺️</span><span class="map-fallback-text">${name}</span>`;
+            img.parentElement.appendChild(fallback);
+        }
+
+        function handleMainImageError(img) {
+            // Remplace l'image principale si elle charge pas
+            img.classList.add('hidden');
+            const fallback = document.getElementById('map-fallback-display');
+            document.getElementById('missing-filename').textContent = img.src.split('/').pop() || 'image';
+            fallback.classList.remove('hidden');
+            fallback.classList.add('flex');
+        }
+
         function switchTab(cat, btn) {
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            
             const titles = { lieux: "Lieu de vie", transports: "Mobilité", pro: "Avenir Pro", demarches: "Démarches", loisirs: "Vie Sociale", freins: "Obstacles" };
             const colors = { lieux: "var(--c-red)", transports: "var(--c-blue)", pro: "var(--c-orange)", demarches: "var(--c-purple)", loisirs: "var(--c-pink)", freins: "var(--c-black)" };
             
@@ -625,7 +429,6 @@
             titleEl.innerText = titles[cat];
             titleEl.style.color = colors[cat];
             titleEl.style.borderColor = colors[cat];
-            
             renderTools(cat, colors[cat]);
         }
 
@@ -637,7 +440,6 @@
                 div.className = item.highlight ? "tool-item tool-highlight" : "tool-item";
                 if(!item.highlight) div.classList.add('border-l-4');
                 div.style.borderLeftColor = color;
-                
                 div.innerHTML = `<span class="text-xl">${item.icon}</span> <span>${item.label}</span>`;
                 div.onclick = () => addToMap(item);
                 container.appendChild(div);
@@ -646,34 +448,17 @@
 
         function addToMap(item) {
             if(item.action === 'openCovoitForm') { openCovoitModal(); return; }
-            
             const el = document.createElement('div');
             el.className = 'draggable pointer-events-auto';
             el.style.left = '50%'; el.style.top = '50%';
-            
-            // Design Bulle
             let bubbleClass = item.class || 'bubble-transport';
-            if(!item.class) {
-                // Fallback si ajout depuis ressources
-                bubbleClass = 'bubble-transport'; 
-            }
-
-            let html = `
-                <div class="bubble-container ${bubbleClass}">
-                    <span class="sticker-emoji">${item.icon}</span>
-                </div>
-                <div class="delete-btn" onclick="this.parentElement.remove()">✕</div>
-            `;
-            
+            if(!item.class) bubbleClass = 'bubble-transport'; 
+            let html = `<div class="bubble-container ${bubbleClass}"><span class="sticker-emoji">${item.icon}</span></div><div class="delete-btn" onclick="this.parentElement.remove()">✕</div>`;
             if(item.editable) {
-                html += `<div class="flex flex-col items-center">
-                    <span class="sticker-label">${item.label}</span>
-                    <input type="text" class="sticker-input" placeholder="Précisez..." onclick="event.stopPropagation();this.focus()">
-                </div>`;
+                html += `<div class="flex flex-col items-center"><span class="sticker-label">${item.label}</span><input type="text" class="sticker-input" placeholder="Précisez..." onclick="event.stopPropagation();this.focus()"></div>`;
             } else {
                 html += `<span class="sticker-label">${item.label}</span>`;
             }
-
             el.innerHTML = html;
             enableDrag(el);
             document.getElementById('drop-zone').appendChild(el);
@@ -691,57 +476,44 @@
             });
         }
 
-        // --- DRAG & DROP ---
         function enableDrag(el) {
             let isDragging = false, startX, startY, initLeft, initTop;
-            
             const start = (e) => {
                 if(e.target.tagName === 'INPUT' || e.target.classList.contains('delete-btn')) return;
                 e.preventDefault();
                 isDragging = true;
                 const clientX = e.touches ? e.touches[0].clientX : e.clientX;
                 const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                startX = clientX;
-                startY = clientY;
-                
+                startX = clientX; startY = clientY;
                 const rect = el.getBoundingClientRect();
                 const parentRect = el.parentElement.getBoundingClientRect();
-                
-                // Calcul position en % pour responsive
                 initLeft = (rect.left + rect.width/2 - parentRect.left) / parentRect.width * 100;
                 initTop = (rect.top + rect.height - parentRect.top) / parentRect.height * 100;
-                
                 document.addEventListener('mousemove', move);
                 document.addEventListener('touchmove', move, { passive: false });
                 document.addEventListener('mouseup', end);
                 document.addEventListener('touchend', end);
             };
-
             const move = (e) => {
                 if(!isDragging) return;
                 e.preventDefault();
                 const clientX = e.touches ? e.touches[0].clientX : e.clientX;
                 const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                
                 const parentRect = el.parentElement.getBoundingClientRect();
                 const deltaX = (clientX - startX) / parentRect.width * 100;
                 const deltaY = (clientY - startY) / parentRect.height * 100;
-                
                 el.style.left = (initLeft + deltaX) + '%';
                 el.style.top = (initTop + deltaY) + '%';
             };
-
             const end = () => {
                 isDragging = false;
                 document.removeEventListener('mousemove', move);
                 document.removeEventListener('touchmove', move);
             };
-
             el.addEventListener('mousedown', start);
             el.addEventListener('touchstart', start, { passive: false });
         }
 
-        // --- MODALS ---
         function toggleLibrary() { 
             const m = document.getElementById('library-modal');
             m.classList.toggle('active');
@@ -749,7 +521,6 @@
         }
         function openAddMapModal() { document.getElementById('add-map-modal').classList.add('active'); }
         function closeAddMapModal() { document.getElementById('add-map-modal').classList.remove('active'); }
-        
         function openCovoitModal() { document.getElementById('covoit-modal').classList.add('active'); }
         function closeCovoitModal() { document.getElementById('covoit-modal').classList.remove('active'); }
 
@@ -762,24 +533,34 @@
                 card.className = "map-card";
                 card.onclick = () => loadMap(m.url);
                 
-                // Fallback si image locale non trouvée pour affichage
-                const img = `<img src="${m.url}" alt="${m.name}" onerror="this.onerror=null; var p=this.parentElement; p.style.fontSize='30px'; p.innerHTML='🗺️';">`;
+                // Image avec gestion d'erreur sécurisée
+                const img = document.createElement('img');
+                img.src = m.url;
+                img.alt = m.name;
+                img.onerror = function() { handleThumbError(this, m.name) };
 
-                // Add name directly to thumb area for overlay
-                card.innerHTML = `
-                    <div class="map-thumb">
-                        ${img}
-                        <div class="map-overlay-title">${m.name}</div>
-                    </div>
-                    <div class="map-info">
-                        <span class="map-tag">${m.tag}</span>
-                    </div>
-                `;
+                const thumb = document.createElement('div');
+                thumb.className = 'map-thumb';
+                thumb.appendChild(img);
+                
+                // Titre Overlay
+                const title = document.createElement('div');
+                title.className = 'map-overlay-title';
+                title.innerText = m.name;
+                thumb.appendChild(title);
+
+                const info = document.createElement('div');
+                info.className = 'map-info';
+                info.innerHTML = `<span class="map-tag">${m.tag}</span>`;
+
+                card.appendChild(thumb);
+                card.appendChild(info);
                 container.appendChild(card);
             });
         }
         
         function handleSearch(val) { currentSearch = val; renderLibrary(); }
+        
         function handleAddMap(e) {
             e.preventDefault();
             const file = document.getElementById('newMapFile').files[0];
@@ -798,18 +579,25 @@
 
         function loadMap(url) {
             const img = document.getElementById('user-map-img');
-            img.src = url;
-            img.classList.remove('hidden');
+            const fallback = document.getElementById('map-fallback-display');
+            
+            // Reset
+            img.classList.add('hidden');
+            fallback.classList.add('hidden');
             document.getElementById('empty-state').classList.add('hidden');
+            
+            // Set new src
+            img.src = url;
+            // Reveal img - let onerror handle the rest if it fails
+            img.classList.remove('hidden');
+
             toggleLibrary();
             resetZoom();
         }
 
-        // --- COVOITURAGE ---
         function switchCovoitTab(tab) {
             document.getElementById('tab-regulier').className = tab==='regulier' ? "flex-1 py-3 rounded-lg font-bold text-sm uppercase transition-colors bg-white shadow-sm text-orange-600" : "flex-1 py-3 rounded-lg font-bold text-sm uppercase transition-colors text-gray-500 hover:bg-white";
             document.getElementById('tab-ponctuel').className = tab==='ponctuel' ? "flex-1 py-3 rounded-lg font-bold text-sm uppercase transition-colors bg-white shadow-sm text-orange-600" : "flex-1 py-3 rounded-lg font-bold text-sm uppercase transition-colors text-gray-500 hover:bg-white";
-            
             document.getElementById('form-regulier').className = tab==='regulier' ? 'block' : 'hidden';
             document.getElementById('form-ponctuel').className = tab==='ponctuel' ? 'block' : 'hidden';
         }
@@ -829,7 +617,6 @@
             closeCovoitModal();
         }
 
-        // --- ZOOM & PDF ---
         function zoomIn() { currentScale += 0.1; applyZoom(); }
         function zoomOut() { currentScale = Math.max(0.2, currentScale - 0.1); applyZoom(); }
         function resetZoom() { currentScale = 1; applyZoom(); }
@@ -837,7 +624,6 @@
 
         async function downloadMapPDF() {
             const el = document.getElementById('board-container');
-            // Hack pour forcer le rendu correct des images cross-origin si possible
             const canvas = await html2canvas(el, { scale: 2, useCORS: true, allowTaint: true });
             const imgData = canvas.toDataURL('image/jpeg', 0.9);
             const pdf = new jspdf.jsPDF('landscape', 'mm', 'a4');
