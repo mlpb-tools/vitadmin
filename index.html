@@ -437,12 +437,19 @@
             </div>
             
             <div class="p-6 bg-white border-b border-gray-100 flex gap-4 items-center">
-                <div class="relative flex-1">
-                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">🔍</span>
-                    <input type="text" id="searchInput" placeholder="Rechercher..." oninput="handleSearch(this.value)" class="input-mlpb pl-10">
-                </div>
-                <button class="btn-mlpb btn-primary" onclick="openAddMapModal()">+ Importer une carte</button>
-            </div>
+  <div class="relative flex-1">
+    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">🔍</span>
+    <input type="text" id="searchInput" placeholder="Rechercher..." oninput="handleSearch(this.value)" class="input-mlpb pl-10">
+  </div>
+
+  <!-- Dropdown cartes -->
+  <select id="mapSelect" class="input-mlpb" style="max-width:260px;" onchange="handleMapSelect(this.value)">
+    <option value="">Choisir une carte…</option>
+  </select>
+
+  <button class="btn-mlpb btn-primary" onclick="openAddMapModal()">+ Importer une carte</button>
+</div>
+
             
             <div class="library-grid" id="libraryContainer"></div>
         </div>
