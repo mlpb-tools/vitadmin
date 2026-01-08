@@ -1,11 +1,11 @@
 <!doctype html>
 <html lang="fr" class="h-full">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Map Ta Mob - V62</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Map Ta Mob - V63 (Pan & Zoom)</title>
 
-  <!-- Typographies : Mulish (Textes) et Barlow Condensed (Titres) -->
+  <!-- Typographies -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700;900&family=Mulish:wght@400;600;800&display=swap" rel="stylesheet">
@@ -15,190 +15,363 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    :root{
-      --c-orange:#f39200; --c-green:#95c11f; --c-blue:#2897d5; --c-pink:#d60b52;
-      --c-purple:#a3195b; --c-red:#9f3d3f; --c-black:#171718; --c-white:#fff; --c-light-grey:#f8f9fa;
+    :root {
+      --c-orange: #f39200;
+      --c-green: #95c11f;
+      --c-blue: #2897d5;
+      --c-pink: #d60b52;
+      --c-purple: #a3195b;
+      --c-red: #9f3d3f;
+      --c-black: #171718;
+      --c-white: #ffffff;
+      --c-light-grey: #f8f9fa;
     }
-    body{font-family:'Mulish',sans-serif;color:var(--c-black);background:#f0f2f5;overscroll-behavior:none;}
-    h1,h2,h3,.title-font{font-family:'Barlow Condensed',sans-serif;}
 
-    .btn-mlpb{
-      background:var(--c-white);border:1px solid #e2e8f0;color:var(--c-black);
-      font-weight:700;text-transform:uppercase;border-radius:9999px;padding:8px 16px;
-      box-shadow:0 2px 4px rgba(0,0,0,.05);transition:all .2s ease;cursor:pointer;
-      display:inline-flex;align-items:center;gap:6px;font-size:11px;letter-spacing:.5px;text-decoration:none;
+    body {
+      font-family: 'Mulish', sans-serif;
+      color: var(--c-black);
+      background-color: #f0f2f5;
+      overscroll-behavior: none;
     }
-    .btn-mlpb:hover{transform:translateY(-1px);box-shadow:0 4px 6px rgba(0,0,0,.1);border-color:var(--c-blue);color:var(--c-blue);}
-    .btn-primary{background:var(--c-blue);color:#fff;border:none;}
-    .btn-primary:hover{background:#1e7bb3;color:#fff;}
 
-    header{
-      height:60px;background:var(--c-white);box-shadow:0 1px 3px rgba(0,0,0,.05);
-      display:flex;justify-content:space-between;align-items:center;padding:0 20px;z-index:50;position:relative;
-    }
-    .cockpit-container{display:flex;height:calc(100vh - 60px);overflow:hidden;gap:0;}
+    h1, h2, h3, .title-font { font-family: 'Barlow Condensed', sans-serif; }
 
-    .sidebar-left{
-      width:260px;background:var(--c-white);display:flex;flex-direction:row;flex-shrink:0;
-      box-shadow:2px 0 5px rgba(0,0,0,.02);z-index:20;
+    .btn-mlpb {
+      background: var(--c-white);
+      border: 1px solid #e2e8f0;
+      color: var(--c-black);
+      font-weight: 700;
+      text-transform: uppercase;
+      border-radius: 9999px;
+      padding: 8px 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      transition: all 0.2s ease;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      text-decoration: none;
+      user-select: none;
     }
-    .nav-column{
-      width:70px;background:var(--c-light-grey);display:flex;flex-direction:column;align-items:center;
-      padding-top:10px;border-right:1px solid #eee;
+    .btn-mlpb:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      border-color: var(--c-blue);
+      color: var(--c-blue);
     }
-    .nav-btn{
-      width:50px;height:50px;margin-bottom:10px;border-radius:12px;
-      display:flex;align-items:center;justify-content:center;color:#64748b;cursor:pointer;
-      transition:all .2s;font-size:22px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.05);
-    }
-    .nav-btn:hover{transform:scale(1.05);color:var(--c-blue);}
-    .nav-btn.active{background:var(--c-blue);color:#fff;box-shadow:0 4px 6px rgba(40,151,213,.3);}
-    .nav-btn[data-cat="lieux"].active{background:var(--c-red);box-shadow:0 4px 6px rgba(159,61,63,.3);}
-    .nav-btn[data-cat="transports"].active{background:var(--c-blue);}
-    .nav-btn[data-cat="pro"].active{background:var(--c-orange);box-shadow:0 4px 6px rgba(243,146,0,.3);}
-    .nav-btn[data-cat="demarches"].active{background:var(--c-purple);box-shadow:0 4px 6px rgba(163,25,91,.3);}
-    .nav-btn[data-cat="loisirs"].active{background:var(--c-pink);box-shadow:0 4px 6px rgba(214,11,82,.3);}
-    .nav-btn[data-cat="freins"].active{background:var(--c-black);}
 
-    .tools-column{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#fff;}
-    .tools-header{
-      padding:20px;font-size:18px;font-weight:700;text-transform:uppercase;color:var(--c-black);
-      font-family:'Barlow Condensed',sans-serif;border-bottom:1px solid #f0f0f0;
+    .btn-primary { background: var(--c-blue); color: white; border: none; }
+    .btn-primary:hover { background: #1e7bb3; color: white; }
+
+    header {
+      height: 60px;
+      background: var(--c-white);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0 20px;
+      z-index: 50; position: relative;
     }
+
+    .cockpit-container { display:flex; height: calc(100vh - 60px); overflow:hidden; gap:0; }
+
+    .sidebar-left {
+      width: 260px;
+      background: var(--c-white);
+      display: flex;
+      flex-direction: row;
+      flex-shrink: 0;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.02);
+      z-index: 20;
+    }
+
+    .nav-column {
+      width: 70px;
+      background: var(--c-light-grey);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 10px;
+      border-right: 1px solid #eee;
+    }
+
+    .nav-btn {
+      width: 50px; height: 50px;
+      margin-bottom: 10px;
+      border-radius: 12px;
+      display:flex; align-items:center; justify-content:center;
+      color:#64748b;
+      cursor:pointer;
+      transition: all .2s;
+      font-size: 22px;
+      background:white;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      user-select:none;
+    }
+    .nav-btn:hover { transform: scale(1.05); color: var(--c-blue); }
+    .nav-btn.active { background: var(--c-blue); color:white; box-shadow: 0 4px 6px rgba(40,151,213,.3); }
+    .nav-btn[data-cat="lieux"].active { background: var(--c-red); box-shadow: 0 4px 6px rgba(159,61,63,.3); }
+    .nav-btn[data-cat="transports"].active { background: var(--c-blue); }
+    .nav-btn[data-cat="pro"].active { background: var(--c-orange); box-shadow: 0 4px 6px rgba(243,146,0,.3); }
+    .nav-btn[data-cat="demarches"].active { background: var(--c-purple); box-shadow: 0 4px 6px rgba(163,25,91,.3); }
+    .nav-btn[data-cat="loisirs"].active { background: var(--c-pink); box-shadow: 0 4px 6px rgba(214,11,82,.3); }
+    .nav-btn[data-cat="freins"].active { background: var(--c-black); }
+
+    .tools-column { flex:1; display:flex; flex-direction:column; overflow:hidden; background:white; }
+    .tools-header {
+      padding: 20px;
+      font-size: 18px; font-weight:700; text-transform:uppercase;
+      color: var(--c-black);
+      font-family: 'Barlow Condensed', sans-serif;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
     .tool-item{
-      margin:0 15px 10px 15px;padding:10px 15px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;
-      display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;font-size:13px;font-weight:600;color:#334155;
+      margin: 0 15px 10px 15px;
+      padding: 10px 15px;
+      background:white;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      display:flex; align-items:center; gap:12px;
+      cursor:pointer; transition: all .2s;
+      font-size: 13px; font-weight:600; color:#334155;
+      user-select:none;
     }
-    .tool-item:hover{border-color:var(--c-blue);background:#f8fafc;transform:translateX(2px);}
-    .border-l-4{border-left-width:4px;}
+    .tool-item:hover { border-color: var(--c-blue); background:#f8fafc; transform: translateX(2px); }
+    .border-l-4 { border-left-width:4px; }
 
     .tool-highlight{
-      background:linear-gradient(135deg,var(--c-blue) 0%,#1e7bb3 100%) !important;
-      color:#fff !important;border:none !important;justify-content:center;text-align:center;
-      box-shadow:0 4px 10px rgba(40,151,213,.3);
+      background: linear-gradient(135deg, var(--c-blue) 0%, #1e7bb3 100%) !important;
+      color:white !important;
+      border:none !important;
+      justify-content:center;
+      text-align:center;
+      box-shadow: 0 4px 10px rgba(40,151,213,.3);
     }
-    .tool-highlight:hover{transform:translateY(-2px) !important;box-shadow:0 6px 12px rgba(40,151,213,.4) !important;}
+    .tool-highlight:hover { transform: translateY(-2px) !important; box-shadow: 0 6px 12px rgba(40,151,213,.4) !important; }
 
-    .map-stage{flex:1;position:relative;overflow:hidden;background:#e5e7eb;display:flex;align-items:center;justify-content:center;}
-    #board-container{width:100%;height:100%;background:#fff;position:relative;overflow:hidden;box-shadow:inset 0 0 20px rgba(0,0,0,.05);}
-    #map-transform-layer{width:100%;height:100%;position:relative;transform-origin:center;display:flex;align-items:center;justify-content:center;}
-    #user-map-img{width:100%;height:100%;object-fit:contain;pointer-events:none;}
+    .map-stage { flex:1; position:relative; overflow:hidden; background:#e5e7eb; display:flex; align-items:center; justify-content:center; }
+    #board-container{
+      width:100%; height:100%;
+      background:white;
+      position:relative; overflow:hidden;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+    }
 
+    /* IMPORTANT: couche transformée = pan + zoom */
+    #map-transform-layer{
+      width:100%; height:100%;
+      position:relative;
+      transform-origin: center;
+      display:flex; align-items:center; justify-content:center;
+      cursor: grab;
+      user-select: none;
+      touch-action: none; /* utile si on ajoute pan tactile */
+    }
+    #user-map-img{ width:100%; height:100%; object-fit:contain; pointer-events:none; }
+
+    /* Stickers */
     .draggable{
-      position:absolute;z-index:100;transform:translate(-50%,-100%);
-      display:flex;flex-direction:column;align-items:center;cursor:grab;
-      filter:drop-shadow(0 4px 6px rgba(0,0,0,.15));transition:transform .1s;
+      position:absolute; z-index:100;
+      transform: translate(-50%, -100%);
+      display:flex; flex-direction:column; align-items:center;
+      cursor: grab;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+      transition: transform 0.1s;
+      pointer-events:auto;
+      user-select:none;
     }
-    .draggable:active{cursor:grabbing;transform:translate(-50%,-100%) scale(1.1);z-index:150;}
+    .draggable:active { cursor: grabbing; transform: translate(-50%, -100%) scale(1.1); z-index:150; }
 
     .bubble-container{
-      position:relative;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;
-      border:2px solid #fff;
+      position:relative;
+      border-radius:50%;
+      width:40px; height:40px;
+      display:flex; align-items:center; justify-content:center;
+      border: 2px solid white;
+      background:white;
     }
-    .bubble-lieu{background:var(--c-red);color:#fff;}
-    .bubble-transport{background:var(--c-blue);color:#fff;}
-    .bubble-pro{background:var(--c-orange);color:#fff;}
-    .bubble-admin{background:var(--c-purple);color:#fff;}
-    .bubble-loisir{background:var(--c-pink);color:#fff;}
-    .bubble-frein{background:var(--c-black);color:#fff;}
+    .bubble-lieu{ background: var(--c-red); color:white; }
+    .bubble-transport{ background: var(--c-blue); color:white; }
+    .bubble-pro{ background: var(--c-orange); color:white; }
+    .bubble-admin{ background: var(--c-purple); color:white; }
+    .bubble-loisir{ background: var(--c-pink); color:white; }
+    .bubble-frein{ background: var(--c-black); color:white; }
 
-    .sticker-emoji{font-size:20px;line-height:1;}
+    .sticker-emoji{ font-size:20px; line-height:1; }
+
     .sticker-label{
-      margin-top:6px;background:rgba(255,255,255,.95);padding:4px 10px;border-radius:12px;
-      font-size:11px;font-weight:700;color:#1e293b;text-align:center;white-space:pre-wrap;max-width:140px;
-      box-shadow:0 2px 4px rgba(0,0,0,.1);border:1px solid rgba(0,0,0,.05);
+      margin-top:6px;
+      background: rgba(255,255,255,0.95);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px; font-weight:700;
+      color: #1e293b;
+      text-align:center;
+      white-space: pre-wrap;
+      max-width: 140px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      border: 1px solid rgba(0,0,0,0.05);
     }
+
     .sticker-input{
-      margin-top:6px;background:#fff;padding:4px 8px;border-radius:8px;border:1px solid #cbd5e1;
-      font-size:11px;text-align:center;width:110px;outline:none;box-shadow:0 2px 4px rgba(0,0,0,.1);
+      margin-top:6px;
+      background:white;
+      padding:4px 8px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      font-size: 11px;
+      text-align:center;
+      width: 110px;
+      outline:none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-    .sticker-input:focus{border-color:var(--c-blue);}
+    .sticker-input:focus { border-color: var(--c-blue); }
 
     .delete-btn{
-      position:absolute;top:-5px;right:-5px;width:18px;height:18px;background:#ef4444;color:#fff;border-radius:50%;
-      display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;
-      box-shadow:0 2px 4px rgba(0,0,0,.2);opacity:0;transform:scale(.8);transition:all .2s;border:2px solid #fff;
+      position:absolute;
+      top:-5px; right:-5px;
+      width:18px; height:18px;
+      background:#ef4444;
+      color:white;
+      border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:12px; font-weight:bold;
+      cursor:pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      opacity:0;
+      transform: scale(0.8);
+      transition: all .2s;
+      border: 2px solid white;
     }
-    .draggable:hover .delete-btn{opacity:1;transform:scale(1);}
+    .draggable:hover .delete-btn{ opacity:1; transform: scale(1); }
 
-    .sidebar-right{width:200px;background:var(--c-white);border-left:1px solid #eee;display:flex;flex-direction:column;z-index:20;}
+    /* Sidebar droite */
+    .sidebar-right{
+      width:200px;
+      background: var(--c-white);
+      border-left: 1px solid #eee;
+      display:flex; flex-direction:column;
+      z-index:20;
+    }
     .resources-header{
-      padding:20px;background:var(--c-white);color:var(--c-black);font-family:'Barlow Condensed';
-      font-weight:700;font-size:16px;text-transform:uppercase;border-bottom:2px solid var(--c-orange);text-align:center;
+      padding: 20px;
+      background: var(--c-white);
+      color: var(--c-black);
+      font-family: 'Barlow Condensed';
+      font-weight:700; font-size:16px; text-transform: uppercase;
+      border-bottom: 2px solid var(--c-orange);
+      text-align:center;
     }
     .resource-item{
-      display:flex;align-items:center;gap:10px;padding:12px 15px;border-bottom:1px solid #f8f9fa;cursor:pointer;
-      transition:all .2s;font-size:12px;font-weight:600;color:#475569;
+      display:flex; align-items:center; gap:10px;
+      padding: 12px 15px;
+      border-bottom: 1px solid #f8f9fa;
+      cursor:pointer; transition: all .2s;
+      font-size: 12px; font-weight:600; color:#475569;
+      user-select:none;
     }
-    .resource-item:hover{background:#f0f9ff;padding-left:20px;color:var(--c-blue);}
-    .res-icon{font-size:18px;width:24px;text-align:center;}
+    .resource-item:hover { background:#f0f9ff; padding-left:20px; color: var(--c-blue); }
+    .res-icon{ font-size:18px; width:24px; text-align:center; }
 
+    /* Zoom controls */
+    .zoom-controls{ position:absolute; bottom:30px; left:30px; display:flex; flex-direction:column; gap:8px; z-index:50; }
+    .zoom-btn{
+      width:44px; height:44px;
+      background:white; border-radius:12px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:20px; color: var(--c-black);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      cursor:pointer; transition: all .2s;
+      user-select:none;
+    }
+    .zoom-btn:hover { background: var(--c-light-grey); transform: scale(1.05); }
+
+    /* Modals */
     .modal-overlay{
-      position:fixed;inset:0;background:rgba(23,23,24,.6);backdrop-filter:blur(4px);z-index:1000;
-      display:none;align-items:center;justify-content:center;opacity:0;transition:opacity .3s;
+      position:fixed; inset:0;
+      background: rgba(23,23,24,0.6);
+      backdrop-filter: blur(4px);
+      z-index:1000;
+      display:none; align-items:center; justify-content:center;
+      opacity:0; transition: opacity .3s;
     }
-    .modal-overlay.active{display:flex;opacity:1;}
+    .modal-overlay.active{ display:flex; opacity:1; }
     .modal-card{
-      background:#fff;width:95%;max-width:900px;max-height:85vh;border-radius:20px;
-      box-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 10px 10px -5px rgba(0,0,0,.04);
-      overflow:hidden;display:flex;flex-direction:column;
+      background:white; width:95%; max-width:900px; max-height:85vh;
+      border-radius:20px;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+      overflow:hidden;
+      display:flex; flex-direction:column;
     }
-    .modal-header{padding:20px 30px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;}
-    .modal-title{font-family:'Barlow Condensed';font-size:24px;font-weight:800;text-transform:uppercase;color:var(--c-blue);}
-    .modal-close{font-size:28px;color:#94a3b8;cursor:pointer;transition:color .2s;line-height:1;}
-    .modal-close:hover{color:var(--c-black);}
+    .modal-header{ padding:20px 30px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center; }
+    .modal-title{ font-family:'Barlow Condensed'; font-size:24px; font-weight:800; text-transform:uppercase; color: var(--c-blue); }
+    .modal-close{ font-size:28px; color:#94a3b8; cursor:pointer; transition: color .2s; line-height:1; }
+    .modal-close:hover{ color: var(--c-black); }
 
     .library-grid{
-      padding:30px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:25px;
-      overflow-y:auto;background:#f8fafc;flex:1;
+      padding:30px;
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap:25px;
+      overflow-y:auto;
+      background:#f8fafc;
+      flex:1;
     }
     .map-card{
-      background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 6px -1px rgba(0,0,0,.05);
-      transition:all .3s;cursor:pointer;border:1px solid transparent;
+      background:white; border-radius:12px; overflow:hidden;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+      transition: all .3s;
+      cursor:pointer;
+      border:1px solid transparent;
     }
-    .map-card:hover{transform:translateY(-5px);box-shadow:0 10px 15px -3px rgba(0,0,0,.1);border-color:var(--c-orange);}
-    .map-thumb{height:140px;background:#e2e8f0;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:40px;}
-    .map-thumb img{width:100%;height:100%;object-fit:cover;transition:transform .5s;}
-    .map-card:hover img{transform:scale(1.05);}
-    .map-info{padding:15px;}
-    .map-name{font-weight:700;font-size:13px;color:var(--c-black);margin-bottom:5px;}
-    .map-tag{display:inline-block;padding:2px 8px;background:#e0f2fe;color:var(--c-blue);border-radius:10px;font-size:10px;font-weight:700;}
+    .map-card:hover{ transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-color: var(--c-orange); }
+    .map-thumb{ height:140px; background:#e2e8f0; overflow:hidden; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:40px; }
+    .map-thumb img{ width:100%; height:100%; object-fit:cover; transition: transform .5s; }
+    .map-card:hover img{ transform: scale(1.05); }
+    .map-info{ padding:15px; }
+    .map-name{ font-weight:700; font-size:13px; color: var(--c-black); margin-bottom:5px; }
+    .map-tag{ display:inline-block; padding:2px 8px; background:#e0f2fe; color: var(--c-blue); border-radius:10px; font-size:10px; font-weight:700; }
 
     .input-mlpb{
-      width:100%;padding:10px 15px;border-radius:8px;border:1px solid #cbd5e1;
-      font-family:'Mulish';font-size:14px;outline:none;transition:border-color .2s;
+      width:100%;
+      padding:10px 15px;
+      border-radius:8px;
+      border:1px solid #cbd5e1;
+      font-family:'Mulish';
+      font-size:14px;
+      outline:none;
+      transition: border-color .2s;
+      background:white;
     }
-    .input-mlpb:focus{border-color:var(--c-blue);}
+    .input-mlpb:focus{ border-color: var(--c-blue); }
 
-    .zoom-controls{position:absolute;bottom:30px;left:30px;display:flex;flex-direction:column;gap:8px;}
-    .zoom-btn{
-      width:44px;height:44px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;
-      font-size:20px;color:var(--c-black);box-shadow:0 4px 6px rgba(0,0,0,.1);cursor:pointer;transition:all .2s;
-    }
-    .zoom-btn:hover{background:var(--c-light-grey);transform:scale(1.05);}
+    .label-mlpb{ display:block; font-size:11px; font-weight:700; text-transform:uppercase; color:#64748b; margin-bottom:6px; }
 
-    @media (max-width:768px){
-      .cockpit-container{flex-direction:column;height:auto;overflow:auto;}
-      .sidebar-left,.sidebar-right{width:100%;height:auto;}
-      .sidebar-left{border-right:none;border-bottom:1px solid #eee;}
-      .nav-column{flex-direction:row;width:100%;overflow-x:auto;padding:10px;gap:10px;}
-      .nav-btn{margin:0;flex-shrink:0;}
-      .tools-column{display:none;}
-      .map-stage{height:60vh;}
+    @media (max-width: 768px) {
+      .cockpit-container { flex-direction:column; height:auto; overflow:auto; }
+      .sidebar-left, .sidebar-right { width:100%; height:auto; }
+      .sidebar-left { border-right:none; border-bottom:1px solid #eee; }
+      .nav-column { flex-direction:row; width:100%; overflow-x:auto; padding:10px; gap:10px; }
+      .nav-btn { margin:0; flex-shrink:0; }
+      .tools-column { display:none; }
+      .map-stage { height:60vh; }
     }
   </style>
 </head>
 
 <body class="flex flex-col h-full overflow-hidden">
-
 <header>
   <div class="flex items-center gap-4">
-    <img src="https://static.wixstatic.com/media/dd5dab_47743b1c86024865ba19e623a3db327f~mv2.avif/v1/fill/w_224,h_60,al_c,q_80,enc_avif,quality_auto/dd5dab_47743b1c86024865ba19e623a3db327f~mv2.avif" alt="Logo MLPB" class="h-10 object-contain">
+    <img src="https://static.wixstatic.com/media/dd5dab_47743b1c86024865ba19e623a3db327f~mv2.avif/v1/fill/w_224,h_60,al_c,q_80,enc_avif,quality_auto/dd5dab_47743b1c86024865ba19e623a3db327f~mv2.avif"
+         alt="Logo MLPB" class="h-10 object-contain">
     <div>
       <h1 class="font-black text-xl uppercase tracking-tight text-slate-800 leading-none">Map Ta Mob</h1>
       <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Diagnostic Mobilité Jeunes</span>
     </div>
   </div>
+
   <div class="flex gap-3">
     <a href="https://mlpb-tools.github.io/diagmob360/" target="_blank" class="btn-mlpb" style="text-decoration:none;">
       <span class="text-lg">📊</span> DiagMob360
@@ -213,7 +386,7 @@
 </header>
 
 <div class="cockpit-container">
-  <!-- Sidebar Gauche -->
+  <!-- Sidebar gauche -->
   <aside class="sidebar-left">
     <div class="nav-column">
       <div class="nav-btn active" data-cat="lieux" onclick="switchTab('lieux', this)" title="Lieu de vie">🏠</div>
@@ -223,13 +396,14 @@
       <div class="nav-btn" data-cat="loisirs" onclick="switchTab('loisirs', this)" title="Social">🎉</div>
       <div class="nav-btn" data-cat="freins" onclick="switchTab('freins', this)" title="Obstacles">🚧</div>
     </div>
+
     <div class="tools-column">
       <div id="tools-title" class="tools-header text-red-700">Lieu de vie</div>
       <div id="tools-container" class="flex-1 overflow-y-auto py-4"></div>
     </div>
   </aside>
 
-  <!-- Espace Carte -->
+  <!-- Carte -->
   <main class="map-stage">
     <div id="board-container">
       <div id="map-transform-layer">
@@ -238,6 +412,7 @@
           <h2 class="font-bold text-gray-400 uppercase tracking-widest text-center">Aucune carte chargée</h2>
           <p class="text-sm text-gray-400 mt-2">Ouvrez la bibliothèque pour commencer</p>
         </div>
+
         <img id="user-map-img" class="hidden shadow-xl" src="" alt="Fond de carte">
         <div id="drop-zone" class="absolute inset-0 z-10"></div>
       </div>
@@ -250,7 +425,7 @@
     </div>
   </main>
 
-  <!-- Sidebar Droite (Mes Ressources) -->
+  <!-- Sidebar droite -->
   <aside class="sidebar-right">
     <div class="resources-header">Mes Ressources</div>
     <div class="flex-1 overflow-y-auto w-full py-2">
@@ -259,7 +434,7 @@
   </aside>
 </div>
 
-<!-- BIBLIOTHÈQUE MODAL -->
+<!-- Bibliothèque -->
 <div id="library-modal" class="modal-overlay">
   <div class="modal-card">
     <div class="modal-header">
@@ -276,7 +451,6 @@
         <input type="text" id="searchInput" placeholder="Rechercher..." oninput="handleSearch(this.value)" class="input-mlpb pl-10">
       </div>
 
-      <!-- Dropdown cartes -->
       <select id="mapSelect" class="input-mlpb" style="max-width:260px;" onchange="handleMapSelect(this.value)">
         <option value="">Choisir une carte…</option>
       </select>
@@ -288,26 +462,29 @@
   </div>
 </div>
 
-<!-- AJOUT CARTE MODAL -->
-<div id="add-map-modal" class="modal-overlay" style="z-index:1100;">
-  <div class="modal-card" style="max-width:500px;height:auto;">
+<!-- Ajouter carte -->
+<div id="add-map-modal" class="modal-overlay" style="z-index: 1100;">
+  <div class="modal-card" style="max-width: 500px; height: auto;">
     <div class="modal-header">
       <h2 class="modal-title text-xl">Ajouter une carte</h2>
       <div class="modal-close" onclick="closeAddMapModal()">×</div>
     </div>
+
     <form onsubmit="handleAddMap(event)" class="p-8">
       <div class="mb-6">
-        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-2">Nom de la carte</label>
+        <label class="label-mlpb">Nom de la carte</label>
         <input type="text" id="newMapName" required class="input-mlpb" placeholder="Ex: Mon Quartier">
       </div>
+
       <div class="mb-8">
-        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-2">Fichier Image</label>
+        <label class="label-mlpb">Fichier Image</label>
         <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:bg-gray-50 transition-colors relative">
           <input type="file" id="newMapFile" accept="image/*" required class="absolute inset-0 opacity-0 cursor-pointer">
           <span class="text-2xl block mb-2">📁</span>
           <span class="text-sm font-bold text-gray-500">Cliquez pour déposer un fichier</span>
         </div>
       </div>
+
       <div class="flex justify-end gap-3">
         <button type="button" onclick="closeAddMapModal()" class="btn-mlpb">Annuler</button>
         <button type="submit" class="btn-mlpb btn-primary">Valider</button>
@@ -316,76 +493,30 @@
   </div>
 </div>
 
-<!-- COVOITURAGE MODAL -->
-<div id="covoit-modal" class="modal-overlay" style="z-index:1200;">
-  <div class="modal-card" style="max-width:650px;height:auto;">
-    <div class="modal-header bg-gradient-to-r from-orange-500 to-pink-500 text-white border-none">
-      <h3 class="font-black text-2xl uppercase tracking-wider text-white">🚘 Je propose un Covoit'</h3>
-      <div class="modal-close text-white hover:text-white opacity-80 hover:opacity-100" onclick="closeCovoitModal()">×</div>
-    </div>
-
-    <div class="flex p-2 bg-gray-100 gap-2">
-      <button class="flex-1 py-3 rounded-lg font-bold text-sm uppercase transition-colors bg-white shadow-sm text-orange-600" id="tab-regulier" onclick="switchCovoitTab('regulier')">📅 Régulier</button>
-      <button class="flex-1 py-3 rounded-lg font-bold text-sm uppercase transition-colors text-gray-500 hover:bg-white" id="tab-ponctuel" onclick="switchCovoitTab('ponctuel')">📍 Ponctuel</button>
-    </div>
-
-    <div class="p-8">
-      <div id="form-regulier" class="block">
-        <div class="grid grid-cols-2 gap-5 mb-5">
-          <div><label class="block text-[11px] font-bold uppercase text-slate-500 mb-2">Départ</label><input type="text" id="reg-depart" class="input-mlpb" placeholder="Ville ou quartier"></div>
-          <div><label class="block text-[11px] font-bold uppercase text-slate-500 mb-2">Arrivée</label><input type="text" id="reg-arrivee" class="input-mlpb" placeholder="Lieu de travail/étude"></div>
-        </div>
-        <div class="grid grid-cols-2 gap-5 mb-5">
-          <div><label class="block text-[11px] font-bold uppercase text-slate-500 mb-2">Heure Aller</label><input type="time" id="reg-h-aller" class="input-mlpb"></div>
-          <div><label class="block text-[11px] font-bold uppercase text-slate-500 mb-2">Heure Retour</label><input type="time" id="reg-h-retour" class="input-mlpb"></div>
-        </div>
-        <div class="mb-6"><label class="block text-[11px] font-bold uppercase text-slate-500 mb-2">Infos (Jours, participation...)</label><textarea id="reg-infos" rows="2" class="input-mlpb"></textarea></div>
-        <button onclick="submitCovoit('regulier')" class="w-full btn-mlpb btn-primary justify-center py-3 text-sm">Publier l'annonce</button>
-      </div>
-
-      <div id="form-ponctuel" class="hidden">
-        <div class="grid grid-cols-2 gap-5 mb-5">
-          <div><label class="block text-[11px] font-bold uppercase text-slate-500 mb-2">Date</label><input type="date" id="ponc-date" class="input-mlpb"></div>
-          <div><label class="block text-[11px] font-bold uppercase text-slate-500 mb-2">Heure</label><input type="time" id="ponc-heure" class="input-mlpb"></div>
-        </div>
-        <div class="grid grid-cols-2 gap-5 mb-6">
-          <div><label class="block text-[11px] font-bold uppercase text-slate-500 mb-2">De</label><input type="text" id="ponc-depart" class="input-mlpb"></div>
-          <div><label class="block text-[11px] font-bold uppercase text-slate-500 mb-2">Vers</label><input type="text" id="ponc-arrivee" class="input-mlpb"></div>
-        </div>
-        <button onclick="submitCovoit('ponctuel')" class="w-full btn-mlpb btn-primary justify-center py-3 text-sm">Publier l'annonce</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <script>
-  // --- CONFIG CARTES (ordre logique : local -> national -> Europe) ---
+  // --- CONFIG CARTES (ordre logique local → national → Europe) ---
   const config = {
     maps: [
-      // Local
-      { id: 0,  name: "Pays Basque", url: "Pays-Basque.png", tag: "Carte par défaut", default: true },
-      { id: 8,  name: "BAB", url: "bab.jpg", tag: "Urbain" },
-      { id: 11, name: "Hendaye – St Jean", url: "hendaye-st-jean.jpg", tag: "Littoral" },
+      { id: 0,  name: "Pays Basque", url: "Pays-Basque.png", tag: "Local (défaut)" },
+      { id: 8,  name: "BAB", url: "bab.jpg", tag: "Local" },
+      { id: 11, name: "Hendaye – St Jean", url: "hendaye-st-jean.jpg", tag: "Local" },
       { id: 12, name: "Hendaye transfrontalier", url: "hendaye-transfrontalier.jpg", tag: "Transfrontalier" },
-      { id: 1,  name: "Errobi – Sud Pays Basque", url: "Errobi-sud-pays-basque.jpg", tag: "Sud Pays Basque" },
-      { id: 14, name: "Ustaritz – Cambo", url: "ustaritz-cambo.jpg", tag: "Intérieur" },
-      { id: 3,  name: "Garazi – Baigorri", url: "Garazi-Baigorri.jpg", tag: "Intérieur" },
-      { id: 13, name: "Saint-Palais – Garazi – Mauleon", url: "saint-palais-garazi-mauleon.jpg", tag: "Intérieur" },
-      { id: 4,  name: "Hasparren – Adour", url: "Hasparren-Adour.jpg", tag: "Adour" },
-      { id: 5,  name: "Hasparren – St Palais", url: "Hasparren-stpalais.jpg", tag: "Intérieur" },
-      { id: 7,  name: "Adour Ouest", url: "adour-ouest.jpg", tag: "Adour" },
-      { id: 6,  name: "Navarre transfrontalière", url: "Navarre-transfrontalier.jpg", tag: "Transfrontalier" },
+      { id: 1,  name: "Errobi – Sud Pays Basque", url: "Errobi-sud-pays-basque.jpg", tag: "Local" },
+      { id: 3,  name: "Garazi – Baigorri", url: "Garazi-Baigorri.jpg", tag: "Local" },
+      { id: 14, name: "Ustaritz – Cambo", url: "ustaritz-cambo.jpg", tag: "Local" },
+      { id: 4,  name: "Hasparren – Adour", url: "Hasparren-Adour.jpg", tag: "Local" },
+      { id: 5,  name: "Hasparren – St Palais", url: "Hasparren-stpalais.jpg", tag: "Local" },
+      { id: 13, name: "Saint-Palais – Garazi – Mauleon", url: "saint-palais-garazi-mauleon.jpg", tag: "Local" },
+      { id: 7,  name: "Adour Ouest", url: "adour-ouest.jpg", tag: "Local" },
 
-      // National
       { id: 10, name: "France", url: "france.jpg", tag: "National" },
 
-      // Large échelle / Europe
-      { id: 9,  name: "Bordeaux – Toulouse – Bilbao", url: "bordeaux-toulouse-bilbao.jpg", tag: "Grande Échelle" },
-      { id: 2,  name: "Europe", url: "Europe.jpg", tag: "Europe" },
+      { id: 9,  name: "Bordeaux – Toulouse – Bilbao", url: "bordeaux-toulouse-bilbao.jpg", tag: "Grande échelle" },
+      { id: 6,  name: "Navarre transfrontalière", url: "Navarre-transfrontalier.jpg", tag: "Transfrontalier" },
+      { id: 2,  name: "Europe", url: "Europe.jpg", tag: "Europe" }
     ]
   };
 
-  // --- PICTOS (corrigé : clés EXACTES attendues par le menu : lieux/transports/pro/demarches/loisirs/freins) ---
   const taxonomy = {
     lieux: [
       { icon: "🏠", label: "Chez mes parents", class: "bubble-lieu" },
@@ -446,22 +577,29 @@
     { icon: "🏫", label: "Mon Auto-École" }, { icon: "📖", label: "Code de la route" }
   ];
 
+  // --- ÉTAT ZOOM + PAN ---
   let currentScale = 1;
+  let panX = 0;
+  let panY = 0;
+  let isPanning = false;
+  let startPanClientX = 0;
+  let startPanClientY = 0;
+  let startPanX = 0;
+  let startPanY = 0;
+
   let currentSearch = "";
 
   // --- INIT ---
   window.onload = () => {
     switchTab('lieux', document.querySelector('.nav-btn[data-cat="lieux"]'));
     renderResources();
-
-    // Charger la carte par défaut SANS ouvrir la bibliothèque
-    const def = config.maps.find(m => m.default) || config.maps[0];
-    if (def) loadMap(def.url, { closeLibrary: false });
-
-    // Préparer la bibliothèque (grid + dropdown) quand on l'ouvre
+    renderLibrary();
+    populateMapDropdown();
+    loadDefaultMap(); // IMPORTANT: charge Pays Basque par défaut, sans ouvrir la bibliothèque
+    setupPanHandlers();
   };
 
-  // --- LOGIQUE METIER ---
+  // --- ONGLET GAUCHE ---
   function switchTab(cat, btn) {
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -480,7 +618,8 @@
   function renderTools(cat, color) {
     const container = document.getElementById('tools-container');
     container.innerHTML = "";
-    (taxonomy[cat] || []).forEach(item => {
+
+    taxonomy[cat].forEach(item => {
       const div = document.createElement('div');
       div.className = item.highlight ? "tool-item tool-highlight" : "tool-item";
       if (!item.highlight) div.classList.add('border-l-4');
@@ -492,12 +631,18 @@
     });
   }
 
+  // --- AJOUT PICTO ---
   function addToMap(item) {
-    if (item.action === 'openCovoitForm') { openCovoitModal(); return; }
+    if (item.action === 'openCovoitForm') {
+      alert("Le module covoit n'est pas inclus dans cette version du code.");
+      return;
+    }
 
     const el = document.createElement('div');
-    el.className = 'draggable pointer-events-auto';
-    el.style.left = '50%'; el.style.top = '50%';
+    el.className = 'draggable';
+
+    el.style.left = '50%';
+    el.style.top = '50%';
 
     const bubbleClass = item.class || 'bubble-transport';
 
@@ -524,6 +669,7 @@
     document.getElementById('drop-zone').appendChild(el);
   }
 
+  // --- RESSOURCES ---
   function renderResources() {
     const container = document.getElementById('resources-container');
     container.innerHTML = "";
@@ -536,18 +682,21 @@
     });
   }
 
-  // --- DRAG & DROP ---
+  // --- DRAG PICTOS (sur #drop-zone) ---
   function enableDrag(el) {
     let isDragging = false, startX, startY, initLeft, initTop;
 
     const start = (e) => {
       if (e.target.tagName === 'INPUT' || e.target.classList.contains('delete-btn')) return;
       e.preventDefault();
+
       isDragging = true;
 
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      startX = clientX; startY = clientY;
+
+      startX = clientX;
+      startY = clientY;
 
       const rect = el.getBoundingClientRect();
       const parentRect = el.parentElement.getBoundingClientRect();
@@ -586,136 +735,146 @@
     el.addEventListener('touchstart', start, { passive: false });
   }
 
-  // --- MODALS ---
+  // --- PAN (cliquer-glisser) SUR LA CARTE ---
+  function setupPanHandlers() {
+    const layer = document.getElementById('map-transform-layer');
+
+    layer.addEventListener('mousedown', (e) => {
+      // Ne pas pan si on clique un pictogramme / input / delete
+      if (e.target.closest('.draggable') || e.target.closest('input') || e.target.closest('.delete-btn')) return;
+
+      isPanning = true;
+      layer.style.cursor = 'grabbing';
+
+      startPanClientX = e.clientX;
+      startPanClientY = e.clientY;
+      startPanX = panX;
+      startPanY = panY;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isPanning) return;
+      const dx = e.clientX - startPanClientX;
+      const dy = e.clientY - startPanClientY;
+      panX = startPanX + dx;
+      panY = startPanY + dy;
+      applyTransform();
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (!isPanning) return;
+      isPanning = false;
+      layer.style.cursor = 'grab';
+    });
+
+    // (optionnel) annuler si la souris sort
+    layer.addEventListener('mouseleave', () => {
+      if (!isPanning) return;
+      isPanning = false;
+      layer.style.cursor = 'grab';
+    });
+  }
+
+  // --- ZOOM ---
+  function zoomIn()  { currentScale = Math.min(4, currentScale + 0.1); applyTransform(); }
+  function zoomOut() { currentScale = Math.max(0.2, currentScale - 0.1); applyTransform(); }
+  function resetZoom() {
+    currentScale = 1;
+    panX = 0;
+    panY = 0;
+    applyTransform();
+  }
+
+  function applyTransform() {
+    const layer = document.getElementById('map-transform-layer');
+    layer.style.transform = `translate(${panX}px, ${panY}px) scale(${currentScale})`;
+  }
+
+  // --- BIBLIOTHÈQUE ---
   function toggleLibrary() {
     const m = document.getElementById('library-modal');
     m.classList.toggle('active');
     if (m.classList.contains('active')) {
       renderLibrary();
-      populateMapSelect();
+      populateMapDropdown();
     }
-  }
-  function openAddMapModal(){ document.getElementById('add-map-modal').classList.add('active'); }
-  function closeAddMapModal(){ document.getElementById('add-map-modal').classList.remove('active'); }
-  function openCovoitModal(){ document.getElementById('covoit-modal').classList.add('active'); }
-  function closeCovoitModal(){ document.getElementById('covoit-modal').classList.remove('active'); }
-
-  // --- BIBLIOTHEQUE (grid + dropdown) ---
-  function populateMapSelect() {
-    const sel = document.getElementById('mapSelect');
-    if (!sel) return;
-
-    const filter = currentSearch.toLowerCase();
-    const list = config.maps.filter(m => m.name.toLowerCase().includes(filter));
-
-    sel.innerHTML = `<option value="">Choisir une carte…</option>` +
-      list.map(m => `<option value="${escapeHtml(m.url)}">${escapeHtml(m.name)}</option>`).join('');
-  }
-
-  function handleMapSelect(url) {
-    if (!url) return;
-    loadMap(url, { closeLibrary: true });
   }
 
   function renderLibrary() {
     const container = document.getElementById('libraryContainer');
     container.innerHTML = "";
-    const filter = currentSearch.toLowerCase();
+    const filter = (currentSearch || "").toLowerCase();
 
     config.maps
       .filter(m => m.name.toLowerCase().includes(filter))
       .forEach(m => {
         const card = document.createElement('div');
         card.className = "map-card";
-        card.onclick = () => loadMap(m.url, { closeLibrary: true });
-        card.title = m.name; // bulle au survol
+        card.onclick = () => loadMap(m.url, true);
+        card.title = m.name;
 
-        const img = `<img src="${m.url}" alt="${escapeHtml(m.name)}" onerror="this.onerror=null; var p=this.parentElement; p.style.fontSize='30px'; p.innerHTML='🗺️';">`;
+        const img = `<img src="${m.url}" alt="${m.name}" onerror="this.onerror=null; var p=this.parentElement; p.style.fontSize='30px'; p.innerHTML='🗺️';">`;
 
         card.innerHTML = `
           <div class="map-thumb">${img}</div>
           <div class="map-info">
-            <div class="map-name">${escapeHtml(m.name)}</div>
-            <span class="map-tag">${escapeHtml(m.tag || "")}</span>
+            <div class="map-name">${m.name}</div>
+            <span class="map-tag">${m.tag || ""}</span>
           </div>
         `;
         container.appendChild(card);
       });
-
-    populateMapSelect();
   }
 
-  function handleSearch(val){
-    currentSearch = val || "";
-    renderLibrary();
+  function handleSearch(val) { currentSearch = val; renderLibrary(); }
+
+  // Dropdown
+  function populateMapDropdown() {
+    const select = document.getElementById('mapSelect');
+    if (!select) return;
+
+    const currentValue = select.value;
+    select.innerHTML = `<option value="">Choisir une carte…</option>`;
+
+    config.maps.forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m.url;
+      opt.textContent = m.name; // NOM AFFICHÉ
+      select.appendChild(opt);
+    });
+
+    // restaure la sélection si possible
+    if (currentValue) select.value = currentValue;
   }
 
-  function handleAddMap(e){
-    e.preventDefault();
-    const file = document.getElementById('newMapFile').files[0];
-    const name = document.getElementById('newMapName').value;
-    if (file && name) {
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        // Ajout en tête (carte perso)
-        config.maps.unshift({ id: Date.now(), name, url: ev.target.result, tag: "Perso" });
-        renderLibrary();
-        closeAddMapModal();
-        loadMap(ev.target.result, { closeLibrary: false });
-      };
-      reader.readAsDataURL(file);
-    }
+  function handleMapSelect(url) {
+    if (!url) return;
+    loadMap(url, true);
   }
 
-  // --- LOAD MAP (option pour ne pas fermer la bibliothèque) ---
-  function loadMap(url, opts = { closeLibrary: true }) {
+  // --- CARTE (default sans ouvrir bibliothèque) ---
+  function loadDefaultMap() {
+    const defaultMap = config.maps.find(m => m.id === 0) || config.maps[0];
+    if (!defaultMap) return;
+    loadMap(defaultMap.url, false);
+  }
+
+  function loadMap(url, closeLibrary) {
     const img = document.getElementById('user-map-img');
     img.src = url;
     img.classList.remove('hidden');
     document.getElementById('empty-state').classList.add('hidden');
+
     resetZoom();
 
-    if (opts.closeLibrary) {
+    if (closeLibrary) {
       const m = document.getElementById('library-modal');
-      if (m.classList.contains('active')) toggleLibrary();
+      if (m.classList.contains('active')) m.classList.remove('active');
     }
   }
 
-  // --- COVOITURAGE ---
-  function switchCovoitTab(tab) {
-    document.getElementById('tab-regulier').className = tab==='regulier'
-      ? "flex-1 py-3 rounded-lg font-bold text-sm uppercase transition-colors bg-white shadow-sm text-orange-600"
-      : "flex-1 py-3 rounded-lg font-bold text-sm uppercase transition-colors text-gray-500 hover:bg-white";
-    document.getElementById('tab-ponctuel').className = tab==='ponctuel'
-      ? "flex-1 py-3 rounded-lg font-bold text-sm uppercase transition-colors bg-white shadow-sm text-orange-600"
-      : "flex-1 py-3 rounded-lg font-bold text-sm uppercase transition-colors text-gray-500 hover:bg-white";
-
-    document.getElementById('form-regulier').className = tab==='regulier' ? 'block' : 'hidden';
-    document.getElementById('form-ponctuel').className = tab==='ponctuel' ? 'block' : 'hidden';
-  }
-
-  function submitCovoit(type) {
-    let label = "";
-    if (type === 'regulier') {
-      const dep = document.getElementById('reg-depart').value;
-      const arr = document.getElementById('reg-arrivee').value;
-      label = `COVOIT RÉGULIER\n${dep} ➔ ${arr}`;
-    } else {
-      const date = document.getElementById('ponc-date').value;
-      const dep = document.getElementById('ponc-depart').value;
-      label = `COVOIT LE ${date}\nDe ${dep}`;
-    }
-    addToMap({ icon: "🚘", label, class: "bubble-transport" });
-    closeCovoitModal();
-  }
-
-  // --- ZOOM & PDF ---
-  function zoomIn(){ currentScale += 0.1; applyZoom(); }
-  function zoomOut(){ currentScale = Math.max(0.2, currentScale - 0.1); applyZoom(); }
-  function resetZoom(){ currentScale = 1; applyZoom(); }
-  function applyZoom(){ document.getElementById('map-transform-layer').style.transform = `scale(${currentScale})`; }
-
-  async function downloadMapPDF(){
+  // --- PDF ---
+  async function downloadMapPDF() {
     const el = document.getElementById('board-container');
     const canvas = await html2canvas(el, { scale: 2, useCORS: true, allowTaint: true });
     const imgData = canvas.toDataURL('image/jpeg', 0.9);
@@ -724,11 +883,28 @@
     pdf.save('Diagnostic_Mobilité.pdf');
   }
 
-  // --- Utils ---
-  function escapeHtml(str){
-    return String(str).replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+  // --- Ajout carte (dataURL) ---
+  function openAddMapModal() { document.getElementById('add-map-modal').classList.add('active'); }
+  function closeAddMapModal() { document.getElementById('add-map-modal').classList.remove('active'); }
+
+  function handleAddMap(e) {
+    e.preventDefault();
+    const file = document.getElementById('newMapFile').files[0];
+    const name = document.getElementById('newMapName').value;
+
+    if (file && name) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        config.maps.unshift({ id: Date.now(), name, url: ev.target.result, tag: "Perso" });
+        renderLibrary();
+        populateMapDropdown();
+        closeAddMapModal();
+        loadMap(ev.target.result, true);
+      };
+      reader.readAsDataURL(file);
+    }
   }
 </script>
-
 </body>
 </html>
+
