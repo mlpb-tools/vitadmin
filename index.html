@@ -531,6 +531,12 @@
         // CONFIGURATION MISE À JOUR AVEC VOS CARTES
         const config = {
             "maps": [
+                {
+      id: 0,
+      name: "Pays Basque",
+      url: "Pays-Basque.png",
+      tag: "Carte par défaut"
+    },
                 { id: 1,  name: "Errobi – Sud Pays Basque", url: "Errobi-sud-pays-basque.jpg", tag: "Sud Pays Basque" },
                 { id: 2,  name: "Europe", url: "Europe.jpg", tag: "Europe" },
                 { id: 3,  name: "Garazi – Baigorri", url: "Garazi-Baigorri.jpg", tag: "Intérieur" },
@@ -611,11 +617,18 @@
         let currentSearch = "";
 
         // --- INIT ---
-        window.onload = () => {
-            switchTab('lieux', document.querySelector('.nav-btn[data-cat="lieux"]'));
-            renderLibrary();
-            renderResources();
-        };
+      window.onload = () => {
+  switchTab('lieux', document.querySelector('.nav-btn[data-cat="lieux"]'));
+  renderLibrary();
+  renderResources();
+
+  // ✅ Charger la carte par défaut (Pays Basque)
+  const defaultMap = config.maps.find(m => m.name === "Pays Basque");
+  if (defaultMap) {
+    loadMap(defaultMap.url);
+  }
+};
+
 
         // --- LOGIQUE METIER ---
         function switchTab(cat, btn) {
