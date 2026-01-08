@@ -539,12 +539,12 @@
         };
 
         const taxonomy = {
-            lieux: [ 
+            lieux de vie : [ 
                 { icon: "🏠", label: "Chez mes parents", color: "var(--c-red)", class:"bubble-lieu" }, 
                 { icon: "🔑", label: "Chez moi", color: "var(--c-red)", class:"bubble-lieu" }, 
                 { icon: "🏘️", label: "En coloc", color: "var(--c-red)", class:"bubble-lieu" },
                 { icon: "🏢", label: "Foyer", color: "var(--c-red)", class:"bubble-lieu" },
-                { icon: "🛏️", label: "Hébergement temp.", color: "var(--c-red)", class:"bubble-lieu" }
+                { icon: "🛏️", label: "Hébergement temporaire", color: "var(--c-red)", class:"bubble-lieu" }
             ],
             transports: [
                 { icon: "🚘", label: "JE PROPOSE UN COVOIT", color: "var(--c-orange)", class:"bubble-transport", action: "openCovoitForm", highlight: true },
@@ -571,16 +571,19 @@
                 { icon: "🤝", label: "Assistante Sociale", color: "var(--c-purple)", class:"bubble-admin" }, 
                 { icon: "🏛️", label: "CCAS", color: "var(--c-purple)", class:"bubble-admin" },
                 { icon: "🩺", label: "Médecin", color: "var(--c-purple)", class:"bubble-admin" },
-                { icon: "💊", label: "Pharmacie", color: "var(--c-purple)", class:"bubble-admin" },
                 { icon: "💶", label: "CAF", color: "var(--c-purple)", class:"bubble-admin" },
                 { icon: "📜", label: "Mairie", color: "var(--c-purple)", class:"bubble-admin" },
                 { icon: "🏦", label: "Banque", color: "var(--c-purple)", class:"bubble-admin" }
             ],
             loisirs: [ 
                 { icon: "🛒", label: "Courses", color: "var(--c-pink)", class:"bubble-loisir" }, 
-                { icon: "⚽", label: "Sport / Asso", color: "var(--c-pink)", class:"bubble-loisir" }, 
-                { icon: "🌊", label: "Loisirs / Plage", color: "var(--c-pink)", class:"bubble-loisir" },
+                { icon: "⚽", label: "Sport", color: "var(--c-pink)", class:"bubble-loisir" }, 
+                { icon: "🌊", label: "Nature", color: "var(--c-pink)", class:"bubble-loisir" },
                 { icon: "☕", label: "Café / Sortie", color: "var(--c-pink)", class:"bubble-loisir" }
+                { icon: "🤲", label: "Bénévolat associatif", color: "var(--c-pink)", class:"bubble-loisir", editable: true }
+                { icon: "🎭", label: "Culture", color: "var(--c-pink)", class:"bubble-loisir", editable: true }
+]
+]
             ],
             freins: [ 
                 { icon: "🚫", label: "Zone Blanche", color: "var(--c-black)", class:"bubble-frein" }, 
