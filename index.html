@@ -622,11 +622,9 @@
   renderLibrary();
   renderResources();
 
-  // ✅ Charger la carte par défaut (Pays Basque)
-  const defaultMap = config.maps.find(m => m.name === "Pays Basque");
-  if (defaultMap) {
-    loadMap(defaultMap.url);
-  }
+ // ✅ Carte Pays Basque par défaut, sans ouvrir/fermer la bibliothèque
+  const defaultMap = config.maps.find(m => m.url === "Pays-Basque.png");
+  if (defaultMap) loadMap(defaultMap.url, { silent: true });
 };
 
 
@@ -824,13 +822,20 @@ function handleMapSelect(url) {
   loadMap(url);
 }
 
-        function loadMap(url) {
-            const img = document.getElementById('user-map-img');
-            img.src = url;
-            img.classList.remove('hidden');
-            document.getElementById('empty-state').classList.add('hidden');
-            toggleLibrary();
-            resetZoom();
+        function loadMap(url, { silent = false } = {}) {
+  const img = document.getElementById('user-map-img');
+  img.src = url;
+  img.classList.remove('hidden');
+  document.getElementById('empty-state').classList.add('hidden');
+  resetZoom();
+
+  // ✅ Ne ferme la bibliothèque QUE si on a cliqué depuis la bibliothèque
+  if (!silent) {
+    const modal = document.getElementById('library-modal');
+    if (modal.classList.contains('active')) toggleLibrary();
+  }
+}
+
         }
 
         // --- COVOITURAGE ---
