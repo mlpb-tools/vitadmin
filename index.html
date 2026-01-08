@@ -308,8 +308,24 @@
         .map-thumb { height: 140px; background: #e2e8f0; overflow: hidden; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 40px; }
         .map-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
         .map-card:hover img { transform: scale(1.05); }
-        .map-info { padding: 15px; }
-        .map-name { font-weight: 700; font-size: 13px; color: var(--c-black); margin-bottom: 5px; }
+        ..map-info{
+  padding: 12px 14px 14px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.map-name{
+  font-family:'Barlow Condensed', sans-serif;
+  font-weight:900;
+  font-size:16px;
+  text-transform:uppercase;
+  letter-spacing:.6px;
+  color:#0f172a;
+  line-height:1.15;
+  text-align:center;
+}
+
         .map-tag { display: inline-block; padding: 2px 8px; background: #e0f2fe; color: var(--c-blue); border-radius: 10px; font-size: 10px; font-weight: 700; }
 
         .input-mlpb { 
@@ -748,10 +764,6 @@
 
                 card.innerHTML = `
                     <div class="map-thumb">${img}</div>
-                    <div class="map-info">
-                        <div class="map-name">${m.name}</div>
-                        <span class="map-tag">${m.tag}</span>
-                    </div>
                 `;
                 container.appendChild(card);
             });
