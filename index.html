@@ -1,843 +1,734 @@
 <!doctype html>
 <html lang="fr" class="h-full">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Map Ta Mob - V62</title>
-    
-    <!-- Typographies : Mulish (Textes) et Barlow Condensed (Titres) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700;900&family=Mulish:wght@400;600;800&display=swap" rel="stylesheet">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <style>
-        :root {
-            /* Palette MLPB */
-            --c-orange: #f39200;  
-            --c-green: #95c11f;   
-            --c-blue: #2897d5;    
-            --c-pink: #d60b52;    
-            --c-purple: #a3195b;  
-            --c-red: #9f3d3f;     
-            --c-black: #171718;   
-            --c-white: #ffffff;
-            --c-light-grey: #f8f9fa;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Map Ta Mob - V62</title>
 
-        body { 
-            font-family: 'Mulish', sans-serif; 
-            color: var(--c-black); 
-            background-color: #f0f2f5; 
-            overscroll-behavior: none;
-        }
+  <!-- Typographies : Mulish (Textes) et Barlow Condensed (Titres) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700;900&family=Mulish:wght@400;600;800&display=swap" rel="stylesheet">
 
-        h1, h2, h3, .title-font { font-family: 'Barlow Condensed', sans-serif; }
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
 
-        /* --- UI COMPONENTS --- */
-        .btn-mlpb {
-            background: var(--c-white);
-            border: 1px solid #e2e8f0;
-            color: var(--c-black);
-            font-weight: 700;
-            text-transform: uppercase;
-            border-radius: 9999px;
-            padding: 8px 16px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            transition: all 0.2s ease;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 11px;
-            letter-spacing: 0.5px;
-            text-decoration: none; /* Pour les liens <a> */
-        }
-        .btn-mlpb:hover { 
-            transform: translateY(-1px); 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
-            border-color: var(--c-blue);
-            color: var(--c-blue);
-        }
-        
-        .btn-primary {
-            background: var(--c-blue);
-            color: white;
-            border: none;
-        }
-        .btn-primary:hover { background: #1e7bb3; color: white; }
+  <style>
+    :root{
+      --c-orange:#f39200; --c-green:#95c11f; --c-blue:#2897d5; --c-pink:#d60b52;
+      --c-purple:#a3195b; --c-red:#9f3d3f; --c-black:#171718; --c-white:#fff; --c-light-grey:#f8f9fa;
+    }
+    body{font-family:'Mulish',sans-serif;color:var(--c-black);background:#f0f2f5;overscroll-behavior:none;}
+    h1,h2,h3,.title-font{font-family:'Barlow Condensed',sans-serif;}
 
-        /* --- LAYOUT --- */
-        header { 
-            height: 60px; 
-            background: var(--c-white); 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            display: flex; justify-content: space-between; align-items: center; padding: 0 20px; 
-            z-index: 50; position: relative;
-        }
+    .btn-mlpb{
+      background:var(--c-white);border:1px solid #e2e8f0;color:var(--c-black);
+      font-weight:700;text-transform:uppercase;border-radius:9999px;padding:8px 16px;
+      box-shadow:0 2px 4px rgba(0,0,0,.05);transition:all .2s ease;cursor:pointer;
+      display:inline-flex;align-items:center;gap:6px;font-size:11px;letter-spacing:.5px;text-decoration:none;
+    }
+    .btn-mlpb:hover{transform:translateY(-1px);box-shadow:0 4px 6px rgba(0,0,0,.1);border-color:var(--c-blue);color:var(--c-blue);}
+    .btn-primary{background:var(--c-blue);color:#fff;border:none;}
+    .btn-primary:hover{background:#1e7bb3;color:#fff;}
 
-        .cockpit-container { display: flex; height: calc(100vh - 60px); overflow: hidden; gap: 0; }
+    header{
+      height:60px;background:var(--c-white);box-shadow:0 1px 3px rgba(0,0,0,.05);
+      display:flex;justify-content:space-between;align-items:center;padding:0 20px;z-index:50;position:relative;
+    }
+    .cockpit-container{display:flex;height:calc(100vh - 60px);overflow:hidden;gap:0;}
 
-        /* SIDEBAR GAUCHE */
-        .sidebar-left { 
-            width: 260px; 
-            background: var(--c-white); 
-            display: flex; 
-            flex-direction: row; 
-            flex-shrink: 0; 
-            box-shadow: 2px 0 5px rgba(0,0,0,0.02);
-            z-index: 20;
-        }
+    .sidebar-left{
+      width:260px;background:var(--c-white);display:flex;flex-direction:row;flex-shrink:0;
+      box-shadow:2px 0 5px rgba(0,0,0,.02);z-index:20;
+    }
+    .nav-column{
+      width:70px;background:var(--c-light-grey);display:flex;flex-direction:column;align-items:center;
+      padding-top:10px;border-right:1px solid #eee;
+    }
+    .nav-btn{
+      width:50px;height:50px;margin-bottom:10px;border-radius:12px;
+      display:flex;align-items:center;justify-content:center;color:#64748b;cursor:pointer;
+      transition:all .2s;font-size:22px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.05);
+    }
+    .nav-btn:hover{transform:scale(1.05);color:var(--c-blue);}
+    .nav-btn.active{background:var(--c-blue);color:#fff;box-shadow:0 4px 6px rgba(40,151,213,.3);}
+    .nav-btn[data-cat="lieux"].active{background:var(--c-red);box-shadow:0 4px 6px rgba(159,61,63,.3);}
+    .nav-btn[data-cat="transports"].active{background:var(--c-blue);}
+    .nav-btn[data-cat="pro"].active{background:var(--c-orange);box-shadow:0 4px 6px rgba(243,146,0,.3);}
+    .nav-btn[data-cat="demarches"].active{background:var(--c-purple);box-shadow:0 4px 6px rgba(163,25,91,.3);}
+    .nav-btn[data-cat="loisirs"].active{background:var(--c-pink);box-shadow:0 4px 6px rgba(214,11,82,.3);}
+    .nav-btn[data-cat="freins"].active{background:var(--c-black);}
 
-        .nav-column { 
-            width: 70px; 
-            background: var(--c-light-grey); 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            padding-top: 10px;
-            border-right: 1px solid #eee;
-        }
+    .tools-column{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#fff;}
+    .tools-header{
+      padding:20px;font-size:18px;font-weight:700;text-transform:uppercase;color:var(--c-black);
+      font-family:'Barlow Condensed',sans-serif;border-bottom:1px solid #f0f0f0;
+    }
+    .tool-item{
+      margin:0 15px 10px 15px;padding:10px 15px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;
+      display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;font-size:13px;font-weight:600;color:#334155;
+    }
+    .tool-item:hover{border-color:var(--c-blue);background:#f8fafc;transform:translateX(2px);}
+    .border-l-4{border-left-width:4px;}
 
-        .nav-btn { 
-            width: 50px; height: 50px; 
-            margin-bottom: 10px;
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center; 
-            color: #64748b; 
-            cursor: pointer; 
-            transition: all 0.2s; 
-            font-size: 22px;
-            background: white;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        }
-        .nav-btn:hover { transform: scale(1.05); color: var(--c-blue); }
-        .nav-btn.active { background: var(--c-blue); color: white; box-shadow: 0 4px 6px rgba(40, 151, 213, 0.3); }
-        
-        .nav-btn[data-cat="lieux"].active { background: var(--c-red); box-shadow: 0 4px 6px rgba(159, 61, 63, 0.3); }
-        .nav-btn[data-cat="transports"].active { background: var(--c-blue); }
-        .nav-btn[data-cat="pro"].active { background: var(--c-orange); box-shadow: 0 4px 6px rgba(243, 146, 0, 0.3); }
-        .nav-btn[data-cat="demarches"].active { background: var(--c-purple); box-shadow: 0 4px 6px rgba(163, 25, 91, 0.3); }
-        .nav-btn[data-cat="loisirs"].active { background: var(--c-pink); box-shadow: 0 4px 6px rgba(214, 11, 82, 0.3); }
-        .nav-btn[data-cat="freins"].active { background: var(--c-black); }
+    .tool-highlight{
+      background:linear-gradient(135deg,var(--c-blue) 0%,#1e7bb3 100%) !important;
+      color:#fff !important;border:none !important;justify-content:center;text-align:center;
+      box-shadow:0 4px 10px rgba(40,151,213,.3);
+    }
+    .tool-highlight:hover{transform:translateY(-2px) !important;box-shadow:0 6px 12px rgba(40,151,213,.4) !important;}
 
-        .tools-column { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: white; }
-        .tools-header { 
-            padding: 20px; 
-            font-size: 18px; font-weight: 700; text-transform: uppercase; 
-            color: var(--c-black); 
-            font-family: 'Barlow Condensed', sans-serif;
-            border-bottom: 1px solid #f0f0f0;
-        }
+    .map-stage{flex:1;position:relative;overflow:hidden;background:#e5e7eb;display:flex;align-items:center;justify-content:center;}
+    #board-container{width:100%;height:100%;background:#fff;position:relative;overflow:hidden;box-shadow:inset 0 0 20px rgba(0,0,0,.05);}
+    #map-transform-layer{width:100%;height:100%;position:relative;transform-origin:center;display:flex;align-items:center;justify-content:center;}
+    #user-map-img{width:100%;height:100%;object-fit:contain;pointer-events:none;}
 
-        .tool-item {
-            margin: 0 15px 10px 15px;
-            padding: 10px 15px;
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            display: flex; align-items: center; gap: 12px;
-            cursor: pointer; transition: all 0.2s;
-            font-size: 13px; font-weight: 600; color: #334155;
-        }
-        .tool-item:hover { 
-            border-color: var(--c-blue); 
-            background: #f8fafc;
-            transform: translateX(2px);
-        }
-        .border-l-4 { border-left-width: 4px; }
-        
-        .tool-highlight {
-            background: linear-gradient(135deg, var(--c-blue) 0%, #1e7bb3 100%) !important;
-            color: white !important;
-            border: none !important;
-            justify-content: center;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(40, 151, 213, 0.3);
-        }
-        .tool-highlight:hover { transform: translateY(-2px) !important; box-shadow: 0 6px 12px rgba(40, 151, 213, 0.4) !important; }
+    .draggable{
+      position:absolute;z-index:100;transform:translate(-50%,-100%);
+      display:flex;flex-direction:column;align-items:center;cursor:grab;
+      filter:drop-shadow(0 4px 6px rgba(0,0,0,.15));transition:transform .1s;
+    }
+    .draggable:active{cursor:grabbing;transform:translate(-50%,-100%) scale(1.1);z-index:150;}
 
-        /* MAP AREA */
-        .map-stage { flex: 1; position: relative; overflow: hidden; background: #e5e7eb; display: flex; align-items: center; justify-content: center; }
-        #board-container { 
-            width: 100%; height: 100%; 
-            background: white; 
-            position: relative; overflow: hidden; 
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
-        }
-        #map-transform-layer { width: 100%; height: 100%; position: relative; transform-origin: center; display: flex; align-items: center; justify-content: center; }
-        #user-map-img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+    .bubble-container{
+      position:relative;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;
+      border:2px solid #fff;
+    }
+    .bubble-lieu{background:var(--c-red);color:#fff;}
+    .bubble-transport{background:var(--c-blue);color:#fff;}
+    .bubble-pro{background:var(--c-orange);color:#fff;}
+    .bubble-admin{background:var(--c-purple);color:#fff;}
+    .bubble-loisir{background:var(--c-pink);color:#fff;}
+    .bubble-frein{background:var(--c-black);color:#fff;}
 
-        /* STICKERS */
-        .draggable { 
-            position: absolute; z-index: 100; 
-            transform: translate(-50%, -100%);
-            display: flex; flex-direction: column; align-items: center; 
-            cursor: grab; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
-            transition: transform 0.1s;
-        }
-        .draggable:active { cursor: grabbing; transform: translate(-50%, -100%) scale(1.1); z-index: 150; }
+    .sticker-emoji{font-size:20px;line-height:1;}
+    .sticker-label{
+      margin-top:6px;background:rgba(255,255,255,.95);padding:4px 10px;border-radius:12px;
+      font-size:11px;font-weight:700;color:#1e293b;text-align:center;white-space:pre-wrap;max-width:140px;
+      box-shadow:0 2px 4px rgba(0,0,0,.1);border:1px solid rgba(0,0,0,.05);
+    }
+    .sticker-input{
+      margin-top:6px;background:#fff;padding:4px 8px;border-radius:8px;border:1px solid #cbd5e1;
+      font-size:11px;text-align:center;width:110px;outline:none;box-shadow:0 2px 4px rgba(0,0,0,.1);
+    }
+    .sticker-input:focus{border-color:var(--c-blue);}
 
-        .bubble-container {
-            position: relative;
-            background: white;
-            border-radius: 50%;
-            width: 40px; height: 40px;
-            display: flex; align-items: center; justify-content: center;
-            border: 2px solid white;
-        }
-        .bubble-lieu { background: var(--c-red); color: white; }
-        .bubble-transport { background: var(--c-blue); color: white; }
-        .bubble-pro { background: var(--c-orange); color: white; }
-        .bubble-admin { background: var(--c-purple); color: white; }
-        .bubble-loisir { background: var(--c-pink); color: white; }
-        .bubble-frein { background: var(--c-black); color: white; }
+    .delete-btn{
+      position:absolute;top:-5px;right:-5px;width:18px;height:18px;background:#ef4444;color:#fff;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;
+      box-shadow:0 2px 4px rgba(0,0,0,.2);opacity:0;transform:scale(.8);transition:all .2s;border:2px solid #fff;
+    }
+    .draggable:hover .delete-btn{opacity:1;transform:scale(1);}
 
-        .sticker-emoji { font-size: 20px; line-height: 1; }
-        .sticker-label { 
-            margin-top: 6px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 11px; font-weight: 700;
-            color: #1e293b;
-            text-align: center;
-            white-space: pre-wrap;
-            max-width: 140px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            border: 1px solid rgba(0,0,0,0.05);
-        }
-        .sticker-input {
-            margin-top: 6px;
-            background: white;
-            padding: 4px 8px;
-            border-radius: 8px;
-            border: 1px solid #cbd5e1;
-            font-size: 11px;
-            text-align: center;
-            width: 110px;
-            outline: none;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .sticker-input:focus { border-color: var(--c-blue); }
+    .sidebar-right{width:200px;background:var(--c-white);border-left:1px solid #eee;display:flex;flex-direction:column;z-index:20;}
+    .resources-header{
+      padding:20px;background:var(--c-white);color:var(--c-black);font-family:'Barlow Condensed';
+      font-weight:700;font-size:16px;text-transform:uppercase;border-bottom:2px solid var(--c-orange);text-align:center;
+    }
+    .resource-item{
+      display:flex;align-items:center;gap:10px;padding:12px 15px;border-bottom:1px solid #f8f9fa;cursor:pointer;
+      transition:all .2s;font-size:12px;font-weight:600;color:#475569;
+    }
+    .resource-item:hover{background:#f0f9ff;padding-left:20px;color:var(--c-blue);}
+    .res-icon{font-size:18px;width:24px;text-align:center;}
 
-        .delete-btn {
-            position: absolute;
-            top: -5px; right: -5px;
-            width: 18px; height: 18px;
-            background: #ef4444;
-            color: white;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 12px; font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            opacity: 0;
-            transform: scale(0.8);
-            transition: all 0.2s;
-            border: 2px solid white;
-        }
-        .draggable:hover .delete-btn { opacity: 1; transform: scale(1); }
+    .modal-overlay{
+      position:fixed;inset:0;background:rgba(23,23,24,.6);backdrop-filter:blur(4px);z-index:1000;
+      display:none;align-items:center;justify-content:center;opacity:0;transition:opacity .3s;
+    }
+    .modal-overlay.active{display:flex;opacity:1;}
+    .modal-card{
+      background:#fff;width:95%;max-width:900px;max-height:85vh;border-radius:20px;
+      box-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 10px 10px -5px rgba(0,0,0,.04);
+      overflow:hidden;display:flex;flex-direction:column;
+    }
+    .modal-header{padding:20px 30px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;}
+    .modal-title{font-family:'Barlow Condensed';font-size:24px;font-weight:800;text-transform:uppercase;color:var(--c-blue);}
+    .modal-close{font-size:28px;color:#94a3b8;cursor:pointer;transition:color .2s;line-height:1;}
+    .modal-close:hover{color:var(--c-black);}
 
-        /* SIDEBAR DROITE */
-        .sidebar-right { 
-            width: 200px; 
-            background: var(--c-white); 
-            border-left: 1px solid #eee; 
-            display: flex; flex-direction: column; 
-            z-index: 20;
-        }
-        .resources-header { 
-            padding: 20px; 
-            background: var(--c-white); 
-            color: var(--c-black); 
-            font-family: 'Barlow Condensed'; 
-            font-weight: 700; font-size: 16px; text-transform: uppercase; 
-            border-bottom: 2px solid var(--c-orange);
-            text-align: center;
-        }
+    .library-grid{
+      padding:30px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:25px;
+      overflow-y:auto;background:#f8fafc;flex:1;
+    }
+    .map-card{
+      background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 6px -1px rgba(0,0,0,.05);
+      transition:all .3s;cursor:pointer;border:1px solid transparent;
+    }
+    .map-card:hover{transform:translateY(-5px);box-shadow:0 10px 15px -3px rgba(0,0,0,.1);border-color:var(--c-orange);}
+    .map-thumb{height:140px;background:#e2e8f0;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:40px;}
+    .map-thumb img{width:100%;height:100%;object-fit:cover;transition:transform .5s;}
+    .map-card:hover img{transform:scale(1.05);}
+    .map-info{padding:15px;}
+    .map-name{font-weight:700;font-size:13px;color:var(--c-black);margin-bottom:5px;}
+    .map-tag{display:inline-block;padding:2px 8px;background:#e0f2fe;color:var(--c-blue);border-radius:10px;font-size:10px;font-weight:700;}
 
-        .resource-item { 
-            display: flex; align-items: center; gap: 10px; 
-            padding: 12px 15px; 
-            border-bottom: 1px solid #f8f9fa; 
-            cursor: pointer; transition: all 0.2s; 
-            font-size: 12px; font-weight: 600; color: #475569;
-        }
-        .resource-item:hover { background: #f0f9ff; padding-left: 20px; color: var(--c-blue); }
-        .res-icon { font-size: 18px; width: 24px; text-align: center; }
+    .input-mlpb{
+      width:100%;padding:10px 15px;border-radius:8px;border:1px solid #cbd5e1;
+      font-family:'Mulish';font-size:14px;outline:none;transition:border-color .2s;
+    }
+    .input-mlpb:focus{border-color:var(--c-blue);}
 
-        /* MODALS */
-        .modal-overlay { 
-            position: fixed; inset: 0; 
-            background: rgba(23, 23, 24, 0.6); 
-            backdrop-filter: blur(4px); 
-            z-index: 1000; 
-            display: none; align-items: center; justify-content: center; 
-            opacity: 0; transition: opacity 0.3s;
-        }
-        .modal-overlay.active { display: flex; opacity: 1; }
-        
-        .modal-card { 
-            background: white; width: 95%; max-width: 900px; max-height: 85vh; 
-            border-radius: 20px; 
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            overflow: hidden; display: flex; flex-direction: column; 
-        }
+    .zoom-controls{position:absolute;bottom:30px;left:30px;display:flex;flex-direction:column;gap:8px;}
+    .zoom-btn{
+      width:44px;height:44px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;
+      font-size:20px;color:var(--c-black);box-shadow:0 4px 6px rgba(0,0,0,.1);cursor:pointer;transition:all .2s;
+    }
+    .zoom-btn:hover{background:var(--c-light-grey);transform:scale(1.05);}
 
-        .modal-header { padding: 20px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .modal-title { font-family: 'Barlow Condensed'; font-size: 24px; font-weight: 800; text-transform: uppercase; color: var(--c-blue); }
-        .modal-close { font-size: 28px; color: #94a3b8; cursor: pointer; transition: color 0.2s; line-height: 1; }
-        .modal-close:hover { color: var(--c-black); }
-
-        .library-grid { 
-            padding: 30px; 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; 
-            overflow-y: auto; background: #f8fafc; flex: 1;
-        }
-        
-        .map-card { 
-            background: white; border-radius: 12px; overflow: hidden; 
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); 
-            transition: all 0.3s; cursor: pointer; border: 1px solid transparent;
-        }
-        .map-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border-color: var(--c-orange); }
-        .map-thumb { height: 140px; background: #e2e8f0; overflow: hidden; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 40px; }
-        .map-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
-        .map-card:hover img { transform: scale(1.05); }
-        .map-info { padding: 15px; }
-        .map-name { font-weight: 700; font-size: 13px; color: var(--c-black); margin-bottom: 5px; }
-        .map-tag { display: inline-block; padding: 2px 8px; background: #e0f2fe; color: var(--c-blue); border-radius: 10px; font-size: 10px; font-weight: 700; }
-
-        .input-mlpb { 
-            width: 100%; padding: 10px 15px; border-radius: 8px; border: 1px solid #cbd5e1; 
-            font-family: 'Mulish'; font-size: 14px; outline: none; transition: border-color 0.2s; 
-        }
-        .input-mlpb:focus { border-color: var(--c-blue); ring: 2px solid var(--c-blue); }
-        .label-mlpb { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 6px; }
-
-        .zoom-controls { position: absolute; bottom: 30px; left: 30px; display: flex; flex-direction: column; gap: 8px; }
-        .zoom-btn { 
-            width: 44px; height: 44px; background: white; border-radius: 12px; 
-            display: flex; align-items: center; justify-content: center; 
-            font-size: 20px; color: var(--c-black); 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer; transition: all 0.2s; 
-        }
-        .zoom-btn:hover { background: var(--c-light-grey); transform: scale(1.05); }
-
-        @media (max-width: 768px) {
-            .cockpit-container { flex-direction: column; height: auto; overflow: auto; }
-            .sidebar-left, .sidebar-right { width: 100%; height: auto; }
-            .sidebar-left { border-right: none; border-bottom: 1px solid #eee; }
-            .nav-column { flex-direction: row; width: 100%; overflow-x: auto; padding: 10px; gap: 10px; }
-            .nav-btn { margin: 0; flex-shrink: 0; }
-            .tools-column { display: none; }
-            .map-stage { height: 60vh; }
-        }
-    </style>
+    @media (max-width:768px){
+      .cockpit-container{flex-direction:column;height:auto;overflow:auto;}
+      .sidebar-left,.sidebar-right{width:100%;height:auto;}
+      .sidebar-left{border-right:none;border-bottom:1px solid #eee;}
+      .nav-column{flex-direction:row;width:100%;overflow-x:auto;padding:10px;gap:10px;}
+      .nav-btn{margin:0;flex-shrink:0;}
+      .tools-column{display:none;}
+      .map-stage{height:60vh;}
+    }
+  </style>
 </head>
+
 <body class="flex flex-col h-full overflow-hidden">
 
-    <header>
-        <div class="flex items-center gap-4">
-            <img src="https://static.wixstatic.com/media/dd5dab_47743b1c86024865ba19e623a3db327f~mv2.avif/v1/fill/w_224,h_60,al_c,q_80,enc_avif,quality_auto/dd5dab_47743b1c86024865ba19e623a3db327f~mv2.avif" alt="Logo MLPB" class="h-10 object-contain">
-            <div>
-                <h1 class="font-black text-xl uppercase tracking-tight text-slate-800 leading-none">Map Ta Mob</h1>
-                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Diagnostic Mobilité Jeunes</span>
-            </div>
-        </div>
-        <div class="flex gap-3">
-            <a href="https://mlpb-tools.github.io/diagmob360/" target="_blank" class="btn-mlpb" style="text-decoration:none;">
-                <span class="text-lg">📊</span> DiagMob360
-            </a>
-            <button onclick="toggleLibrary()" class="btn-mlpb">
-                <span class="text-lg">📚</span> Bibliothèque
-            </button>
-            <button onclick="downloadMapPDF()" class="btn-mlpb" style="background:#1e293b; color:white; border:none;">
-                <span class="text-lg">📄</span> Exporter PDF
-            </button>
-        </div>
-    </header>
-
-    <div class="cockpit-container">
-        <!-- Sidebar Gauche -->
-        <aside class="sidebar-left">
-            <div class="nav-column">
-                <div class="nav-btn active" data-cat="lieux" onclick="switchTab('lieux', this)" title="Lieu de vie">🏠</div>
-                <div class="nav-btn" data-cat="transports" onclick="switchTab('transports', this)" title="Mobilité">🚌</div>
-                <div class="nav-btn" data-cat="pro" onclick="switchTab('pro', this)" title="Avenir">🚀</div>
-                <div class="nav-btn" data-cat="demarches" onclick="switchTab('demarches', this)" title="Démarches">🤝</div>
-                <div class="nav-btn" data-cat="loisirs" onclick="switchTab('loisirs', this)" title="Social">🎉</div>
-                <div class="nav-btn" data-cat="freins" onclick="switchTab('freins', this)" title="Obstacles">🚧</div>
-            </div>
-            <div class="tools-column">
-                <div id="tools-title" class="tools-header text-red-700">Lieu de vie</div>
-                <div id="tools-container" class="flex-1 overflow-y-auto py-4"></div>
-            </div>
-        </aside>
-
-        <!-- Espace Carte -->
-        <main class="map-stage">
-            <div id="board-container">
-                <div id="map-transform-layer">
-                    <div id="empty-state" class="flex flex-col items-center opacity-40 select-none pointer-events-none">
-                        <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-4xl shadow-inner">🗺️</div>
-                        <h2 class="font-bold text-gray-400 uppercase tracking-widest text-center">Aucune carte chargée</h2>
-                        <p class="text-sm text-gray-400 mt-2">Ouvrez la bibliothèque pour commencer</p>
-                    </div>
-                    <img id="user-map-img" class="hidden shadow-xl" src="" alt="Fond de carte">
-                    <div id="drop-zone" class="absolute inset-0 z-10"></div>
-                </div>
-                
-                <div class="zoom-controls">
-                    <button class="zoom-btn" onclick="zoomIn()" title="Zoomer">+</button>
-                    <button class="zoom-btn" onclick="resetZoom()" title="Réinitialiser">⟲</button>
-                    <button class="zoom-btn" onclick="zoomOut()" title="Dézoomer">-</button>
-                </div>
-            </div>
-        </main>
-
-        <!-- Sidebar Droite (Mes Ressources) -->
-        <aside class="sidebar-right">
-            <div class="resources-header">Mes Ressources</div>
-            <div class="flex-1 overflow-y-auto w-full py-2">
-                <div id="resources-container"></div>
-            </div>
-        </aside>
+<header>
+  <div class="flex items-center gap-4">
+    <img src="https://static.wixstatic.com/media/dd5dab_47743b1c86024865ba19e623a3db327f~mv2.avif/v1/fill/w_224,h_60,al_c,q_80,enc_avif,quality_auto/dd5dab_47743b1c86024865ba19e623a3db327f~mv2.avif" alt="Logo MLPB" class="h-10 object-contain">
+    <div>
+      <h1 class="font-black text-xl uppercase tracking-tight text-slate-800 leading-none">Map Ta Mob</h1>
+      <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Diagnostic Mobilité Jeunes</span>
     </div>
-
-    <!-- BIBLIOTHÈQUE MODAL -->
-    <div id="library-modal" class="modal-overlay">
-        <div class="modal-card">
-            <div class="modal-header">
-                <div>
-                    <h2 class="modal-title">Bibliothèque de Cartes</h2>
-                    <p class="text-sm text-gray-500 mt-1">Sélectionnez un fond de carte (fichiers locaux)</p>
-                </div>
-                <div class="modal-close" onclick="toggleLibrary()">×</div>
-            </div>
-            
-<div class="p-6 bg-white border-b border-gray-100 flex gap-4 items-center">
-  <div class="relative flex-1">
-    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">🔍</span>
-    <input type="text" id="searchInput" placeholder="Rechercher..." oninput="handleSearch(this.value)" class="input-mlpb pl-10">
   </div>
+  <div class="flex gap-3">
+    <a href="https://mlpb-tools.github.io/diagmob360/" target="_blank" class="btn-mlpb" style="text-decoration:none;">
+      <span class="text-lg">📊</span> DiagMob360
+    </a>
+    <button onclick="toggleLibrary()" class="btn-mlpb">
+      <span class="text-lg">📚</span> Bibliothèque
+    </button>
+    <button onclick="downloadMapPDF()" class="btn-mlpb" style="background:#1e293b; color:white; border:none;">
+      <span class="text-lg">📄</span> Exporter PDF
+    </button>
+  </div>
+</header>
 
-  <!-- Dropdown cartes -->
-  <select id="mapSelect" class="input-mlpb" style="max-width:260px;" onchange="handleMapSelect(this.value)">
-    <option value="">Choisir une carte…</option>
-  </select>
+<div class="cockpit-container">
+  <!-- Sidebar Gauche -->
+  <aside class="sidebar-left">
+    <div class="nav-column">
+      <div class="nav-btn active" data-cat="lieux" onclick="switchTab('lieux', this)" title="Lieu de vie">🏠</div>
+      <div class="nav-btn" data-cat="transports" onclick="switchTab('transports', this)" title="Mobilité">🚌</div>
+      <div class="nav-btn" data-cat="pro" onclick="switchTab('pro', this)" title="Avenir">🚀</div>
+      <div class="nav-btn" data-cat="demarches" onclick="switchTab('demarches', this)" title="Démarches">🤝</div>
+      <div class="nav-btn" data-cat="loisirs" onclick="switchTab('loisirs', this)" title="Social">🎉</div>
+      <div class="nav-btn" data-cat="freins" onclick="switchTab('freins', this)" title="Obstacles">🚧</div>
+    </div>
+    <div class="tools-column">
+      <div id="tools-title" class="tools-header text-red-700">Lieu de vie</div>
+      <div id="tools-container" class="flex-1 overflow-y-auto py-4"></div>
+    </div>
+  </aside>
 
-  <button class="btn-mlpb btn-primary" onclick="openAddMapModal()">+ Importer une carte</button>
+  <!-- Espace Carte -->
+  <main class="map-stage">
+    <div id="board-container">
+      <div id="map-transform-layer">
+        <div id="empty-state" class="flex flex-col items-center opacity-40 select-none pointer-events-none">
+          <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-4xl shadow-inner">🗺️</div>
+          <h2 class="font-bold text-gray-400 uppercase tracking-widest text-center">Aucune carte chargée</h2>
+          <p class="text-sm text-gray-400 mt-2">Ouvrez la bibliothèque pour commencer</p>
+        </div>
+        <img id="user-map-img" class="hidden shadow-xl" src="" alt="Fond de carte">
+        <div id="drop-zone" class="absolute inset-0 z-10"></div>
+      </div>
+
+      <div class="zoom-controls">
+        <button class="zoom-btn" onclick="zoomIn()" title="Zoomer">+</button>
+        <button class="zoom-btn" onclick="resetZoom()" title="Réinitialiser">⟲</button>
+        <button class="zoom-btn" onclick="zoomOut()" title="Dézoomer">-</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Sidebar Droite (Mes Ressources) -->
+  <aside class="sidebar-right">
+    <div class="resources-header">Mes Ressources</div>
+    <div class="flex-1 overflow-y-auto w-full py-2">
+      <div id="resources-container"></div>
+    </div>
+  </aside>
 </div>
 
-            
-            <div class="library-grid" id="libraryContainer"></div>
-        </div>
+<!-- BIBLIOTHÈQUE MODAL -->
+<div id="library-modal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <h2 class="modal-title">Bibliothèque de Cartes</h2>
+        <p class="text-sm text-gray-500 mt-1">Sélectionnez un fond de carte</p>
+      </div>
+      <div class="modal-close" onclick="toggleLibrary()">×</div>
     </div>
 
-    <!-- AJOUT CARTE MODAL -->
-    <div id="add-map-modal" class="modal-overlay" style="z-index: 1100;">
-        <div class="modal-card" style="max-width: 500px; height: auto;">
-            <div class="modal-header">
-                <h2 class="modal-title text-xl">Ajouter une carte</h2>
-                <div class="modal-close" onclick="closeAddMapModal()">×</div>
-            </div>
-            <form onsubmit="handleAddMap(event)" class="p-8">
-                <div class="mb-6">
-                    <label class="label-mlpb">Nom de la carte</label>
-                    <input type="text" id="newMapName" required class="input-mlpb" placeholder="Ex: Mon Quartier">
-                </div>
-                <div class="mb-8">
-                    <label class="label-mlpb">Fichier Image</label>
-                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:bg-gray-50 transition-colors relative">
-                        <input type="file" id="newMapFile" accept="image/*" required class="absolute inset-0 opacity-0 cursor-pointer">
-                        <span class="text-2xl block mb-2">📁</span>
-                        <span class="text-sm font-bold text-gray-500">Cliquez pour déposer un fichier</span>
-                    </div>
-                </div>
-                <div class="flex justify-end gap-3">
-                    <button type="button" onclick="closeAddMapModal()" class="btn-mlpb">Annuler</button>
-                    <button type="submit" class="btn-mlpb btn-primary">Valider</button>
-                </div>
-            </form>
-        </div>
+    <div class="p-6 bg-white border-b border-gray-100 flex gap-4 items-center">
+      <div class="relative flex-1">
+        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">🔍</span>
+        <input type="text" id="searchInput" placeholder="Rechercher..." oninput="handleSearch(this.value)" class="input-mlpb pl-10">
+      </div>
+
+      <!-- Dropdown cartes -->
+      <select id="mapSelect" class="input-mlpb" style="max-width:260px;" onchange="handleMapSelect(this.value)">
+        <option value="">Choisir une carte…</option>
+      </select>
+
+      <button class="btn-mlpb btn-primary" onclick="openAddMapModal()">+ Importer une carte</button>
     </div>
 
-    <!-- COVOITURAGE MODAL -->
-    <div id="covoit-modal" class="modal-overlay" style="z-index: 1200;">
-        <div class="modal-card" style="max-width: 650px; height: auto;">
-            <div class="modal-header bg-gradient-to-r from-orange-500 to-pink-500 text-white border-none">
-                <h3 class="font-black text-2xl uppercase tracking-wider text-white">🚘 Je propose un Covoit'</h3>
-                <div class="modal-close text-white hover:text-white opacity-80 hover:opacity-100" onclick="closeCovoitModal()">×</div>
-            </div>
-            
-            <div class="flex p-2 bg-gray-100 gap-2">
-                <button class="flex-1 py-3 rounded-lg font-bold text-sm uppercase transition-colors bg-white shadow-sm text-orange-600" id="tab-regulier" onclick="switchCovoitTab('regulier')">📅 Régulier</button>
-                <button class="flex-1 py-3 rounded-lg font-bold text-sm uppercase transition-colors text-gray-500 hover:bg-white" id="tab-ponctuel" onclick="switchCovoitTab('ponctuel')">📍 Ponctuel</button>
-            </div>
+    <div class="library-grid" id="libraryContainer"></div>
+  </div>
+</div>
 
-            <div class="p-8">
-                <!-- REGULIER -->
-                <div id="form-regulier" class="block">
-                    <div class="grid grid-cols-2 gap-5 mb-5">
-                        <div><label class="label-mlpb">Départ</label><input type="text" id="reg-depart" class="input-mlpb" placeholder="Ville ou quartier"></div>
-                        <div><label class="label-mlpb">Arrivée</label><input type="text" id="reg-arrivee" class="input-mlpb" placeholder="Lieu de travail/étude"></div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-5 mb-5">
-                        <div><label class="label-mlpb">Heure Aller</label><input type="time" id="reg-h-aller" class="input-mlpb"></div>
-                        <div><label class="label-mlpb">Heure Retour</label><input type="time" id="reg-h-retour" class="input-mlpb"></div>
-                    </div>
-                    <div class="mb-6"><label class="label-mlpb">Infos (Jours, participation...)</label><textarea id="reg-infos" rows="2" class="input-mlpb"></textarea></div>
-                    <button onclick="submitCovoit('regulier')" class="w-full btn-mlpb btn-primary justify-center py-3 text-sm">Publier l'annonce</button>
-                </div>
-
-                <!-- PONCTUEL -->
-                <div id="form-ponctuel" class="hidden">
-                    <div class="grid grid-cols-2 gap-5 mb-5">
-                        <div><label class="label-mlpb">Date</label><input type="date" id="ponc-date" class="input-mlpb"></div>
-                        <div><label class="label-mlpb">Heure</label><input type="time" id="ponc-heure" class="input-mlpb"></div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-5 mb-6">
-                        <div><label class="label-mlpb">De</label><input type="text" id="ponc-depart" class="input-mlpb"></div>
-                        <div><label class="label-mlpb">Vers</label><input type="text" id="ponc-arrivee" class="input-mlpb"></div>
-                    </div>
-                    <button onclick="submitCovoit('ponctuel')" class="w-full btn-mlpb btn-primary justify-center py-3 text-sm">Publier l'annonce</button>
-                </div>
-            </div>
+<!-- AJOUT CARTE MODAL -->
+<div id="add-map-modal" class="modal-overlay" style="z-index:1100;">
+  <div class="modal-card" style="max-width:500px;height:auto;">
+    <div class="modal-header">
+      <h2 class="modal-title text-xl">Ajouter une carte</h2>
+      <div class="modal-close" onclick="closeAddMapModal()">×</div>
+    </div>
+    <form onsubmit="handleAddMap(event)" class="p-8">
+      <div class="mb-6">
+        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-2">Nom de la carte</label>
+        <input type="text" id="newMapName" required class="input-mlpb" placeholder="Ex: Mon Quartier">
+      </div>
+      <div class="mb-8">
+        <label class="block text-[11px] font-bold uppercase text-slate-500 mb-2">Fichier Image</label>
+        <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:bg-gray-50 transition-colors relative">
+          <input type="file" id="newMapFile" accept="image/*" required class="absolute inset-0 opacity-0 cursor-pointer">
+          <span class="text-2xl block mb-2">📁</span>
+          <span class="text-sm font-bold text-gray-500">Cliquez pour déposer un fichier</span>
         </div>
+      </div>
+      <div class="flex justify-end gap-3">
+        <button type="button" onclick="closeAddMapModal()" class="btn-mlpb">Annuler</button>
+        <button type="submit" class="btn-mlpb btn-primary">Valider</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- COVOITURAGE MODAL -->
+<div id="covoit-modal" class="modal-overlay" style="z-index:1200;">
+  <div class="modal-card" style="max-width:650px;height:auto;">
+    <div class="modal-header bg-gradient-to-r from-orange-500 to-pink-500 text-white border-none">
+      <h3 class="font-black text-2xl uppercase tracking-wider text-white">🚘 Je propose un Covoit'</h3>
+      <div class="modal-close text-white hover:text-white opacity-80 hover:opacity-100" onclick="closeCovoitModal()">×</div>
     </div>
 
-    <script>
-        // CONFIGURATION MISE À JOUR AVEC VOS CARTES
-        const config = {
-            "maps": [
-                {
-      id: 0,
-      name: "Pays Basque",
-      url: "Pays-Basque.png",
-      tag: "Carte par défaut"
-    },
-                { id: 1,  name: "Errobi – Sud Pays Basque", url: "Errobi-sud-pays-basque.jpg", tag: "Sud Pays Basque" },
-                { id: 2,  name: "Europe", url: "Europe.jpg", tag: "Europe" },
-                { id: 3,  name: "Garazi – Baigorri", url: "Garazi-Baigorri.jpg", tag: "Intérieur" },
-                { id: 4,  name: "Hasparren – Adour", url: "Hasparren-Adour.jpg", tag: "Adour" },
-                { id: 5,  name: "Hasparren – St Palais", url: "Hasparren-stpalais.jpg", tag: "Intérieur" },
-                { id: 6,  name: "Navarre transfrontalière", url: "Navarre-transfrontalier.jpg", tag: "Transfrontalier" },
-                { id: 7,  name: "Adour Ouest", url: "adour-ouest.jpg", tag: "Adour" },
-                { id: 8,  name: "BAB", url: "bab.jpg", tag: "Urbain" },
-                { id: 9,  name: "Bordeaux – Toulouse – Bilbao", url: "bordeaux-toulouse-bilbao.jpg", tag: "Grande Échelle" },
-                { id: 10, name: "France", url: "france.jpg", tag: "National" },
-                { id: 11, name: "Hendaye – St Jean", url: "hendaye-st-jean.jpg", tag: "Littoral" },
-                { id: 12, name: "Hendaye transfrontalier", url: "hendaye-transfrontalier.jpg", tag: "Transfrontalier" },
-                { id: 13, name: "Saint-Palais – Garazi – Mauleon", url: "saint-palais-garazi-mauleon.jpg", tag: "Intérieur" },
-                { id: 14, name: "Ustaritz – Cambo", url: "ustaritz-cambo.jpg", tag: "Intérieur" }
-            ]
-        };
+    <div class="flex p-2 bg-gray-100 gap-2">
+      <button class="flex-1 py-3 rounded-lg font-bold text-sm uppercase transition-colors bg-white shadow-sm text-orange-600" id="tab-regulier" onclick="switchCovoitTab('regulier')">📅 Régulier</button>
+      <button class="flex-1 py-3 rounded-lg font-bold text-sm uppercase transition-colors text-gray-500 hover:bg-white" id="tab-ponctuel" onclick="switchCovoitTab('ponctuel')">📍 Ponctuel</button>
+    </div>
 
-        const taxonomy = {
-            lieux de vie : [ 
-                { icon: "🏠", label: "Chez mes parents", color: "var(--c-red)", class:"bubble-lieu" }, 
-                { icon: "🔑", label: "Chez moi", color: "var(--c-red)", class:"bubble-lieu" }, 
-                { icon: "🏘️", label: "En coloc", color: "var(--c-red)", class:"bubble-lieu" },
-                { icon: "🏢", label: "Foyer", color: "var(--c-red)", class:"bubble-lieu" },
-                { icon: "🛏️", label: "Hébergement temporaire", color: "var(--c-red)", class:"bubble-lieu" }
-            ],
-            transports: [
-                { icon: "🚘", label: "JE PROPOSE UN COVOIT", color: "var(--c-orange)", class:"bubble-transport", action: "openCovoitForm", highlight: true },
-                { icon: "🚶", label: "Marche", color: "var(--c-blue)", class:"bubble-transport" }, 
-                { icon: "🚲", label: "Vélo Perso / Pony", color: "var(--c-blue)", class:"bubble-transport" },
-                { icon: "🛴", label: "Trottinette", color: "var(--c-blue)", class:"bubble-transport" },
-                { icon: "🚌", label: "Bus / Car", color: "var(--c-blue)", class:"bubble-transport" }, 
-                { icon: "🚋", label: "Tram'Bus", color: "var(--c-blue)", class:"bubble-transport" },
-                { icon: "🚆", label: "Train", color: "var(--c-blue)", class:"bubble-transport" }, 
-                { icon: "🛵", label: "Scooter / Moto", color: "var(--c-blue)", class:"bubble-transport" },
-                { icon: "🚘", label: "Voiture Perso", color: "var(--c-blue)", class:"bubble-transport" },
-                { icon: "🚗", label: "Autopartage", color: "var(--c-blue)", class:"bubble-transport" },
-                { icon: "👍", label: "Auto-Stop", color: "var(--c-blue)", class:"bubble-transport" },
-                { icon: "🤝", label: "Covoiturage (Passager)", color: "var(--c-blue)", class:"bubble-transport" }
-            ],
-            pro: [ 
-                { icon: "🚀", label: "Mission Locale", color: "var(--c-orange)", class:"bubble-pro" }, 
-                { icon: "🏛️", label: "France Travail", color: "var(--c-orange)", class:"bubble-pro" },
-                { icon: "💼", label: "Entreprise", color: "var(--c-orange)", class:"bubble-pro", editable: true }, 
-                { icon: "🎓", label: "Formation", color: "var(--c-orange)", class:"bubble-pro", editable: true },
-                { icon: "🤝", label: "Volontariat", color: "var(--c-orange)", class:"bubble-pro", editable: true }
-            ],
-            demarches: [ 
-                { icon: "🤝", label: "Assistante Sociale", color: "var(--c-purple)", class:"bubble-admin" }, 
-                { icon: "🏛️", label: "CCAS", color: "var(--c-purple)", class:"bubble-admin" },
-                { icon: "🩺", label: "Médecin", color: "var(--c-purple)", class:"bubble-admin" },
-                { icon: "💶", label: "CAF", color: "var(--c-purple)", class:"bubble-admin" },
-                { icon: "📜", label: "Mairie", color: "var(--c-purple)", class:"bubble-admin" },
-                { icon: "🏦", label: "Banque", color: "var(--c-purple)", class:"bubble-admin" }
-            ],
-            loisirs: [ 
-                { icon: "🛒", label: "Courses", color: "var(--c-pink)", class:"bubble-loisir" }, 
-                { icon: "⚽", label: "Sport", color: "var(--c-pink)", class:"bubble-loisir" }, 
-                { icon: "🌊", label: "Nature", color: "var(--c-pink)", class:"bubble-loisir" },
-                { icon: "☕", label: "Café / Sortie", color: "var(--c-pink)", class:"bubble-loisir" }
-                { icon: "🤲", label: "Bénévolat associatif", color: "var(--c-pink)", class:"bubble-loisir", editable: true }
-                { icon: "🎭", label: "Culture", color: "var(--c-pink)", class:"bubble-loisir", editable: true }
-]
-]
-            ],
-            freins: [ 
-                { icon: "🚫", label: "Zone Blanche", color: "var(--c-black)", class:"bubble-frein" }, 
-                { icon: "⏰", label: "Horaires inadaptés", color: "var(--c-black)", class:"bubble-frein" },
-                { icon: "🤯", label: "Trop compliqué", color: "var(--c-black)", class:"bubble-frein" },
-                { icon: "💶", label: "Coût trop élevé", color: "var(--c-black)", class:"bubble-frein" }
-            ]
-        };
+    <div class="p-8">
+      <div id="form-regulier" class="block">
+        <div class="grid grid-cols-2 gap-5 mb-5">
+          <div><label class="block text-[11px] font-bold uppercase text-slate-500 mb-2">Départ</label><input type="text" id="reg-depart" class="input-mlpb" placeholder="Ville ou quartier"></div>
+          <div><label class="block text-[11px] font-bold uppercase text-slate-500 mb-2">Arrivée</label><input type="text" id="reg-arrivee" class="input-mlpb" placeholder="Lieu de travail/étude"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-5 mb-5">
+          <div><label class="block text-[11px] font-bold uppercase text-slate-500 mb-2">Heure Aller</label><input type="time" id="reg-h-aller" class="input-mlpb"></div>
+          <div><label class="block text-[11px] font-bold uppercase text-slate-500 mb-2">Heure Retour</label><input type="time" id="reg-h-retour" class="input-mlpb"></div>
+        </div>
+        <div class="mb-6"><label class="block text-[11px] font-bold uppercase text-slate-500 mb-2">Infos (Jours, participation...)</label><textarea id="reg-infos" rows="2" class="input-mlpb"></textarea></div>
+        <button onclick="submitCovoit('regulier')" class="w-full btn-mlpb btn-primary justify-center py-3 text-sm">Publier l'annonce</button>
+      </div>
 
-        const resources = [
-            { icon: "🚲", label: "Vélo" }, { icon: "🛵", label: "Scooter" }, { icon: "🏍️", label: "Moto" },
-            { icon: "🛴", label: "Trottinette" }, { icon: "🚘", label: "Voiture" }, { icon: "🎫", label: "Carte Txik Txak" },
-            { icon: "🚆", label: "Carte SNCF" }, { icon: "🛵", label: "Permis AM" }, { icon: "🚗", label: "Permis B" },
-            { icon: "🏫", label: "Mon Auto-École" }, { icon: "📖", label: "Code de la route" }
-        ];
+      <div id="form-ponctuel" class="hidden">
+        <div class="grid grid-cols-2 gap-5 mb-5">
+          <div><label class="block text-[11px] font-bold uppercase text-slate-500 mb-2">Date</label><input type="date" id="ponc-date" class="input-mlpb"></div>
+          <div><label class="block text-[11px] font-bold uppercase text-slate-500 mb-2">Heure</label><input type="time" id="ponc-heure" class="input-mlpb"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-5 mb-6">
+          <div><label class="block text-[11px] font-bold uppercase text-slate-500 mb-2">De</label><input type="text" id="ponc-depart" class="input-mlpb"></div>
+          <div><label class="block text-[11px] font-bold uppercase text-slate-500 mb-2">Vers</label><input type="text" id="ponc-arrivee" class="input-mlpb"></div>
+        </div>
+        <button onclick="submitCovoit('ponctuel')" class="w-full btn-mlpb btn-primary justify-center py-3 text-sm">Publier l'annonce</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-        let currentScale = 1;
-        let currentSearch = "";
+<script>
+  // --- CONFIG CARTES (ordre logique : local -> national -> Europe) ---
+  const config = {
+    maps: [
+      // Local
+      { id: 0,  name: "Pays Basque", url: "Pays-Basque.png", tag: "Carte par défaut", default: true },
+      { id: 8,  name: "BAB", url: "bab.jpg", tag: "Urbain" },
+      { id: 11, name: "Hendaye – St Jean", url: "hendaye-st-jean.jpg", tag: "Littoral" },
+      { id: 12, name: "Hendaye transfrontalier", url: "hendaye-transfrontalier.jpg", tag: "Transfrontalier" },
+      { id: 1,  name: "Errobi – Sud Pays Basque", url: "Errobi-sud-pays-basque.jpg", tag: "Sud Pays Basque" },
+      { id: 14, name: "Ustaritz – Cambo", url: "ustaritz-cambo.jpg", tag: "Intérieur" },
+      { id: 3,  name: "Garazi – Baigorri", url: "Garazi-Baigorri.jpg", tag: "Intérieur" },
+      { id: 13, name: "Saint-Palais – Garazi – Mauleon", url: "saint-palais-garazi-mauleon.jpg", tag: "Intérieur" },
+      { id: 4,  name: "Hasparren – Adour", url: "Hasparren-Adour.jpg", tag: "Adour" },
+      { id: 5,  name: "Hasparren – St Palais", url: "Hasparren-stpalais.jpg", tag: "Intérieur" },
+      { id: 7,  name: "Adour Ouest", url: "adour-ouest.jpg", tag: "Adour" },
+      { id: 6,  name: "Navarre transfrontalière", url: "Navarre-transfrontalier.jpg", tag: "Transfrontalier" },
 
-        // --- INIT ---
-        window.onload = () => {
-            switchTab('lieux', document.querySelector('.nav-btn[data-cat="lieux"]'));
-            renderLibrary();
-            renderResources();
-        };
+      // National
+      { id: 10, name: "France", url: "france.jpg", tag: "National" },
 
-        // --- LOGIQUE METIER ---
-        function switchTab(cat, btn) {
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            
-            const titles = { lieux: "Lieu de vie", transports: "Mobilité", pro: "Avenir Pro", demarches: "Démarches", loisirs: "Vie Sociale", freins: "Obstacles" };
-            const colors = { lieux: "var(--c-red)", transports: "var(--c-blue)", pro: "var(--c-orange)", demarches: "var(--c-purple)", loisirs: "var(--c-pink)", freins: "var(--c-black)" };
-            
-            const titleEl = document.getElementById('tools-title');
-            titleEl.innerText = titles[cat];
-            titleEl.style.color = colors[cat];
-            titleEl.style.borderColor = colors[cat];
-            
-            renderTools(cat, colors[cat]);
-        }
+      // Large échelle / Europe
+      { id: 9,  name: "Bordeaux – Toulouse – Bilbao", url: "bordeaux-toulouse-bilbao.jpg", tag: "Grande Échelle" },
+      { id: 2,  name: "Europe", url: "Europe.jpg", tag: "Europe" },
+    ]
+  };
 
-        function renderTools(cat, color) {
-            const container = document.getElementById('tools-container');
-            container.innerHTML = "";
-            taxonomy[cat].forEach(item => {
-                const div = document.createElement('div');
-                div.className = item.highlight ? "tool-item tool-highlight" : "tool-item";
-                if(!item.highlight) div.classList.add('border-l-4');
-                div.style.borderLeftColor = color;
-                
-                div.innerHTML = `<span class="text-xl">${item.icon}</span> <span>${item.label}</span>`;
-                div.onclick = () => addToMap(item);
-                container.appendChild(div);
-            });
-        }
+  // --- PICTOS (corrigé : clés EXACTES attendues par le menu : lieux/transports/pro/demarches/loisirs/freins) ---
+  const taxonomy = {
+    lieux: [
+      { icon: "🏠", label: "Chez mes parents", class: "bubble-lieu" },
+      { icon: "🔑", label: "Chez moi", class: "bubble-lieu" },
+      { icon: "🏘️", label: "En coloc", class: "bubble-lieu" },
+      { icon: "🏢", label: "Foyer", class: "bubble-lieu" },
+      { icon: "🛏️", label: "Hébergement temporaire", class: "bubble-lieu" }
+    ],
+    transports: [
+      { icon: "🚘", label: "JE PROPOSE UN COVOIT", class: "bubble-transport", action: "openCovoitForm", highlight: true },
+      { icon: "🚶", label: "Marche", class: "bubble-transport" },
+      { icon: "🚲", label: "Vélo Perso / Pony", class: "bubble-transport" },
+      { icon: "🛴", label: "Trottinette", class: "bubble-transport" },
+      { icon: "🚌", label: "Bus / Car", class: "bubble-transport" },
+      { icon: "🚋", label: "Tram'Bus", class: "bubble-transport" },
+      { icon: "🚆", label: "Train", class: "bubble-transport" },
+      { icon: "🛵", label: "Scooter / Moto", class: "bubble-transport" },
+      { icon: "🚘", label: "Voiture Perso", class: "bubble-transport" },
+      { icon: "🚗", label: "Autopartage", class: "bubble-transport" },
+      { icon: "👍", label: "Auto-Stop", class: "bubble-transport" },
+      { icon: "🤝", label: "Covoiturage (Passager)", class: "bubble-transport" }
+    ],
+    pro: [
+      { icon: "🚀", label: "Mission Locale", class: "bubble-pro" },
+      { icon: "🏛️", label: "France Travail", class: "bubble-pro" },
+      { icon: "💼", label: "Entreprise", class: "bubble-pro", editable: true },
+      { icon: "🎓", label: "Formation", class: "bubble-pro", editable: true },
+      { icon: "🤝", label: "Volontariat", class: "bubble-pro", editable: true }
+    ],
+    demarches: [
+      { icon: "🤝", label: "Assistante Sociale", class: "bubble-admin" },
+      { icon: "🏛️", label: "CCAS", class: "bubble-admin" },
+      { icon: "🩺", label: "Médecin", class: "bubble-admin" },
+      { icon: "💶", label: "CAF", class: "bubble-admin" },
+      { icon: "📜", label: "Mairie", class: "bubble-admin" },
+      { icon: "🏦", label: "Banque", class: "bubble-admin" }
+    ],
+    loisirs: [
+      { icon: "🛒", label: "Courses", class: "bubble-loisir" },
+      { icon: "⚽", label: "Sport", class: "bubble-loisir" },
+      { icon: "🌊", label: "Nature", class: "bubble-loisir" },
+      { icon: "☕", label: "Café / Sortie", class: "bubble-loisir" },
+      { icon: "🤲", label: "Bénévolat associatif", class: "bubble-loisir", editable: true },
+      { icon: "🎭", label: "Culture", class: "bubble-loisir", editable: true }
+    ],
+    freins: [
+      { icon: "🚫", label: "Zone Blanche", class: "bubble-frein" },
+      { icon: "⏰", label: "Horaires inadaptés", class: "bubble-frein" },
+      { icon: "🤯", label: "Trop compliqué", class: "bubble-frein" },
+      { icon: "💶", label: "Coût trop élevé", class: "bubble-frein" }
+    ]
+  };
 
-        function addToMap(item) {
-            if(item.action === 'openCovoitForm') { openCovoitModal(); return; }
-            
-            const el = document.createElement('div');
-            el.className = 'draggable pointer-events-auto';
-            el.style.left = '50%'; el.style.top = '50%';
-            
-            // Design Bulle
-            let bubbleClass = item.class || 'bubble-transport';
-            if(!item.class) {
-                // Fallback si ajout depuis ressources
-                bubbleClass = 'bubble-transport'; 
-            }
+  const resources = [
+    { icon: "🚲", label: "Vélo" }, { icon: "🛵", label: "Scooter" }, { icon: "🏍️", label: "Moto" },
+    { icon: "🛴", label: "Trottinette" }, { icon: "🚘", label: "Voiture" }, { icon: "🎫", label: "Carte Txik Txak" },
+    { icon: "🚆", label: "Carte SNCF" }, { icon: "🛵", label: "Permis AM" }, { icon: "🚗", label: "Permis B" },
+    { icon: "🏫", label: "Mon Auto-École" }, { icon: "📖", label: "Code de la route" }
+  ];
 
-            let html = `
-                <div class="bubble-container ${bubbleClass}">
-                    <span class="sticker-emoji">${item.icon}</span>
-                </div>
-                <div class="delete-btn" onclick="this.parentElement.remove()">✕</div>
-            `;
-            
-            if(item.editable) {
-                html += `<div class="flex flex-col items-center">
-                    <span class="sticker-label">${item.label}</span>
-                    <input type="text" class="sticker-input" placeholder="Précisez..." onclick="event.stopPropagation();this.focus()">
-                </div>`;
-            } else {
-                html += `<span class="sticker-label">${item.label}</span>`;
-            }
+  let currentScale = 1;
+  let currentSearch = "";
 
-            el.innerHTML = html;
-            enableDrag(el);
-            document.getElementById('drop-zone').appendChild(el);
-        }
+  // --- INIT ---
+  window.onload = () => {
+    switchTab('lieux', document.querySelector('.nav-btn[data-cat="lieux"]'));
+    renderResources();
 
-        function renderResources() {
-            const container = document.getElementById('resources-container');
-            container.innerHTML = "";
-            resources.forEach(item => {
-                const div = document.createElement('div');
-                div.className = "resource-item";
-                div.innerHTML = `<span class="res-icon">${item.icon}</span> ${item.label}`;
-                div.onclick = () => addToMap({...item, class: 'bubble-transport'});
-                container.appendChild(div);
-            });
-        }
+    // Charger la carte par défaut SANS ouvrir la bibliothèque
+    const def = config.maps.find(m => m.default) || config.maps[0];
+    if (def) loadMap(def.url, { closeLibrary: false });
 
-        // --- DRAG & DROP ---
-        function enableDrag(el) {
-            let isDragging = false, startX, startY, initLeft, initTop;
-            
-            const start = (e) => {
-                if(e.target.tagName === 'INPUT' || e.target.classList.contains('delete-btn')) return;
-                e.preventDefault();
-                isDragging = true;
-                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                startX = clientX;
-                startY = clientY;
-                
-                const rect = el.getBoundingClientRect();
-                const parentRect = el.parentElement.getBoundingClientRect();
-                
-                // Calcul position en % pour responsive
-                initLeft = (rect.left + rect.width/2 - parentRect.left) / parentRect.width * 100;
-                initTop = (rect.top + rect.height - parentRect.top) / parentRect.height * 100;
-                
-                document.addEventListener('mousemove', move);
-                document.addEventListener('touchmove', move, { passive: false });
-                document.addEventListener('mouseup', end);
-                document.addEventListener('touchend', end);
-            };
+    // Préparer la bibliothèque (grid + dropdown) quand on l'ouvre
+  };
 
-            const move = (e) => {
-                if(!isDragging) return;
-                e.preventDefault();
-                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                
-                const parentRect = el.parentElement.getBoundingClientRect();
-                const deltaX = (clientX - startX) / parentRect.width * 100;
-                const deltaY = (clientY - startY) / parentRect.height * 100;
-                
-                el.style.left = (initLeft + deltaX) + '%';
-                el.style.top = (initTop + deltaY) + '%';
-            };
+  // --- LOGIQUE METIER ---
+  function switchTab(cat, btn) {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
 
-            const end = () => {
-                isDragging = false;
-                document.removeEventListener('mousemove', move);
-                document.removeEventListener('touchmove', move);
-            };
+    const titles = { lieux: "Lieu de vie", transports: "Mobilité", pro: "Avenir Pro", demarches: "Démarches", loisirs: "Vie Sociale", freins: "Obstacles" };
+    const colors = { lieux: "var(--c-red)", transports: "var(--c-blue)", pro: "var(--c-orange)", demarches: "var(--c-purple)", loisirs: "var(--c-pink)", freins: "var(--c-black)" };
 
-            el.addEventListener('mousedown', start);
-            el.addEventListener('touchstart', start, { passive: false });
-        }
+    const titleEl = document.getElementById('tools-title');
+    titleEl.innerText = titles[cat];
+    titleEl.style.color = colors[cat];
+    titleEl.style.borderColor = colors[cat];
 
-        // --- MODALS ---
-        function toggleLibrary() { 
-            const m = document.getElementById('library-modal');
-            m.classList.toggle('active');
-            if(m.classList.contains('active')) renderLibrary();
-        }
-        function openAddMapModal() { document.getElementById('add-map-modal').classList.add('active'); }
-        function closeAddMapModal() { document.getElementById('add-map-modal').classList.remove('active'); }
-        
-        function openCovoitModal() { document.getElementById('covoit-modal').classList.add('active'); }
-        function closeCovoitModal() { document.getElementById('covoit-modal').classList.remove('active'); }
+    renderTools(cat, colors[cat]);
+  }
 
-        function renderLibrary() {
-            const container = document.getElementById('libraryContainer');
-            container.innerHTML = "";
-            const filter = currentSearch.toLowerCase();
-            config.maps.filter(m => m.name.toLowerCase().includes(filter)).forEach(m => {
-                const card = document.createElement('div');
-                card.className = "map-card";
-                card.onclick = () => loadMap(m.url);
-                card.title = m.name;   // bulle au survol
-                // Fallback si image locale non trouvée pour affichage
-                const img = `<img src="${m.url}" alt="${m.name}" onerror="this.onerror=null; var p=this.parentElement; p.style.fontSize='30px'; p.innerHTML='🗺️';">`;
+  function renderTools(cat, color) {
+    const container = document.getElementById('tools-container');
+    container.innerHTML = "";
+    (taxonomy[cat] || []).forEach(item => {
+      const div = document.createElement('div');
+      div.className = item.highlight ? "tool-item tool-highlight" : "tool-item";
+      if (!item.highlight) div.classList.add('border-l-4');
+      div.style.borderLeftColor = color;
 
-                card.innerHTML = `
-                    <div class="map-thumb">${img}</div>
-                    <div class="map-info">
-                        <div class="map-name">${m.name}</div>
-                        <span class="map-tag">${m.tag}</span>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-        
-        function handleSearch(val) { currentSearch = val; renderLibrary(); }
-        function handleAddMap(e) {
-            e.preventDefault();
-            const file = document.getElementById('newMapFile').files[0];
-            const name = document.getElementById('newMapName').value;
-            if(file && name) {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    config.maps.unshift({ name: name, url: ev.target.result, tag: "Perso" });
-                    renderLibrary();
-                    closeAddMapModal();
-                    loadMap(ev.target.result);
-                };
-                reader.readAsDataURL(file);
-            }
-        }
+      div.innerHTML = `<span class="text-xl">${item.icon}</span> <span>${item.label}</span>`;
+      div.onclick = () => addToMap(item);
+      container.appendChild(div);
+    });
+  }
 
-        function loadMap(url) {
-            const img = document.getElementById('user-map-img');
-            img.src = url;
-            img.classList.remove('hidden');
-            document.getElementById('empty-state').classList.add('hidden');
-            toggleLibrary();
-            resetZoom();
-        }
+  function addToMap(item) {
+    if (item.action === 'openCovoitForm') { openCovoitModal(); return; }
 
-        // --- COVOITURAGE ---
-        function switchCovoitTab(tab) {
-            document.getElementById('tab-regulier').className = tab==='regulier' ? "flex-1 py-3 rounded-lg font-bold text-sm uppercase transition-colors bg-white shadow-sm text-orange-600" : "flex-1 py-3 rounded-lg font-bold text-sm uppercase transition-colors text-gray-500 hover:bg-white";
-            document.getElementById('tab-ponctuel').className = tab==='ponctuel' ? "flex-1 py-3 rounded-lg font-bold text-sm uppercase transition-colors bg-white shadow-sm text-orange-600" : "flex-1 py-3 rounded-lg font-bold text-sm uppercase transition-colors text-gray-500 hover:bg-white";
-            
-            document.getElementById('form-regulier').className = tab==='regulier' ? 'block' : 'hidden';
-            document.getElementById('form-ponctuel').className = tab==='ponctuel' ? 'block' : 'hidden';
-        }
+    const el = document.createElement('div');
+    el.className = 'draggable pointer-events-auto';
+    el.style.left = '50%'; el.style.top = '50%';
 
-        function submitCovoit(type) {
-            let label = "";
-            if(type === 'regulier') {
-                const dep = document.getElementById('reg-depart').value;
-                const arr = document.getElementById('reg-arrivee').value;
-                label = `COVOIT RÉGULIER\n${dep} ➔ ${arr}`;
-            } else {
-                const date = document.getElementById('ponc-date').value;
-                const dep = document.getElementById('ponc-depart').value;
-                label = `COVOIT LE ${date}\nDe ${dep}`;
-            }
-            addToMap({ icon: "🚘", label: label, class: "bubble-transport" });
-            closeCovoitModal();
-        }
+    const bubbleClass = item.class || 'bubble-transport';
 
-        // --- ZOOM & PDF ---
-        function zoomIn() { currentScale += 0.1; applyZoom(); }
-        function zoomOut() { currentScale = Math.max(0.2, currentScale - 0.1); applyZoom(); }
-        function resetZoom() { currentScale = 1; applyZoom(); }
-        function applyZoom() { document.getElementById('map-transform-layer').style.transform = `scale(${currentScale})`; }
+    let html = `
+      <div class="bubble-container ${bubbleClass}">
+        <span class="sticker-emoji">${item.icon}</span>
+      </div>
+      <div class="delete-btn" onclick="this.parentElement.remove()">✕</div>
+    `;
 
-        async function downloadMapPDF() {
-            const el = document.getElementById('board-container');
-            // Hack pour forcer le rendu correct des images cross-origin si possible
-            const canvas = await html2canvas(el, { scale: 2, useCORS: true, allowTaint: true });
-            const imgData = canvas.toDataURL('image/jpeg', 0.9);
-            const pdf = new jspdf.jsPDF('landscape', 'mm', 'a4');
-            pdf.addImage(imgData, 'JPEG', 0, 0, 297, 210);
-            pdf.save('Diagnostic_Mobilité.pdf');
-        }
-    </script>
+    if (item.editable) {
+      html += `
+        <div class="flex flex-col items-center">
+          <span class="sticker-label">${item.label}</span>
+          <input type="text" class="sticker-input" placeholder="Précisez..." onclick="event.stopPropagation();this.focus()">
+        </div>
+      `;
+    } else {
+      html += `<span class="sticker-label">${item.label}</span>`;
+    }
+
+    el.innerHTML = html;
+    enableDrag(el);
+    document.getElementById('drop-zone').appendChild(el);
+  }
+
+  function renderResources() {
+    const container = document.getElementById('resources-container');
+    container.innerHTML = "";
+    resources.forEach(item => {
+      const div = document.createElement('div');
+      div.className = "resource-item";
+      div.innerHTML = `<span class="res-icon">${item.icon}</span> ${item.label}`;
+      div.onclick = () => addToMap({ ...item, class: 'bubble-transport' });
+      container.appendChild(div);
+    });
+  }
+
+  // --- DRAG & DROP ---
+  function enableDrag(el) {
+    let isDragging = false, startX, startY, initLeft, initTop;
+
+    const start = (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.classList.contains('delete-btn')) return;
+      e.preventDefault();
+      isDragging = true;
+
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      startX = clientX; startY = clientY;
+
+      const rect = el.getBoundingClientRect();
+      const parentRect = el.parentElement.getBoundingClientRect();
+
+      initLeft = (rect.left + rect.width / 2 - parentRect.left) / parentRect.width * 100;
+      initTop  = (rect.top + rect.height - parentRect.top) / parentRect.height * 100;
+
+      document.addEventListener('mousemove', move);
+      document.addEventListener('touchmove', move, { passive: false });
+      document.addEventListener('mouseup', end);
+      document.addEventListener('touchend', end);
+    };
+
+    const move = (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
+
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+      const parentRect = el.parentElement.getBoundingClientRect();
+      const deltaX = (clientX - startX) / parentRect.width * 100;
+      const deltaY = (clientY - startY) / parentRect.height * 100;
+
+      el.style.left = (initLeft + deltaX) + '%';
+      el.style.top  = (initTop + deltaY) + '%';
+    };
+
+    const end = () => {
+      isDragging = false;
+      document.removeEventListener('mousemove', move);
+      document.removeEventListener('touchmove', move);
+    };
+
+    el.addEventListener('mousedown', start);
+    el.addEventListener('touchstart', start, { passive: false });
+  }
+
+  // --- MODALS ---
+  function toggleLibrary() {
+    const m = document.getElementById('library-modal');
+    m.classList.toggle('active');
+    if (m.classList.contains('active')) {
+      renderLibrary();
+      populateMapSelect();
+    }
+  }
+  function openAddMapModal(){ document.getElementById('add-map-modal').classList.add('active'); }
+  function closeAddMapModal(){ document.getElementById('add-map-modal').classList.remove('active'); }
+  function openCovoitModal(){ document.getElementById('covoit-modal').classList.add('active'); }
+  function closeCovoitModal(){ document.getElementById('covoit-modal').classList.remove('active'); }
+
+  // --- BIBLIOTHEQUE (grid + dropdown) ---
+  function populateMapSelect() {
+    const sel = document.getElementById('mapSelect');
+    if (!sel) return;
+
+    const filter = currentSearch.toLowerCase();
+    const list = config.maps.filter(m => m.name.toLowerCase().includes(filter));
+
+    sel.innerHTML = `<option value="">Choisir une carte…</option>` +
+      list.map(m => `<option value="${escapeHtml(m.url)}">${escapeHtml(m.name)}</option>`).join('');
+  }
+
+  function handleMapSelect(url) {
+    if (!url) return;
+    loadMap(url, { closeLibrary: true });
+  }
+
+  function renderLibrary() {
+    const container = document.getElementById('libraryContainer');
+    container.innerHTML = "";
+    const filter = currentSearch.toLowerCase();
+
+    config.maps
+      .filter(m => m.name.toLowerCase().includes(filter))
+      .forEach(m => {
+        const card = document.createElement('div');
+        card.className = "map-card";
+        card.onclick = () => loadMap(m.url, { closeLibrary: true });
+        card.title = m.name; // bulle au survol
+
+        const img = `<img src="${m.url}" alt="${escapeHtml(m.name)}" onerror="this.onerror=null; var p=this.parentElement; p.style.fontSize='30px'; p.innerHTML='🗺️';">`;
+
+        card.innerHTML = `
+          <div class="map-thumb">${img}</div>
+          <div class="map-info">
+            <div class="map-name">${escapeHtml(m.name)}</div>
+            <span class="map-tag">${escapeHtml(m.tag || "")}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+    populateMapSelect();
+  }
+
+  function handleSearch(val){
+    currentSearch = val || "";
+    renderLibrary();
+  }
+
+  function handleAddMap(e){
+    e.preventDefault();
+    const file = document.getElementById('newMapFile').files[0];
+    const name = document.getElementById('newMapName').value;
+    if (file && name) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        // Ajout en tête (carte perso)
+        config.maps.unshift({ id: Date.now(), name, url: ev.target.result, tag: "Perso" });
+        renderLibrary();
+        closeAddMapModal();
+        loadMap(ev.target.result, { closeLibrary: false });
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  // --- LOAD MAP (option pour ne pas fermer la bibliothèque) ---
+  function loadMap(url, opts = { closeLibrary: true }) {
+    const img = document.getElementById('user-map-img');
+    img.src = url;
+    img.classList.remove('hidden');
+    document.getElementById('empty-state').classList.add('hidden');
+    resetZoom();
+
+    if (opts.closeLibrary) {
+      const m = document.getElementById('library-modal');
+      if (m.classList.contains('active')) toggleLibrary();
+    }
+  }
+
+  // --- COVOITURAGE ---
+  function switchCovoitTab(tab) {
+    document.getElementById('tab-regulier').className = tab==='regulier'
+      ? "flex-1 py-3 rounded-lg font-bold text-sm uppercase transition-colors bg-white shadow-sm text-orange-600"
+      : "flex-1 py-3 rounded-lg font-bold text-sm uppercase transition-colors text-gray-500 hover:bg-white";
+    document.getElementById('tab-ponctuel').className = tab==='ponctuel'
+      ? "flex-1 py-3 rounded-lg font-bold text-sm uppercase transition-colors bg-white shadow-sm text-orange-600"
+      : "flex-1 py-3 rounded-lg font-bold text-sm uppercase transition-colors text-gray-500 hover:bg-white";
+
+    document.getElementById('form-regulier').className = tab==='regulier' ? 'block' : 'hidden';
+    document.getElementById('form-ponctuel').className = tab==='ponctuel' ? 'block' : 'hidden';
+  }
+
+  function submitCovoit(type) {
+    let label = "";
+    if (type === 'regulier') {
+      const dep = document.getElementById('reg-depart').value;
+      const arr = document.getElementById('reg-arrivee').value;
+      label = `COVOIT RÉGULIER\n${dep} ➔ ${arr}`;
+    } else {
+      const date = document.getElementById('ponc-date').value;
+      const dep = document.getElementById('ponc-depart').value;
+      label = `COVOIT LE ${date}\nDe ${dep}`;
+    }
+    addToMap({ icon: "🚘", label, class: "bubble-transport" });
+    closeCovoitModal();
+  }
+
+  // --- ZOOM & PDF ---
+  function zoomIn(){ currentScale += 0.1; applyZoom(); }
+  function zoomOut(){ currentScale = Math.max(0.2, currentScale - 0.1); applyZoom(); }
+  function resetZoom(){ currentScale = 1; applyZoom(); }
+  function applyZoom(){ document.getElementById('map-transform-layer').style.transform = `scale(${currentScale})`; }
+
+  async function downloadMapPDF(){
+    const el = document.getElementById('board-container');
+    const canvas = await html2canvas(el, { scale: 2, useCORS: true, allowTaint: true });
+    const imgData = canvas.toDataURL('image/jpeg', 0.9);
+    const pdf = new jspdf.jsPDF('landscape', 'mm', 'a4');
+    pdf.addImage(imgData, 'JPEG', 0, 0, 297, 210);
+    pdf.save('Diagnostic_Mobilité.pdf');
+  }
+
+  // --- Utils ---
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+  }
+</script>
+
 </body>
 </html>
