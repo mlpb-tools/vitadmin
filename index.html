@@ -308,24 +308,8 @@
         .map-thumb { height: 140px; background: #e2e8f0; overflow: hidden; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 40px; }
         .map-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
         .map-card:hover img { transform: scale(1.05); }
-        ..map-info{
-  padding: 12px 14px 14px;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-
-.map-name{
-  font-family:'Barlow Condensed', sans-serif;
-  font-weight:900;
-  font-size:16px;
-  text-transform:uppercase;
-  letter-spacing:.6px;
-  color:#0f172a;
-  line-height:1.15;
-  text-align:center;
-}
-
+        .map-info { padding: 15px; }
+        .map-name { font-weight: 700; font-size: 13px; color: var(--c-black); margin-bottom: 5px; }
         .map-tag { display: inline-block; padding: 2px 8px; background: #e0f2fe; color: var(--c-blue); border-radius: 10px; font-size: 10px; font-weight: 700; }
 
         .input-mlpb { 
@@ -436,7 +420,7 @@
                 <div class="modal-close" onclick="toggleLibrary()">×</div>
             </div>
             
-            <div class="p-6 bg-white border-b border-gray-100 flex gap-4 items-center">
+<div class="p-6 bg-white border-b border-gray-100 flex gap-4 items-center">
   <div class="relative flex-1">
     <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">🔍</span>
     <input type="text" id="searchInput" placeholder="Rechercher..." oninput="handleSearch(this.value)" class="input-mlpb pl-10">
@@ -617,16 +601,11 @@
         let currentSearch = "";
 
         // --- INIT ---
-      window.onload = () => {
-  switchTab('lieux', document.querySelector('.nav-btn[data-cat="lieux"]'));
-  renderLibrary();
-  renderResources();
-
- // ✅ Carte Pays Basque par défaut, sans ouvrir/fermer la bibliothèque
-  const defaultMap = config.maps.find(m => m.url === "Pays-Basque.png");
-  if (defaultMap) loadMap(defaultMap.url, { silent: true });
-};
-
+        window.onload = () => {
+            switchTab('lieux', document.querySelector('.nav-btn[data-cat="lieux"]'));
+            renderLibrary();
+            renderResources();
+        };
 
         // --- LOGIQUE METIER ---
         function switchTab(cat, btn) {
@@ -769,38 +748,28 @@
         function closeCovoitModal() { document.getElementById('covoit-modal').classList.remove('active'); }
 
         function renderLibrary() {
-  const container = document.getElementById('libraryContainer');
-  container.innerHTML = "";
-  const filter = currentSearch.toLowerCase();
+            const container = document.getElementById('libraryContainer');
+            container.innerHTML = "";
+            const filter = currentSearch.toLowerCase();
+            config.maps.filter(m => m.name.toLowerCase().includes(filter)).forEach(m => {
+                const card = document.createElement('div');
+                card.className = "map-card";
+                card.onclick = () => loadMap(m.url);
+                
+                // Fallback si image locale non trouvée pour affichage
+                const img = `<img src="${m.url}" alt="${m.name}" onerror="this.onerror=null; var p=this.parentElement; p.style.fontSize='30px'; p.innerHTML='🗺️';">`;
 
-  const filteredMaps = config.maps.filter(m => m.name.toLowerCase().includes(filter));
-
-  // ✅ Remplit le menu déroulant
-  const sel = document.getElementById('mapSelect');
-  if (sel) {
-    sel.innerHTML = `<option value="">Choisir une carte…</option>` +
-      filteredMaps.map(m => `<option value="${m.url}">${m.name}</option>`).join('');
-  }
-
-  // Grille de vignettes
-  filteredMaps.forEach(m => {
-    const card = document.createElement('div');
-    card.className = "map-card";
-    card.onclick = () => loadMap(m.url);
-
-    const img = `<img src="${m.url}" alt="${m.name}" onerror="this.onerror=null; var p=this.parentElement; p.style.fontSize='30px'; p.innerHTML='🗺️';">`;
-
-    card.innerHTML = `
-      <div class="map-thumb">${img}</div>
-      <div class="map-info">
-        <div class="map-name">${m.name}</div>
-        <span class="map-tag">${m.tag}</span>
-      </div>
-    `;
-    container.appendChild(card);
-  });
-}
-
+                card.innerHTML = `
+                    <div class="map-thumb">${img}</div>
+                    <div class="map-info">
+                        <div class="map-name">${m.name}</div>
+                        <span class="map-tag">${m.tag}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+        
         function handleSearch(val) { currentSearch = val; renderLibrary(); }
         function handleAddMap(e) {
             e.preventDefault();
@@ -817,25 +786,14 @@
                 reader.readAsDataURL(file);
             }
         }
-function handleMapSelect(url) {
-  if(!url) return;
-  loadMap(url);
-}
 
-        function loadMap(url, { silent = false } = {}) {
-  const img = document.getElementById('user-map-img');
-  img.src = url;
-  img.classList.remove('hidden');
-  document.getElementById('empty-state').classList.add('hidden');
-  resetZoom();
-
-  // ✅ Ne ferme la bibliothèque QUE si on a cliqué depuis la bibliothèque
-  if (!silent) {
-    const modal = document.getElementById('library-modal');
-    if (modal.classList.contains('active')) toggleLibrary();
-  }
-}
-
+        function loadMap(url) {
+            const img = document.getElementById('user-map-img');
+            img.src = url;
+            img.classList.remove('hidden');
+            document.getElementById('empty-state').classList.add('hidden');
+            toggleLibrary();
+            resetZoom();
         }
 
         // --- COVOITURAGE ---
