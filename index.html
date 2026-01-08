@@ -758,6 +758,8 @@
                 const card = document.createElement('div');
                 card.className = "map-card";
                 card.onclick = () => loadMap(m.url);
+                card.title = m.name;   // bulle au survol
+
                 
                 // Fallback si image locale non trouvée pour affichage
                 const img = `<img src="${m.url}" alt="${m.name}" onerror="this.onerror=null; var p=this.parentElement; p.style.fontSize='30px'; p.innerHTML='🗺️';">`;
