@@ -758,26 +758,38 @@
         function closeCovoitModal() { document.getElementById('covoit-modal').classList.remove('active'); }
 
         function renderLibrary() {
-            const container = document.getElementById('libraryContainer');
-            container.innerHTML = "";
-            const filter = currentSearch.toLowerCase();
-            config.maps.filter(m => m.name.toLowerCase().includes(filter)).forEach(m => {
-                const card = document.createElement('div');
-                card.className = "map-card";
-                card.onclick = () => loadMap(m.url);
-                card.title = m.name;   // bulle au survol
+  const container = document.getElementById('libraryContainer');
+  container.innerHTML = "";
+  const filter = currentSearch.toLowerCase();
 
-                
-                // Fallback si image locale non trouvée pour affichage
-                const img = `<img src="${m.url}" alt="${m.name}" onerror="this.onerror=null; var p=this.parentElement; p.style.fontSize='30px'; p.innerHTML='🗺️';">`;
+  const filteredMaps = config.maps.filter(m => m.name.toLowerCase().includes(filter));
 
-                card.innerHTML = `
-                    <div class="map-thumb">${img}</div>
-                `;
-                container.appendChild(card);
-            });
-        }
-        
+  // ✅ Remplit le menu déroulant
+  const sel = document.getElementById('mapSelect');
+  if (sel) {
+    sel.innerHTML = `<option value="">Choisir une carte…</option>` +
+      filteredMaps.map(m => `<option value="${m.url}">${m.name}</option>`).join('');
+  }
+
+  // Grille de vignettes
+  filteredMaps.forEach(m => {
+    const card = document.createElement('div');
+    card.className = "map-card";
+    card.onclick = () => loadMap(m.url);
+
+    const img = `<img src="${m.url}" alt="${m.name}" onerror="this.onerror=null; var p=this.parentElement; p.style.fontSize='30px'; p.innerHTML='🗺️';">`;
+
+    card.innerHTML = `
+      <div class="map-thumb">${img}</div>
+      <div class="map-info">
+        <div class="map-name">${m.name}</div>
+        <span class="map-tag">${m.tag}</span>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
         function handleSearch(val) { currentSearch = val; renderLibrary(); }
         function handleAddMap(e) {
             e.preventDefault();
@@ -794,6 +806,10 @@
                 reader.readAsDataURL(file);
             }
         }
+function handleMapSelect(url) {
+  if(!url) return;
+  loadMap(url);
+}
 
         function loadMap(url) {
             const img = document.getElementById('user-map-img');
